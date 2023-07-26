@@ -12,7 +12,6 @@ import {User} from "../user";
 import {system} from "../system";
 import {CHIP_TYPE_MODELS, CHIPS_TYPE} from "../../../shared/casino/main";
 import {runCasinoAchievWin} from "./achiev";
-import {randomOrgApi} from "../randomOrgApi";
 import { gui } from '../gui'
 
 let roulleteDailyWinning = 0
@@ -146,12 +145,6 @@ ROULETTE_TABLE_POSITIONS.map((table, index) => {
 
                 mp.objects.toArray().filter(q => q && q.getVariable('casinoId') === index && !!q.getVariable('casinoChip')).map(q => q.destroy());
                 setTimeout(() => {
-                    // Дабы не тратить числа сгенерированные апишкой рандом.орг (есть лимиты по битам в день/запросам в день)
-                    // при отсутствии ставок число генерируется через Math.random();
-                    // TODO: вообще переделать это так, что если никаких ставок нет, то и ничего генерироваться не должно
-                    // const isAnyBets = tables.get(index).bets.length > 0;
-                    // const numWin = Math.floor((isAnyBets ? randomOrgApi.get() : Math.random()) * 38)
-                    
                     let numWin = getNumWin();
                     let bigWin = false;
                     
