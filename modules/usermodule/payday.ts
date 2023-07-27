@@ -23,7 +23,6 @@ import {
     LEVEL_FOR_PLAY_REWARD_MAX,
     MINUTES_FOR_PLAY_REWARD_MAX
 } from "../../../shared/reward.time";
-import {BattleRoyale} from "../battleroyale";
 import {Vehicle} from "../vehicles";
 import {inventory} from "../inventory";
 import {OWNER_TYPES} from "../../../shared/inventory";
@@ -70,21 +69,19 @@ CustomEvent.register('newMinute', () => {
                 const MIN_NEED = mp.config.announce ? MINUTES_FOR_PLAY_REWARD_MAX : 10
                 if (!user.account.playtimecar) {
                     if (user.entity.playtimecar === MIN_NEED) {
-                        if (!BattleRoyale.getByPlayer(player)) {
-                            const cfg = Vehicle.getVehicleConfig(CAR_FOR_PLAY_REWARD_MAX)
-                            if (cfg) {
-                                user.notifyBig('Получен купон', 'Данный купон вы можете обменять на автомобиль. Для этого используйте полученный купон в инвентаре')
-                                player.outputChatBox(`Вы получили купон, который можно обменять на автомобиль. Для этого откройте инвентерь и используйте купон.`)
-                                inventory.createItem({
-                                    owner_type: OWNER_TYPES.PLAYER,
-                                    owner_id: user.id,
-                                    item_id: 866,
-                                    advancedNumber: user.id,
-                                    advancedString: 'veh|' + CAR_FOR_PLAY_REWARD_MAX
-                                })
-                                user.account.playtimecar = 1;
-                                saveEntity(user.account)
-                            }
+                        const cfg = Vehicle.getVehicleConfig(CAR_FOR_PLAY_REWARD_MAX)
+                        if (cfg) {
+                            user.notifyBig('Получен купон', 'Данный купон вы можете обменять на автомобиль. Для этого используйте полученный купон в инвентаре')
+                            player.outputChatBox(`Вы получили купон, который можно обменять на автомобиль. Для этого откройте инвентерь и используйте купон.`)
+                            inventory.createItem({
+                                owner_type: OWNER_TYPES.PLAYER,
+                                owner_id: user.id,
+                                item_id: 866,
+                                advancedNumber: user.id,
+                                advancedString: 'veh|' + CAR_FOR_PLAY_REWARD_MAX
+                            })
+                            user.account.playtimecar = 1;
+                            saveEntity(user.account)
                         }
                     } else if (user.entity.playtimecar < MIN_NEED) {
                         user.entity.playtimecar++;

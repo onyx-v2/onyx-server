@@ -79,7 +79,6 @@ import {DeathMath} from "./deadmatch";
 import {StorageAlertData} from "../../shared/alertsSettings";
 import {syncDeathId} from "./survival";
 import {dialogSystem} from "./chat";
-import {BattleRoyale} from "./battleroyale";
 import {FamilyTasks} from "../../shared/family";
 import {CargoBattleFamilyQuest} from "./families/quests/cargobattle";
 import {
@@ -3250,7 +3249,6 @@ export class User extends UserStatic {
         if (DeathMathLobby.getByPlayer(this.player)) return true;
         if (raceRegisteredPlayers.find(q => mp.players.exists(q) && q.id === this.player.id)) return true;
         if (duels.getLobbyByUser(this.id) && !duels.getLobbyByUser(this.id).ended) return true;
-        if(BattleRoyale.playerAttachedLobby(this.player)) return true;
         if(ConstructionSystem.getByPlayer(this.player)) return true;
         if (this.player.getVariable('inVehicleTruck')) return true;
         return false;
@@ -3261,7 +3259,6 @@ export class User extends UserStatic {
         const dm = DeathMath.getByPlayer(this.player);
         if(dm && !dm.weapon) return true;
         if(ConstructionSystem.getByPlayer(this.player)) return true;
-        if(BattleRoyale.getByPlayer(this.player)) return true;
         if (this.attachedToPlace) return false
         return true;
     }

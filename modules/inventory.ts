@@ -47,7 +47,6 @@ import {VEHICLE_FUEL_TYPE} from "../../shared/vehicles";
 import {In} from "typeorm";
 import {removeEntity, saveEntity} from "./typeorm";
 import {LicenseName, UdoData} from "../../shared/licence";
-import {BattleRoyale} from "./battleroyale";
 import {FamilyTasks, FamilyTasksLoading} from "../../shared/family";
 import {warehouses} from "./warehouse";
 import {WAREHOUSE_SLOTS_POS} from "../../shared/warehouse";
@@ -1862,18 +1861,6 @@ export const inventory = {
                     isHouseStockPushed = true;
                 }
             })
-            const br = BattleRoyale.getByPlayer(player);
-            if (br && br.started) {
-                br.objectsLootsPos.forEach((pos, id) => {
-                    if (system.distanceToPos(position, pos) < 5) {
-                        res.push({owner_type: OWNER_TYPES.BATTLE_ROYALE, owner_id: id, have_access: true});
-                        if (br.blipsLoots.has(id)) {
-                            if (mp.blips.exists(br.blipsLoots.get(id))) br.blipsLoots.get(id).destroy()
-                            br.blipsLoots.delete(id)
-                        }
-                    }
-                })
-            }
         }
         User.getNearestPlayers(player, 3, true).filter(q => q.dimension === player.dimension && q.user).map(target => {
             res.push({
@@ -1954,7 +1941,7 @@ export const inventory = {
             let countRemoved = 0;
             console.time('Загрузка инвентаря завершена')
             inventory.inventory_blocks.set(`0_0`, [])
-            ItemEntity.delete({owner_type: In([OWNER_TYPES.WORLD, OWNER_TYPES.BATTLE_ROYALE, OWNER_TYPES.TEMP, OWNER_TYPES.VEHICLE_TEMP])}).then((del) => {
+            ItemEntity.delete({owner_type: In([OWNER_TYPES.WORLD, OWNER_TYPES.TEMP, OWNER_TYPES.VEHICLE_TEMP])}).then((del) => {
                 if (typeof del.affected === "number") countRemoved += del.affected;
                 ItemEntity.delete({temp: 1}).then((del) => {
                     if (typeof del.affected === "number") countRemoved += del.affected;

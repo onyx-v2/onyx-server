@@ -6,8 +6,6 @@ import {EVENT_ANNOUNCE_COST, EVENT_ANNOUNCE_MINUTE} from "../../shared/economy";
 import {fight} from "./fight";
 import {BoxGameCreateAndRun} from './boxgame';
 import {clearGangZone} from "./gangwar";
-import {BattleRoyale} from "./battleroyale";
-import {BATTLEROYALE_ZONES} from "../../shared/battleroyale";
 import {eventsList} from "../../shared/events";
 import {generateRace} from "./race";
 import {CargoBattleFamilyQuest} from "./families/quests/cargobattle";
@@ -19,7 +17,6 @@ import {gangfight} from "./gangfight";
 
 CustomEvent.register('newHour', (hour) => {
     setTimeout(() => {
-        if(eventsList.BR.includes(hour)) BattleRoyale.create(system.randomArrayElementIndex(BATTLEROYALE_ZONES))
         if(eventsList.RACE.includes(hour)) generateRace();
         if(eventsList.BOX.includes(hour)) {
             setTimeout(() => {
@@ -302,16 +299,6 @@ const adminMenu = (player: PlayerMp) => {
             if (!user.hasPermission('admin:boxGameStart:system')) return;
             m.close();
             BoxGameCreateAndRun()
-        }
-    })
-    m.newItem({
-        name: "Начать BR матч",
-        type: 'list',
-        list: BATTLEROYALE_ZONES.map(q => q.name),
-        onpress: (itm) => {
-            if (!user.hasPermission('admin:battleroyale:system')) return;
-            m.close();
-            BattleRoyale.create(itm.listSelected)
         }
     })
     // adminRun

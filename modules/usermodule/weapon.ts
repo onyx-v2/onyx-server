@@ -12,7 +12,6 @@ import {
     OWNER_TYPES, WeaponAddonsItem
 } from "../../../shared/inventory";
 import {inventory} from "../inventory";
-import {BattleRoyale} from "../battleroyale";
 import {ItemEntity} from "../typeorm/entities/inventory";
 import {WEAPON_ATTACH_LIST} from "../../../shared/attach.system";
 export class UserWeapon extends UserAddonClass {
