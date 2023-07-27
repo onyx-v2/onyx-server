@@ -49,7 +49,6 @@ import {
 import {isWaterSpotInRange} from "../jobs/firefighter/FireStation";
 import {InterractionMenu} from "./InterractionMenu";
 import {activeCars} from '../vehicle.grab'
-import {openAutoSoundMenu} from "../vehicle.autosound";
 import {sendExchangeRequest} from "../inventory.exchange";
 import {Carry} from '../carry'
 import {BATTLE_PASS_VEHICLES} from "../../../shared/battlePass/main";
@@ -111,14 +110,6 @@ const vehInteract = (player: PlayerMp, targetId: number) => {
     if(target.isMission && target.missionOwner !== user.id) return player.notify('Вы не можете взаимодействовать с данным ТС', 'error');
     const interaction = new InterractionMenu(player, true);
     interaction.autoClose = true;
-
-    if (player.vehicle === target && player.seat === 0) {
-
-        if (target.entity?.data && target.entity.data.isAutoSoundInstalled) {
-            interaction.add('Автозвук', '', 'autosound', () => openAutoSoundMenu(player, target));
-        }
-
-    }
     
     if (target.fireSquad && player.user.fireSquad && target.fireSquad === player.user.fireSquad) {
         interaction.add('Заправить огнетушительной смесью', '', 'star', () => {

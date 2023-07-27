@@ -53,7 +53,6 @@ import {WAREHOUSE_SLOTS_POS} from "../../shared/warehouse";
 import {tablet} from "./tablet";
 import {Logs} from "./logs";
 import {gui} from "./gui";
-import {BoxPlayer} from "./musicPlayer";
 import {colshapes} from "./checkpoints";
 import {gangfight} from "./gangfight";
 import {SendUpdate} from "../../shared/GameVisualElement";
@@ -899,29 +898,6 @@ export const inventory = {
             CustomEvent.triggerClient(player, 'diving:useMap', item.item_id);
         }
 
-        if (item.item_id === AUTO_SOUND_ITEM_ID) {
-            if (!player.vehicle) {
-                return player.notify('Этот предмет можно использовать только находясь в Т/С', 'error');
-            }
-
-            if (!player.vehicle?.entity?.data) {
-                return player.notify('Систему автозвука невозможно установить в этом Т/С', 'error');
-            }
-
-            const vehicleData = player.vehicle.entity.data;
-            if (vehicleData.isAutoSoundInstalled) {
-                return player.notify('Система автозвука уже установлена в этом Т/С', 'error');
-            }
-
-            vehicleData.isAutoSoundInstalled = true;
-            vehicleData.save();
-
-            item.useCount(1);
-
-            player.notify('Вы успешно установили систему автозвука в транспортное средство. ' +
-                'Чтобы использовать его, открой меню взаимодействия, находясь в машине на водительском месте (G)', 'success');
-        }
-
         if ([ITEM_TYPE.WATER, ITEM_TYPE.FOOD, ITEM_TYPE.ALCO].includes(itmCfg.type)) {
             if (itmCfg.type === ITEM_TYPE.ALCO) {
                 count = system.smallestNumber(count, 45)
@@ -969,11 +945,6 @@ export const inventory = {
         if (itmCfg.inHand) {
             if (user.hasAttachment('item_' + itmCfg.item_id)) user.removeAttachment('item_' + itmCfg.item_id);
             else user.addAttachment('item_' + itmCfg.item_id);
-        }
-        if (item.item_id === 894) {
-            if (!BoxPlayer.canPlace(player))
-                return player.notify('Поблизости уже есть плеер или вы находитесь в зеленой зоне', 'error')
-            new BoxPlayer(player, item)
         }
         if (item.item_id === 868) {
             if (player.dimension) return player.notify('В данном месте нельзя выпускать фейерверк', 'error')

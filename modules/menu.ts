@@ -8,8 +8,6 @@ import {JobId, jobsList} from "../../shared/jobs";
 import {Family} from "./families/family";
 import { fractionCfg } from "./fractions/main";
 import {PURCHASEABLE_ANIMS} from "../../shared/anim";
-
-
 export class MenuClass {
     /** Параметр множителя базовой ширины меню, на случай если это необходимо */
     widthMultipler = 1;

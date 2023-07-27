@@ -36,7 +36,6 @@ import {ChipTuningOption} from "../../shared/lsc";
 import {DRIFT_PARAMS} from "../../shared/drift";
 import {Logs} from "./logs";
 import {UserStatic} from "./usermodule/static";
-import {VehiclePlayer} from "./vehicle.autosound";
 import {gui} from "./gui";
 import {distinctArray} from "../../shared/arrays";
 import {BATTLE_PASS_VEHICLES} from "../../shared/battlePass/main";
@@ -224,7 +223,6 @@ export class Vehicle {
     data: VehicleEntity;
     vehicle: VehicleMp;
     id: number;
-    musicPlayer: VehiclePlayer;
     static list = new Map <number, Vehicle>();
     static get(id: number){
         return this.list.get(id);
