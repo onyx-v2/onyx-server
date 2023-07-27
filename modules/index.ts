@@ -102,7 +102,6 @@ import './snowWar'
 import './battlePass'
 import './supplyWar'
 import './admin/index'
-import './fightClub'
 import './houses/index.ts'
 import './duckWalk';
 import './islandBattle';
