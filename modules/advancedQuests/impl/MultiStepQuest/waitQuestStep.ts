@@ -25,7 +25,7 @@ class WaitQuestStep extends QuestStep implements IQuestSavable {
     get hudDto(): QuestStepDto {
         return {
             completed: this.isComplete,
-            name: `Подождите ${this._waitTimeMin} минут`
+            name: `Warte ${this._waitTimeMin} Minuten`
         };
     }
 

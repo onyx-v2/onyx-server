@@ -119,7 +119,7 @@ export class CargoBattleFamilyQuest {
             if(isAdminStart) { }
             if([...CargoBattleFamilyQuest.all].length > 1) {
                 this.destroy()
-                return reject('Еще не закончилась предыдущая игра')
+                return reject('Das vorherige Spiel ist noch nicht zu Ende')
             }
             this.familyInGame = []
             let families: { family: Family, count: number }[] = []
@@ -132,7 +132,7 @@ export class CargoBattleFamilyQuest {
             families = families.filter(f => f.count >= this.minimumStartMembers)
             if(families.length < this.minimumStartFamilies) {
                 this.destroy()
-                return reject('Недостаточно семей / членов семей');
+                return reject('Nicht genug Familien / Familienmitglieder');
             }
             this.familyInGame = families.map(f =>f.family)
             this.setReadyTimeout()
@@ -175,7 +175,7 @@ export class CargoBattleFamilyQuest {
         })
         if(!allObjects.length) {
             this.destroy()
-            return system.debug.error('При попытке старта высадки груза не оказалось свободной локации')
+            return system.debug.error('Es gab keinen freien Platz, als ich versucht habe, die Frachtabgabe zu starten')
         }
         CargoBattleFamilyQuest.clearRestartTimeout()
 
@@ -213,7 +213,7 @@ export class CargoBattleFamilyQuest {
     private enterZone(player: PlayerMp) {
         if(this.isEnd) return;
         if(!player.user.isAdminNow() && player.user && player.user.family && player.user.health > 0) {
-            if(!this.familyInGame.includes(player.user.family)) return player.notify('Ваша семья не может принять участие в захвате груза')
+            if(!this.familyInGame.includes(player.user.family)) return player.notify('Deine Familie kann nicht an der Abholung der Sendung teilnehmen')
             if(!this.players.find(p => p.player == player)) this.players.push({player: player, points: 0})
             this.attackersInside.push(player)
             this.checkZoneOwner()
@@ -335,12 +335,12 @@ export class CargoBattleFamilyQuest {
             this.addWinnerPoints(this.attackFamily)
             this.attackFamily.cargo += FAMILY_CARGO_VALUE_FOR_WIN
             this.attackFamily.wins++
-            this.functionToAllFamilies(player => player.user.notify(`Семья ${this.attackFamily.name} победила в захвате груза`))
+            this.functionToAllFamilies(player => player.user.notify(`Familie ${this.attackFamily.name} gewann den Frachtgreifer`))
             let allScores = 0
             this.players.filter(p => mp.players.exists(p.player) && p.player.user && p.player.user.family === this.attackFamily).map(winner => {
                 const win = Math.round(winner.points)
                 if(!win) return;
-                winner.player.notify(`Вы получили ${win} семейных очков за участие в победном захвате груза`)
+                winner.player.notify(`Du hast ${win} Familienpunkte für die Teilnahme an einem siegreichen Ladungsraub`)
                 winner.player.user.familyScores += win
                 allScores += win
             })

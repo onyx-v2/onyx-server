@@ -21,10 +21,10 @@ CustomEvent.registerCef('cloth:buy', async (player, shopId: number, itemId: numb
     if (!shop) return;
     if (shop.type !== BUSINESS_TYPE.DRESS_SHOP) return;
     const conf = shop.catalog.find(q => q.item == itemId);
-    if (!conf || !conf.price) return player.notify('Данный товар больше не продаётся', 'error'), reloadShopData(player, shop);
+    if (!conf || !conf.price) return player.notify('Dieser Artikel ist nicht mehr zu verkaufen', 'error'), reloadShopData(player, shop);
     let dressCfg = dress.get(itemId);
-    if (!dressCfg) return player.notify('Данная одежда больше не производится', 'error'), reloadShopData(player, shop);
-    if(!dressCfg.data[variationId]) return player.notify("Выбрана не верная вариация данной одежды", "error");
+    if (!dressCfg) return player.notify('Dieses Kleidungsstück ist nicht mehr in Produktion', 'error'), reloadShopData(player, shop);
+    if(!dressCfg.data[variationId]) return player.notify("Die falsche Variante dieses Kleidungsstücks wurde ausgewählt", "error");
     const price = conf.count > 0 ? conf.price : businessDefaultCostItem(shop, conf.item)
     let canPay: boolean;
     if (!shop.donate) {
@@ -32,25 +32,25 @@ CustomEvent.registerCef('cloth:buy', async (player, shopId: number, itemId: numb
             price,
             'all',
             null, 
-            `Покупка одежды в магазине ${shop.id} одежду ${itemId} ${dressCfg.name}`,
-            'Магазин одежды'
+            `Kleidung in einem Geschäft kaufen ${shop.id} Kleidung ${itemId} ${dressCfg.name}`,
+            'Bekleidungsgeschäft'
         )
     }
     else canPay = user.donate_money >= price
-    if (!canPay) return player.notify("Недостаточно средств для оплаты", "error");
+    if (!canPay) return player.notify("Unzureichende Mittel zur Bezahlung", "error");
     if (conf.count > 0) {
         business.addMoney(shop, price, `Клиент (${player.dbid}) купил ${dressCfg.name}`, false,
             false, true, true, businessDefaultCostItem(shop, conf.item));
         shop.setItemCountByItemId(conf.item, conf.count - 1)
     }
     if (shop.donate){
-        user.removeDonateMoney(price, `Покупка одежды в магазине ${shop.id} одежду ${itemId} ${dressCfg.name}`);
+        user.removeDonateMoney(price, `Kleidung in einem Geschäft kaufen ${shop.id} Kleidung ${itemId} ${dressCfg.name}`);
 
     } else {
         //user.removeMoney(price, true, `Покупка одежды в магазине ${shop.id} одежду ${itemId} ${dressCfg.name}`);
         player.user.achiev.setAchievTickBiz(shop.type, shop.sub_type, price)
     }
-    player.notify("Одежда успешно приобретена", "success");
+    player.notify("Die Kleidung wurde erfolgreich gekauft", "success");
     writeClientRatingLog(player, shopId, price, dressCfg.name, 1);
     user.quests.map(quest => {
         if (quest[2]) return;
@@ -113,14 +113,14 @@ export const dressMenu = (player: PlayerMp, item: BusinessEntity) => {
     if (!player.user) return;
     const user = player.user;
     const openShop = () => {
-        if (item.catalog.length == 0) return player.notify('Каталог магазина на данный момент пустой', 'error');
-        if(user.getJobDress) return player.notify('Вы не можете пользоваться магазином одежды пока в форме', 'error')
-        if(!user.mp_character) return player.notify('Вы не можете посетить магазин одежды пока используется не стандартный скин', 'error')
+        if (item.catalog.length == 0) return player.notify('Der Shop-Katalog ist derzeit leer', 'error');
+        if(user.getJobDress) return player.notify('Du kannst den Bekleidungsladen nicht benutzen, wenn du eine Uniform trägst.', 'error')
+        if(!user.mp_character) return player.notify('Du kannst nur in ein Bekleidungsgeschäft gehen, wenn du einen nicht standardisierten Skin verwendest', 'error')
         reloadShopData(player, item)
     }
     if (!user.isAdminNow(6) && item.userId !== user.id && !needUnload(player, item) && !canUserStartBizWar(user))
         return openShop();
-    let m = menu.new(player, "", user.isAdminNow(6) ? `Бизнес #${item.id}` : "");
+    let m = menu.new(player, "", user.isAdminNow(6) ? `Business #${item.id}` : "");
     let sprite = "";
 
     switch (item.sub_type) {
@@ -141,7 +141,7 @@ export const dressMenu = (player: PlayerMp, item: BusinessEntity) => {
 
 
     m.newItem({
-        name: "Каталог товаров",
+        name: "Produktkatalog",
         onpress: () => {
             m.close();
             openShop()
@@ -150,7 +150,7 @@ export const dressMenu = (player: PlayerMp, item: BusinessEntity) => {
 
     if (needUnload(player, item)) {
         m.newItem({
-            name: "~g~Выгрузить заказ",
+            name: "~g~Auftrag abladen",
             onpress: () => {
                 m.close();
                 deliverSet(player)
@@ -162,7 +162,7 @@ export const dressMenu = (player: PlayerMp, item: BusinessEntity) => {
     
     if (user.isAdminNow(6) || item.userId === user.id) {
         m.newItem({
-            name: '~b~Управление бизнесом',
+            name: '~b~Business Management',
             onpress: () => {
                 businessCatalogMenu(player, item, () => {
                     dressMenu(player, item)
@@ -170,7 +170,7 @@ export const dressMenu = (player: PlayerMp, item: BusinessEntity) => {
             },
         })
         m.newItem({
-            name: '~g~Заказ продукции',
+            name: '~g~Produktbestellung',
             onpress: () => {
                 orderDeliverMenu(player, item)
             }

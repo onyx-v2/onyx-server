@@ -60,10 +60,10 @@ CustomEvent.registerCef('rentCar:rent', (player, shopId: number, modelName: stri
     const car = shop.catalog.find(el => getVehicleConfigById(el.item).name == modelName)
     if (!car) return;
     const { name, fuel_type, fuel_max, fuel_min, model, stock, license } = getVehicleConfigById(car.item)
-    if (license && !user.haveActiveLicense(license)) return player.notify(`Чтобы взять ${name} в аренду необходимо иметь активную лицензию на ${LicenseName[license]}`, "error");
+    if (license && !user.haveActiveLicense(license)) return player.notify(`Um ${name} zu nehmen, musst eine aktive Lizenz haben: ${LicenseName[license]}`, "error");
     user.tryPayment(car.price, 'all', () => {
         return !player.rentCar
-    }, `Аренда транспорта ${name}`, `#${shop.id} ${shop.name}`).then(val => {
+    }, `Transport mieten ${name}`, `#${shop.id} ${shop.name}`).then(val => {
         if (!val) return openShop(player, shop);
         const veh = Vehicle.spawn(model, new mp.Vector3(shop.positions[1].x, shop.positions[1].y, shop.positions[1].z), shop.positions[1].h, player.dimension, true, false);
         veh.rentCar = true;
@@ -72,7 +72,7 @@ CustomEvent.registerCef('rentCar:rent', (player, shopId: number, modelName: stri
         player.rentCar = veh;
         let sumBiz = car.price * 0.3;
         sumBiz = sumBiz + (sumBiz / 100 * (shop.upgrade * 10))
-        business.addMoney(shop, sumBiz, `Аренда ${name} пользователем ${user.name} ${user.id}`);
+        business.addMoney(shop, sumBiz, `Vermietungen ${name} Benutzer ${user.name} ${user.id}`);
         player.user.achiev.setAchievTickBiz(shop.type, shop.sub_type, car.price)
         setTimeout(() => {
             if(mp.players.exists(player) && mp.vehicles.exists(veh)) player.user.putIntoVehicle(player.rentCar, 0);
@@ -87,27 +87,27 @@ CustomEvent.registerClient('autosalon:buyCar', async (player, itemId: number, sh
     let shop = business.get(shopId);
     if (!shop) return;
     if (shop.type !== BUSINESS_TYPE.VEHICLE_SHOP) return;
-    if(user.myVehicles.find(veh => veh.onParkingFine)) return player.notify('Вы не можете ничего покупать пока имеете ТС на штрафстоянке', 'error');
+    if(user.myVehicles.find(veh => veh.onParkingFine)) return player.notify('Du kannst nichts kaufen, solange du das Fahrzeug auf dem Abstellplatz hast', 'error');
     const conf = shop.catalog.find(q => q.item == itemId);
-    if (!conf || !conf.price) return player.notify('Данный ТС больше не продаётся', 'error');
-    if (!conf.count) return player.notify("ТС отсутствует на складе", "error");
+    if (!conf || !conf.price) return player.notify('Dieses Fahrzeug ist nicht mehr zu verkaufen', 'error');
+    if (!conf.count) return player.notify("Das Fahrzeug ist nicht mehr auf Lager", "error");
     // const pos = user.getFreeVehicleSlot()
     // if(!pos) return player.notify("Для покупки транспорта необходим собственный дом с свободным местом в гараже, либо свободное парковочное место", "error");
     const vehConf = getVehicleConfigById(itemId);
     if(!vehConf) return;
     if (vehConf.license && !user.haveActiveLicense(vehConf.license)) return player.notify(`Чтобы приобрести ${vehConf.name} необходимо иметь активную лицензию на ${LicenseName[vehConf.license]}`, "error");
     if(isFamilyMoney){
-        if(!user.family || !user.family.canBuyMoreCar) return player.notify(`У вашей семьи достигнут лимит на количество приобретнённого транспорта`, "error");
+        if(!user.family || !user.family.canBuyMoreCar) return player.notify(`Deine Familie hat das Limit für die Anzahl der Fahrzeuge erreicht, die du kaufen kannst.`, "error");
     } else {
-        if (user.myVehicles.length >= user.current_vehicle_limit) return player.notify(`Вы можете иметь не более ${user.current_vehicle_limit} ТС. Дополнительные слоты можно приобрести в личном кабинете`, "error");
+        if (user.myVehicles.length >= user.current_vehicle_limit) return player.notify(`Du kannst nicht mehr haben als ${user.current_vehicle_limit} Fahrzeuge. Zusätzliche Slots können in myAlpari gekauft werden`, "error");
     }
     const air = vehConf.fuel_type === VEHICLE_FUEL_TYPE.AIR;
     if(air && isFamilyMoney){
         const airVeh = Vehicle.getFamilyVehicles(user.familyId).filter(q => q.avia);
-        if(airVeh.length > 0) return player.notify("У вашей семьи есть один вертолёт", "error");
+        if(airVeh.length > 0) return player.notify("Deine Familie hat einen Hubschrauber", "error");
     }
     let place = await Vehicle.selectParkPlace(player, air, isFamilyMoney);
-    if(!place) return player.notify("Для покупки ТС необходимо указать парковочное место, где ТС будет храниться", "error");
+    if(!place) return player.notify("Beim Kauf des Fahrzeugs musst du den Stellplatz angeben, auf dem das Fahrzeug abgestellt werden soll", "error");
     const getParkPos = () => {
         if (place.type === "house") {
             return houses.getFreeVehicleSlot(place.id, vehConf.fuel_type === VEHICLE_FUEL_TYPE.AIR)
@@ -127,9 +127,9 @@ CustomEvent.registerClient('autosalon:buyCar', async (player, itemId: number, sh
             let freePoint = points.find(point => !system.isPointInPoints(point, nearestvehs, 3))
             if (!freePoint) freePoint = Vehicle.findFreeParkingZone(new mp.Vector3(points[0].x, points[0].y, points[0].z), 200)
             if (pos && place.type === "parking"){
-                if (!user.tryRemoveBankMoney(PARKING_START_COST, true, 'Оплата парковочного места', 'Парковка #'+place.id) && !user.removeMoney(PARKING_START_COST, true, 'Оплата парковочного места')){
+                if (!user.tryRemoveBankMoney(PARKING_START_COST, true, 'Parken bezahlen', 'Парковка #'+place.id) && !user.removeMoney(PARKING_START_COST, true, 'Parken bezahlen')){
                     veh.moveToParkingFine(0);
-                    player.notify("Поскольку у вас нет возможности оплатить парковку мы вынуждены отправить транспорт на штрафстоянку. Вы сможете забрать его оттуда как только будет возможность оплатить первоначальный взнос за парковочное место", "error", null, 15000)
+                    player.notify("Da du nicht in der Lage bist, die Parkgebühr zu bezahlen, müssen wir das Fahrzeug auf den Abschlepphof schicken. Du kannst es dort abholen, sobald du in der Lage bist, die ursprüngliche Parkgebühr zu bezahlen.", "error", null, 15000)
                     return;
                 }
             }
@@ -138,12 +138,12 @@ CustomEvent.registerClient('autosalon:buyCar', async (player, itemId: number, sh
             if (freePoint){
                 Vehicle.teleport(veh.vehicle, new mp.Vector3(freePoint.x, freePoint.y, freePoint.z), freePoint.h, 0);
                 veh.vehicle.usedAfterRespawn = true;
-                player.notify("Транспорт успешно приобретён и ожидает вас на ближайшей парковке", "success", "CHAR_PEGASUS_DELIVERY");
-                if (system.distanceToPos(shop.positions[0], freePoint) > 20) user.setWaypoint(freePoint.x, freePoint.y, freePoint.z, 'Новый ТС', true), player.notify("Поблизости все места заняты, поэтому нам пришлось отогнать ТС подальше. Координаты в вашем GPS навигаторе")
+                player.notify("Тransport wurde erfolgreich gekauft und wartet im nächsten Parkhaus auf dich", "success", "CHAR_PEGASUS_DELIVERY");
+                if (system.distanceToPos(shop.positions[0], freePoint) > 20) user.setWaypoint(freePoint.x, freePoint.y, freePoint.z, 'Новый ТС', true), player.notify("Alle Plätze in der Nähe waren besetzt, also mussten wir das Fahrzeug weiter wegfahren. Koordinaten in deinem GPS-Navigator")
             } else {
-                player.notify("Транспорт успешно приобретён. К сожалению все парковочные места заняты и мы доставили ваш ТС на парковочное место.", "success", "CHAR_PEGASUS_DELIVERY");
+                player.notify("Das Fahrzeug wurde erfolgreich gekauft. Leider sind alle Parkplätze belegt und wir haben dein Fahrzeug an einen Parkplatz geliefert.", "success", "CHAR_PEGASUS_DELIVERY");
             }
-            player.notify("Не забудьте зарегистрировать ТС, установив на него номерной знак. Передвигатся по городу без регистрации можно лишь ограниченное время", "info", "CHAR_PEGASUS_DELIVERY");
+            player.notify("Vergiss nicht, dein Fahrzeug mit einem Nummernschild anzumelden. Ohne Anmeldung darfst du nur für eine begrenzte Zeit in der Stadt herumfahren", "info", "CHAR_PEGASUS_DELIVERY");
         });
     }
     if(isFamilyMoney){
@@ -151,11 +151,11 @@ CustomEvent.registerClient('autosalon:buyCar', async (player, itemId: number, sh
         if(!family) return;
         if(!family.isCan(user.familyRank, 'buyCar')) return;
         if(shop.donate){
-            if(family.donate < conf.price) return player.notify('У вашей семьи недостаточно средств для покупки', 'error');
-            family.removeDonateMoney(conf.price, player,`Приобретение транспорта ${vehConf.name}`)
+            if(family.donate < conf.price) return player.notify('Deine Familie hat nicht genug Geld', 'error');
+            family.removeDonateMoney(conf.price, player,`Kauf von Transportmitteln ${vehConf.name}`)
         } else {
-            if(family.money < conf.price) return player.notify('У вашей семьи недостаточно средств для покупки', 'error');
-            family.removeMoney(conf.price, player,`Приобретение транспорта ${vehConf.name}`)
+            if(family.money < conf.price) return player.notify('Deine Familie hat nicht genug Geld', 'error');
+            family.removeMoney(conf.price, player,`Kauf von Transportmitteln ${vehConf.name}`)
         }
         success();
         writeClientRatingLog(player, shopId, conf.price, vehConf.name, 1);
@@ -163,11 +163,11 @@ CustomEvent.registerClient('autosalon:buyCar', async (player, itemId: number, sh
         user.tryPayment(conf.price, shop.donate ? "donate" : "all", () => {
             const conf = shop.catalog.find(q => q.item == itemId);
             if (!conf || !conf.price){
-                player.notify('Данный ТС больше не продаётся', 'error');
+                player.notify('Dieses Fahrzeug ist nicht mehr zu verkaufen', 'error');
                 return false
             }
             if (!conf.count){
-                player.notify("ТС отсутствует на складе", "error");
+                player.notify("Das Fahrzeug ist nicht mehr auf Lager", "error");
                 return false
             }
             return !!getParkPos()
@@ -184,12 +184,12 @@ export const autosalonMenu = (player: PlayerMp, item: BusinessEntity) => {
     if (!player.user) return;
     const user = player.user;
     if (!user.isAdminNow(6) && item.userId !== user.id && !canUserStartBizWar(user)) return openShop(player, item);
-    let m = menu.new(player, "", user.isAdminNow(6) ? `Бизнес #${item.id}` : "");
+    let m = menu.new(player, "", user.isAdminNow(6) ? `Business #${item.id}` : "");
     let sprite = "";
 
 
     m.newItem({
-        name: "Каталог товаров",
+        name: "Produktkatalog",
         onpress: () => {
             m.close();
             openShop(player, item)
@@ -200,7 +200,7 @@ export const autosalonMenu = (player: PlayerMp, item: BusinessEntity) => {
     
     if (user.isAdminNow(6) || item.userId === user.id) {
         m.newItem({
-            name: '~b~Управление бизнесом',
+            name: '~b~Business Management',
             onpress: () => {
                 businessCatalogMenu(player, item, () => {
                     autosalonMenu(player, item)

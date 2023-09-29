@@ -11,11 +11,11 @@ import {User} from "../user";
 export const openLscChipMenu = (player: PlayerMp, business: BusinessEntity) => {
     const vehicle = player.vehicle;
     if (!vehicle) {
-        return player.notify('Вы должны находиться в ТС', 'error');
+        return player.notify('Du musst in dem Fahrzeug sein', 'error');
     }
 
     if (isAMotorcycle(vehicle.modelname)) {
-        return player.notify('ЧИП-тюнинг не доступен для мотоциклов');
+        return player.notify('Chiptuning ist für Motorräder nicht verfügbar');
     }
 
     if (!checkVehicleTuningAvailable(player, vehicle)) {
@@ -61,15 +61,15 @@ CustomEvent.registerCef('lsc:chip:buy', (player, businessId: number, vehicleId: 
     const chipTuningCost = player.user.entity.isFreeChipTuningUsed ? CHIP_TUNING_COST : 1;
     if (payType == PayType.CASH) {
         if (user.money < chipTuningCost) {
-            return player.notify("У вас недостаточно средств", 'error');
+            return player.notify("Du hast nicht genug Geld", 'error');
         }
-        user.removeMoney(chipTuningCost, true, 'Покупка чип-тюнинга');
+        user.removeMoney(chipTuningCost, true, 'Kauf von Chiptuning');
     }
     else if (payType == PayType.CARD) {
         if (!user.verifyBankCardPay(pin)) {
-            return player.notify(`Либо вы ввели неверный пин-код, либо у вас нет при себе банковской карты`, 'error');
+            return player.notify(`Entweder hast du den falschen Pin-Code eingegeben oder du hast deine Bankkarte nicht dabei`, 'error');
         }
-        if (!user.tryRemoveBankMoney(chipTuningCost, true, 'Покупка чип-тюнинга', `#${businessId}`)) {
+        if (!user.tryRemoveBankMoney(chipTuningCost, true, 'Kauf von Chiptuning', `#${businessId}`)) {
             return;
         }
     }

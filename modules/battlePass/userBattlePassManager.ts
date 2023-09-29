@@ -25,7 +25,7 @@ export class UserBattlePassManager {
         this.addExp(this._season.everyDayExp.exp);
         this.battlePassEntity.expReward = system.timestamp;
         this.battlePassEntity.save();
-        this._user.player.notify(`Вы получили ежедневный опыт боевого пропуска ${this._season.everyDayExp.exp}`,
+        this._user.player.notify(`Du hast tägliche Kampfpass-Erfahrung gesammelt ${this._season.everyDayExp.exp}`,
             'info');
     }
 
@@ -35,7 +35,7 @@ export class UserBattlePassManager {
 
     buyBattlePass() {
         if (this.battlePassEntity)
-            return this._user.notify('У вас уже есть боевой пропуск');
+            return this._user.notify('Du hast bereits einen Kampfpass');
 
         let cost: number;
 
@@ -46,14 +46,14 @@ export class UserBattlePassManager {
         }
 
         if (this._user.donate_money < cost)
-            return this._user.notify('У вас недостаточно коинов', 'error');
+            return this._user.notify('Du hast nicht genug Koins', 'error');
 
         this._user.donate_money = this._user.donate_money - cost;
-        this._user.notify('Вы успешно приобрели боевой пропуск', 'success');
+        this._user.notify('Du hast erfolgreich einen Kampfpass erworben', 'success');
         this.createBattlePassEntity();
         this.loadGlobalTask();
         this.loadBasicTasks();
-        this._user.log('battlePass', `Купил боевой пропуск`);
+        this._user.log('battlePass', `Einen Battle Pass gekauft`);
         CustomEvent.trigger('battlePass:setRating', this._user.id, this._user.name, 0);
         CustomEvent.trigger('battlePass:openInterface', this._user.player);
     }
@@ -82,7 +82,7 @@ export class UserBattlePassManager {
 
     public isSpam() {
         if (system.timestampMS - this.antiSpam < 2000) {
-            this._user.player.notify('Слишком быстро, попробуйте помедленнее', 'error');
+            this._user.player.notify('Zu schnell, versuche es langsamer', 'error');
             return true;
         }else{
             this.antiSpam = system.timestampMS;
@@ -173,7 +173,7 @@ export class UserBattlePassManager {
             this.loadGlobalTask();
             this.addExp(expReward);
             this.battlePassEntity.save();
-            this._user.log('battlePass', `Получил ${expReward} exp за выполнение глобального задания`);
+            this._user.log('battlePass', `Ich hab ${expReward} exp für die globale Zuordnung`);
         } else {
             const globalTask = {...this.battlePassEntity.globalTask};
             globalTask.goalsCount = goalsCount;
@@ -194,7 +194,7 @@ export class UserBattlePassManager {
 
         if (goalsCount === cfg.goal) {
             this.addExp(cfg.expReward);
-            this._user.log('battlePass', `Получил ${cfg.expReward} exp за выполнение задания`);
+            this._user.log('battlePass', `Ich hab ${cfg.expReward} exp für Aufgabenerledigung`);
         }
 
         const basicTasks = {...this.battlePassEntity.basicTasks};
@@ -202,7 +202,7 @@ export class UserBattlePassManager {
         this.battlePassEntity.basicTasks = basicTasks;
     }
 
-    /** Создание сущности прогресса в БД  **/
+    /** Erstellen einer Fortschrittsentität in der Datenbank  **/
     private createBattlePassEntity(): void {
         this.battlePassEntity = BattlePassEntity.create({
             battlePassId: this._season.id,
@@ -225,7 +225,7 @@ export class UserBattlePassManager {
     /** Выдача вознагрождение за уровень **/
     public giveReward(level: number): void {
         if (this.isRewardReceived(level))
-            return this._user.notify('Вы уже получили вознагрождение за текущий уровень');
+            return this._user.notify('Du wurdest bereits für das aktuelle Level belohnt.');
 
         RewardManager.give(this._user, level);
     }
@@ -249,13 +249,13 @@ export class UserBattlePassManager {
         const cost = levels * this._season.levelPrice;
 
         if (this._user.donate_money < cost)
-            return this._user.notify('У вас недостаточно коинов');
+            return this._user.notify('Du hast nicht genug Koins');
 
         this._user.donate_money = this._user.donate_money - cost;
 
         this.addExp(this._season.levelExp * levels);
-        this._user.player.notify(`Уровень батл пасса повышен до ${this.getLevel}`, 'success');
-        this._user.log('battlePass', `Купил уровни батл пасса - ${levels}`);
+        this._user.player.notify(`Die Stufe des Battle Pass wurde erhöht auf ${this.getLevel}`, 'success');
+        this._user.log('battlePass', `Gekaufte Battle Pass Level - ${levels}`);
     }
 
     public destroy(): void {

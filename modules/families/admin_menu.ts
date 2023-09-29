@@ -12,74 +12,74 @@ import {writeSpecialLog} from "../specialLogs";
 
 
 export const showFamilyAdminMenu = (player:PlayerMp) => {
-    const m = menu.new(player, 'Система семей');
+    const m = menu.new(player, 'Familiensystem');
     m.newItem(
         {
-            name: 'Выбрать автомобиль для груза (если есть возможность)',
+            name: 'Wähle ein Fahrzeug für die Ladung (falls verfügbar)',
             onpress: () => registerFamilyCargoVehicle(player)
         },
         {
-            name: 'Получить груз в руки (если есть возможность)',
+            name: 'Nimm die Sendung persönlich in Empfang (wenn möglich)',
             onpress: () => giveFamilyQuestCargo(player)
         },
         {
-            name: 'ГУИ Создания семьи',
+            name: 'Familie erstellen GUI',
             onpress: () => familyCreateGUI(player)
         },
         {
-            name: 'Принудительно начать битву за груз',
+            name: 'Gezwungen, den Kampf um die Ladung aufzunehmen',
             onpress: () => new CargoBattleFamilyQuest().start()
         },
         {
-            name: 'Принудительно начать подготовку к битве за груз',
+            name: 'Gezwungen, mit den Vorbereitungen für die Ardennenoffensive zu beginnen',
             onpress: () => new CargoBattleFamilyQuest().startReady(true).then(res => {
-                player.notify('Запущено')
+                player.notify('Gestartet')
             }).catch(error => {
-                player.notify('Не удалось запустить: '+error)
+                player.notify('Start fehlgeschlagen: '+error)
             })
         },
         {
-            name: 'Принудительно остановить все битвы за груз',
+            name: 'Alle Frachtkämpfe gewaltsam beenden',
             onpress: () => {
                 CargoBattleFamilyQuest.stopAll()
-                player.notify('Выполнено')
+                player.notify('Erledigt')
             }
         },
         {
-            name: 'Сменить свою семью',
+            name: 'Verändere deine Familie',
             onpress: () => {
-                let list:string[] = ['Покинуть семью']
+                let list:string[] = ['Verlassen der Familie']
                 Family.getAll().map(f => list.push(f.name))
-                menu.selector(player, 'Выберите семью', list, true).then(id => {
+                menu.selector(player, 'Wähle eine Familie', list, true).then(id => {
                     if(!id) {
                         if(player.user.family) {
                             player.user.family = null
-                            player.notify('Вы покинули семью')
+                            player.notify('Du hast deine Familie verlassen')
                         }
                         return;
                     }
                     if(!Family.getAll()[id-1]) return;
-                    player.notify('Вы изменили свою семью: '+Family.getAll()[id-1].name)
+                    player.notify('Du hast deine Familie verändert: '+Family.getAll()[id-1].name)
                     player.user.family = Family.getAll()[id-1]
                     player.user.familyRank = player.user.family.leaderRankID
                 })
             }
         },
         {
-            name: 'Сменить свой ранг в семье (если есть возможность)',
+            name: 'Ändere deinen Rang in der Familie (wenn möglich)',
             onpress: () => {
                 if(!player.user || !player.user.family) return;
-                menu.selector(player, 'Выберите ранг', player.user.family.ranks.map(r => {
+                menu.selector(player, 'Wähle einen Rang', player.user.family.ranks.map(r => {
                     return r.name
                 }), false).then(name => {
                     player.user.family.ranks.find(r => r.name == name)
                     player.user.familyRank = player.user.family.ranks.find(r => r.name == name).id || 1
-                    player.notify(`Вы изменили свой ранг в семье: ${player.user.family.getRank(player.user.familyRank).name}`)
+                    player.notify(`Du hast deinen Rang in der Familie geändert: ${player.user.family.getRank(player.user.familyRank).name}`)
                 })
             }
         },
         {
-            name: 'Посмотреть/изменить информацию о своей семье',
+            name: 'Informationen über deine Familie ansehen/ändern',
             onpress: () => {
                 if(!player.user || !player.user.family) return;
                 showFamilyEditAdminMenu(player, player.user.family)
@@ -98,27 +98,27 @@ export const showFamilyEditAdminMenu = (player:PlayerMp, family:Family) => {
         const allMembers = await family.getAllMembers()
         const membersOnline = allMembers.filter(u => u.is_online)
 
-        const m = menu.new(player, 'Система семей');
+        const m = menu.new(player, 'Familiensystem');
         m.newItem(
             {
-                name: 'ID семьи',
+                name: 'Familien-ID',
                 more: family.id
             },
             {
-                name: 'Количество членов семьи',
-                more: `Всего: ${allMembers.length}`,
-                desc: `Онлайн: ${membersOnline.length}`
+                name: 'Anzahl der Familienmitglieder',
+                more: `Gesamt: ${allMembers.length}`,
+                desc: `Online: ${membersOnline.length}`
             },
             {
-                name: 'Название',
+                name: 'Titel',
                 more: family.name,
-                onpress: () => menu.input(player, 'Введите новое название', family.name, 24).then(newName => {
-                    if(newName.length < 3) player.notify('Название должно содержать хотя-бы 3 символа')
+                onpress: () => menu.input(player, 'Einen neuen Namen eingeben', family.name, 24).then(newName => {
+                    if(newName.length < 3) player.notify('Der Name muss mindestens 3 Zeichen enthalten')
                     if (!newName || ! /^[a-zA-Z_-]{0,15}$/i.test(newName)) {
-                        player.notify('Название содержит лишние символы', "error")
+                        player.notify('Der Name enthält unnötige Zeichen', "error")
                     }
                     else if (Family.getAll().find(f => f.name == newName)) {
-                        player.notify('Семья с таким названием уже существует', "error")
+                        player.notify('Es gibt bereits eine Familie mit diesem Namen', "error")
                         return false;
                     }
                     else family.name = newName
@@ -126,52 +126,52 @@ export const showFamilyEditAdminMenu = (player:PlayerMp, family:Family) => {
                 })
             },
             {
-                name: 'Количество очков',
+                name: 'Anzahl der Punkte',
                 more: family.points,
-                onpress: () => menu.input(player, 'Введите количество очков', family.points, 20, 'int').then(newVal => {
-                    if(isNaN(newVal) || newVal < 0) player.notify('Количество не может быть меньше 0')
+                onpress: () => menu.input(player, 'Gib die Anzahl der Punkte ein', family.points, 20, 'int').then(newVal => {
+                    if(isNaN(newVal) || newVal < 0) player.notify('Die Menge kann nicht kleiner als 0 sein')
                     else family.points = newVal
-                    player.user.log('AdminJob', `Установил количество очков ${family.seasonPoints} семье ${family.name}`, family.id)
+                    player.user.log('AdminJob', `Die Anzahl der Punkte festlegen ${family.seasonPoints} Familie ${family.name}`, family.id)
                     showFamilyEditAdminMenu(player, family)
                 })
             },
             {
-                name: 'Количество очков в сезоне',
+                name: 'Anzahl der Punkte in der Saison',
                 more: family.seasonPoints,
-                onpress: () => menu.input(player, 'Введите количество очков', family.seasonPoints, 20, 'int').then(newVal => {
-                    if(isNaN(newVal) || newVal < 0) player.notify('Количество не может быть меньше 0')
+                onpress: () => menu.input(player, 'Gib die Anzahl der Punkte ein', family.seasonPoints, 20, 'int').then(newVal => {
+                    if(isNaN(newVal) || newVal < 0) player.notify('Die Menge kann nicht kleiner als 0 sein')
                     else family.seasonPoints = newVal
-                    player.user.log('AdminJob', `Установил количество сезонных очков ${family.seasonPoints} семье ${family.name}`, family.id)
+                    player.user.log('AdminJob', `Lege die Anzahl der Saisonpunkte fest ${family.seasonPoints} Familie ${family.name}`, family.id)
                     showFamilyEditAdminMenu(player, family)
                 })
             },
             {
-                name: 'Количество груза',
+                name: 'Menge der Fracht',
                 more: family.cargo,
-                onpress: () => menu.input(player, 'Введите количество груза', family.cargo, 20, 'int').then(newVal => {
+                onpress: () => menu.input(player, 'Gib die Menge der Ladung ein', family.cargo, 20, 'int').then(newVal => {
                     const lastValue = family.cargo;
-                    if(isNaN(newVal) || newVal < 0) player.notify('Количество не может быть меньше 0')
+                    if(isNaN(newVal) || newVal < 0) player.notify('Die Menge kann nicht kleiner als 0 sein')
                     else family.cargo = newVal
-                    writeSpecialLog(`Изменил количество груза с ${lastValue} на ${newVal} | ${family.name}`, player, 0);
+                    writeSpecialLog(`Änderte die Menge der Fracht von ${lastValue} auf ${newVal} | ${family.name}`, player, 0);
                     showFamilyEditAdminMenu(player, family)
                 })
             },
             {
-                name: 'Уровень семьи',
+                name: 'Familienebene',
                 more: family.level,
-                onpress: () => menu.input(player, 'Введите уровень семьи', family.level, 20, 'int').then(newVal => {
+                onpress: () => menu.input(player, 'Gib die Familienebene ein', family.level, 20, 'int').then(newVal => {
                     const lastValue = family.level;
-                    if(isNaN(newVal) || newVal < 0) player.notify('Количество не может быть меньше 0')
+                    if(isNaN(newVal) || newVal < 0) player.notify('Die Menge kann nicht kleiner als 0 sein')
                     else family.level = newVal
-                    writeSpecialLog(`Изменил уровень семьи с ${lastValue} на ${newVal} | ${family.name}`, player, 0);
+                    writeSpecialLog(`Änderte die Ebene der Familie von ${lastValue} auf ${newVal} | ${family.name}`, player, 0);
                     showFamilyEditAdminMenu(player, family)
                 })
             },
             {
-                name: 'Побед в соревнованиях',
+                name: 'Wettbewerb gewinnt',
                 more: family.wins,
-                onpress: () => menu.input(player, 'Введите количество побед в соревнованиях', family.wins, 20, 'int').then(newVal => {
-                    if(isNaN(newVal) || newVal < 0) player.notify('Количество не может быть меньше 0')
+                onpress: () => menu.input(player, 'Gib die Anzahl der Wettbewerbsgewinne ein', family.wins, 20, 'int').then(newVal => {
+                    if(isNaN(newVal) || newVal < 0) player.notify('Die Menge kann nicht kleiner als 0 sein')
                     else family.wins = newVal
                     showFamilyEditAdminMenu(player, family)
                 })
@@ -188,12 +188,12 @@ export const showFamilyEditAdminMenu = (player:PlayerMp, family:Family) => {
             // }
 
             {
-                name: '~r~Заменить доступные контракты',
+                name: '~r~Ersetze verfügbare Verträge',
                 onpress: () => {
                     menu.accept(player).then(status => {
                         if(!status) return;
                         family.setRandomContracts(CONTRACT_NUM_FOR_FAMILY)
-                        player.notify('Готово', 'success');
+                        player.notify('Erfolgreich', 'success');
                     })
                 }
             }
@@ -201,32 +201,32 @@ export const showFamilyEditAdminMenu = (player:PlayerMp, family:Family) => {
         if (player.user.hasPermission('admin:familyBank')) {
             m.newItem(
                 {
-                    name: 'Количество денег',
+                    name: 'Geldbetrag',
                     more: family.money,
-                    onpress: () => menu.input(player, 'Введите количество денег', family.money, 20, 'int').then(newVal => {
+                    onpress: () => menu.input(player, 'Gib den Geldbetrag ein', family.money, 20, 'int').then(newVal => {
                         const lastValue = family.money;
-                        if(isNaN(newVal) || newVal < 0) player.notify('Количество не может быть меньше 0')
+                        if(isNaN(newVal) || newVal < 0) player.notify('Die Menge kann nicht kleiner als 0 sein')
                         else family.money = newVal
-                        writeSpecialLog(`Изменил количество денег семьи с ${lastValue} на ${newVal}  | ${family.name}`, player, 0);
+                        writeSpecialLog(`Änderte die Höhe des Geldes der Familie von ${lastValue} auf ${newVal}  | ${family.name}`, player, 0);
                         showFamilyEditAdminMenu(player, family)
                     })
                 },
                 {
-                    name: 'Количество доната',
+                    name: 'Höhe der Spende',
                     more: family.donate,
-                    onpress: () => menu.input(player, 'Введите количество доната', family.donate, 20, 'int').then(newVal => {
+                    onpress: () => menu.input(player, 'Gib die Höhe der Spende ein', family.donate, 20, 'int').then(newVal => {
                         const lastValue = family.donate;
-                        if(isNaN(newVal) || newVal < 0) player.notify('Количество не может быть меньше 0')
+                        if(isNaN(newVal) || newVal < 0) player.notify('Die Menge kann nicht kleiner als 0 sein')
                         else family.donate = newVal
-                        writeSpecialLog(`Изменил количество доната семьи с ${lastValue} на ${newVal}  | ${family.name}`, player, 0);
+                        writeSpecialLog(`Änderte den Betrag der Familienspende von ${lastValue} auf ${newVal}  | ${family.name}`, player, 0);
                         showFamilyEditAdminMenu(player, family)
                     })
             })
         }
         
         m.newItem({
-            name: `Дом`,
-            more: !!family.house?`${family.house.name} #${family.house.id}`:`Отсутствует`,
+            name: `Haus`,
+            more: !!family.house?`${family.house.name} #${family.house.id}`:`Abwesend`,
             onpress: () => {
                 if(!!family.house) player.user.teleport(family.house.x, family.house.y, family.house.z, family.house.h, family.house.d)
             }
@@ -235,15 +235,15 @@ export const showFamilyEditAdminMenu = (player:PlayerMp, family:Family) => {
         const targetVehs = Vehicle.getFamilyVehicles(family.id)
         if(!targetVehs || !targetVehs.length){
             m.newItem({
-                name: "~r~ТС семьи",
-                more: "~r~У семьи нет ТС",
+                name: "~r~Familienautos",
+                more: "~r~Die Familie hat keine Autos",
             })
         } else {
             m.newItem({
-                name: "ТС семьи",
+                name: "Familienfahrzeuge",
                 more: `x${targetVehs.length}`,
                 onpress: () => {
-                    let submenu = menu.new(player, "ТС семьи "+family.name);
+                    let submenu = menu.new(player, "Familienfahrzeuge "+family.name);
                     submenu.onclose = () => {
                         showFamilyEditAdminMenu(player, family)
                     }
@@ -251,45 +251,45 @@ export const showFamilyEditAdminMenu = (player:PlayerMp, family:Family) => {
                         submenu.newItem({
                             name: `#${veh.id} ${veh.name}`,
                             more: `${veh.number}`,
-                            desc: `Стоимость покупки: ${veh.isDonate ? DONATE_MONEY_NAMES[2] : '$'} ${system.numberFormat(veh.data.cost)}. ${veh.onParkingFine ? 'На штрафстоянке $' + system.numberFormat(veh.fine) : `На точке спавна - ${veh.inSpawnPoint ? 'Да' : 'Нет'}, Место парковки - ${parking.allVehsInAllParking().find(q => q.entity.id === veh.id) ? 'Парковка' : `Дом`}`}`,
+                            desc: `Kosten der Anschaffung: ${veh.isDonate ? DONATE_MONEY_NAMES[2] : '$'} ${system.numberFormat(veh.data.cost)}. ${veh.onParkingFine ? 'На штрафстоянке $' + system.numberFormat(veh.fine) : `На точке спавна - ${veh.inSpawnPoint ? 'Да' : 'Нет'}, Место парковки - ${parking.allVehsInAllParking().find(q => q.entity.id === veh.id) ? 'Парковка' : `Дом`}`}`,
                             onpress: () => {
-                                let submenu2 = menu.new(player, "Действия над ТС");
+                                let submenu2 = menu.new(player, "Aktionen über TC");
                                 submenu.onclose = () => {
                                     showFamilyEditAdminMenu(player, family)
                                 }
                                 submenu2.newItem({
-                                    name: "Респавн",
+                                    name: "Respavn",
                                     onpress: () => {
                                         veh.respawn();
                                     }
                                 })
                                 submenu2.newItem({
-                                    name: "Телепортировать ТС ко мне",
+                                    name: "Teleportiere die TK zu mir",
                                     onpress: () => {
                                         Vehicle.teleport(veh.vehicle, player.position, player.heading, player.dimension);
                                     }
                                 })
                                 submenu2.newItem({
-                                    name: "Телепортироваться к ТС",
+                                    name: "Teleport zum TC",
                                     onpress: () => {
                                         if (veh.exists) player.user.teleport(veh.vehicle.position.x, veh.vehicle.position.y, veh.vehicle.position.z, 0, veh.vehicle.dimension)
                                     }
                                 })
                                 submenu2.newItem({
-                                    name: "Телепортироваться на точку парковки",
+                                    name: "Teleportiere dich zu einem Parkplatz",
                                     onpress: () => {
                                         player.user.teleport(veh.position.x, veh.position.y, veh.position.z, veh.position.h, veh.position.d)
                                     }
                                 })
                                 if(player.user.isAdminNow(6)){
                                     submenu2.newItem({
-                                        name: "~r~Удалить ТС",
+                                        name: "~r~Auto löschen",
                                         onpress: () => {
                                             menu.accept(player).then(status => {
                                                 if(!status) return;
                                                 veh.deleteFromDatabase()
                                                 showFamilyEditAdminMenu(player, family)
-                                                player.notify('Готово', 'success');
+                                                player.notify('Es ist vollbracht', 'success');
                                             })
                                         }
                                     })

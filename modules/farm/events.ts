@@ -41,11 +41,11 @@ CustomEvent.registerCef('farm:capital:add', (player, sum: number) => {
     const activity = player.farmWorker?.activity
     
     if (!activity || activity.owner != player.user.id) 
-        return player.notify('Неожиданная ошибка!', 'error')
+        return player.notify('Unerwarteter Fehler!', 'error')
     if (isNaN(sum) || sum <= 0 || sum > 999999)
-        return player.notify('Сумма введена неверно', 'error')
-    if (player.user.money < sum || !player.user.removeMoney(sum, false, 'Аренда на ферме'))
-        return player.notify('Недостаточно средств для аренды', 'warning')
+        return player.notify('Falsch eingegebener Betrag', 'error')
+    if (player.user.money < sum || !player.user.removeMoney(sum, false, 'Hofmiete'))
+        return player.notify('Unzureichende Mittel für die Miete', 'warning')
     
     activity.capital += sum
     

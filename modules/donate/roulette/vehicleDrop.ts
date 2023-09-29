@@ -14,16 +14,16 @@ export class VehicleDrop extends DropBase {
         const vehConf = Vehicle.getVehicleConfig(this.data.vehicleModel);
         
         if (!vehConf) {
-            player.notify('Данную машину невозможно активировать. Обратитесь к администрации', 'error');
+            player.notify('Diese Maschine kann nicht aktiviert werden. Bitte kontaktiere die Verwaltung', 'error');
             return false;
         }
         if (vehConf.license && !user.haveActiveLicense(vehConf.license)) {
-            player.notify(`Чтобы получить ${vehConf.name} необходимо иметь активную лицензию на ${LicenseName[vehConf.license]}`, "error");
+            player.notify(`Um zu bekommen ${vehConf.name} Du musst eine aktive Lizenz haben, um ${LicenseName[vehConf.license]}`, "error");
             return false
         } 
         if (user.myVehicles.length >= user.current_vehicle_limit) {
-                player.notify(`Вы можете иметь не более ${user.current_vehicle_limit} ТС.
-             Дополнительные слоты можно приобрести в личном кабинете`, "error");
+                player.notify(`Du kannst nicht mehr haben als ${user.current_vehicle_limit} Fahrzeuge.
+             Zusätzliche Slots können in deinem persönlichen Schrank gekauft werden`, "error");
                 return false;
         }
         
@@ -37,7 +37,7 @@ export class VehicleDrop extends DropBase {
             Vehicle.fineDimension, 
             this.data.sellPrice, 
             this.data.sellType == DropSellType.DONATE ? 1 : 0)
-        player.outputChatBox(`Вы получили ${vehConf.name} из донат-рулетки. Транспорт вы можете бесплатно забрать на ближайшей штрафстоянке`);
+        player.outputChatBox(`Du hast ${vehConf.name} vom Donate-Roulette. Du kannst dein Fahrzeug kostenlos bei der nächsten Abschleppstelle abholen`);
         
         return true;
     };

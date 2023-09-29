@@ -34,7 +34,7 @@ class CollectHuntingQuestStep extends QuestStep implements IQuestSavable {
 
     get hudDto(): QuestStepDto {
         return {
-            name: `Добудьте ${getBaseItemNameById(this._item_id)}`,
+            name: `Hol dir ${getBaseItemNameById(this._item_id)}`,
             completed: this.isComplete,
             count: this._huntingCount,
             countGoal: this._goalCount

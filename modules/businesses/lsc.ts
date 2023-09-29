@@ -91,17 +91,17 @@ export const loadConfig = async () => {
 
 CustomEvent.registerClient('admin:gamedata:lsc', player => {
     if (!player.user) return;
-    if (!player.user.hasPermission('admin:gamedata:lsc')) return player.notify("У вас нет доступа", "success");
+    if (!player.user.hasPermission('admin:gamedata:lsc')) return player.notify("Du hast keinen Zugang", "success");
     openEditMenu(player)
 })
 const openEditMenu = (player: PlayerMp) => {
-    let m = menu.new(player, "", "Конфиг ЛСК")
+    let m = menu.new(player, "", "LSC-Profil")
     lscConfig.forEach(modItem => {
         m.newItem({
             name: modItem.name,
-            desc: `Текущая базовая стоимость ${modItem.cost}`,
+            desc: `Aktuelle Basiskosten ${modItem.cost}`,
             onpress: () => {
-                menu.input(player, 'Введите цену', modItem.cost, 7, 'int').then(val => {
+                menu.input(player, 'Einen Preis eingeben', modItem.cost, 7, 'int').then(val => {
                     if (typeof val !== "number") return;
                     if (isNaN(val)) return;
                     if (val < 0) return;
@@ -127,11 +127,11 @@ CustomEvent.registerCef('vehicle:lsc:repair', (player, shopId: number) => {
     const user = player.user;
     if(!user) return false;
     const veh = player.vehicle;
-    if(!veh) return player.notify('Вы должны быть за рулём', 'error'), false;
+    if(!veh) return player.notify('Du solltest fahren', 'error'), false;
     let shop = business.get(shopId);
-    if (!shop) return player.notify("Некорректный бизнес", "error"), false;
-    if (user.money < VEHICLE_REPAIR_COST) return player.notify('У вас недостаточно средств для оплаты' , 'error'), false;
-    user.removeMoney(VEHICLE_REPAIR_COST, true, `Ремонт и обслуживание ТС`)
+    if (!shop) return player.notify("Falsches Geschäft", "error"), false;
+    if (user.money < VEHICLE_REPAIR_COST) return player.notify('Du hast nicht genügend Geld, um zu bezahlen' , 'error'), false;
+    user.removeMoney(VEHICLE_REPAIR_COST, true, `Reparatur und Wartung von Fahrzeugen`)
     player.vehicle.repair();
 
     setTimeout(() => {
@@ -141,10 +141,10 @@ CustomEvent.registerCef('vehicle:lsc:repair', (player, shopId: number) => {
 
         setVehicleParamsByConfig(player.vehicle);
     }, 500)
-    business.addMoney(shop, VEHICLE_REPAIR_COST / 10, 'Ремонт ТС');
+    business.addMoney(shop, VEHICLE_REPAIR_COST / 10, 'Fahrzeug-Reparatur');
     player.user.achiev.setAchievTickBiz(shop.type, shop.sub_type, VEHICLE_REPAIR_COST)
-    player.notify('ТС отремонтирован', 'success');
-    writeClientRatingLog(player, shopId, VEHICLE_REPAIR_COST, "Ремонт ТС", 1);
+    player.notify('Fahrzeug repariert', 'success');
+    writeClientRatingLog(player, shopId, VEHICLE_REPAIR_COST, "Fahrzeug-Reparatur", 1);
     return true
 })
 
@@ -168,11 +168,11 @@ CustomEvent.registerCef('lsc:buyTuning', (player, shopId:number, carId: number, 
 
     const check = () => {
         if(!mp.vehicles.at(carId)) return false;
-        if(!vehicle || player.vehicle != mp.vehicles.at(carId)) return player.notify('Произошла ошибка тюнинга #LSCBT1, обратитесь к Администрации сервера'), false;
-        if(!player.vehicle.entity) return player.notify('Данный автомобиль не подлежит тюнингу'), false;
+        if(!vehicle || player.vehicle != mp.vehicles.at(carId)) return player.notify('Tuning-Fehler #LSCBT1 ist aufgetreten, bitte kontaktiere die Server-Administration'), false;
+        if(!player.vehicle.entity) return player.notify('Dieses Fahrzeug ist nicht Gegenstand von Tuning'), false;
         if (!player.user) return false;
-        if(!shop) return player.notify('Произошла ошибка тюнинга #LSCBT2, обратитесь к Администрации сервера'), false;
-        if (shop.type !== BUSINESS_TYPE.TUNING) return player.notify("Произошла ошибка тюнинга #LSCBT3, обратитесь к Администрации сервера", "error"), false;
+        if(!shop) return player.notify('Es gab einen Abstimmungsfehler #LSCBT2, bitte kontaktiere die Server-Administration'), false;
+        if (shop.type !== BUSINESS_TYPE.TUNING) return player.notify("Tuning-Fehler #LSCBT3 ist aufgetreten, bitte kontaktiere die Server-Administration", "error"), false;
         return true;
     }
     if (!check()) {
@@ -258,18 +258,18 @@ CustomEvent.registerCef('lsc:buyTuning', (player, shopId:number, carId: number, 
 
     if (payType == PayType.CASH) {
         if (user.money < tuningCost) {
-            return player.notify("У вас недостаточно средств", 'error'), true
+            return player.notify("Du hast nicht genug Geld", 'error'), true
         }
-        user.removeMoney(tuningCost, true, 'Ремонт и обслуживание ТС')
+        user.removeMoney(tuningCost, true, 'Reparatur und Wartung von Fahrzeugen')
     }
     else if (payType == PayType.CARD) {
         if (!user.verifyBankCardPay(pin)) {
-            return player.notify(`Либо вы ввели неверный пин-код, либо у вас нет при себе банковской карты`, 'error'), true
+            return player.notify(`Entweder hast du den falschen Pin-Code eingegeben oder du hast deine Bankkarte nicht dabei`, 'error'), true
         }
-        if (!user.tryRemoveBankMoney(tuningCost, true, 'Ремонт и обслуживание ТС', `#${shop.id} ${shop.name}`)) return false;
+        if (!user.tryRemoveBankMoney(tuningCost, true, 'Reparatur und Wartung von Fahrzeugen', `#${shop.id} ${shop.name}`)) return false;
     }
     else {
-        system.debug.error('[ЛСК] Попытка использовать несуществующий тип оплаты')
+        system.debug.error('[LSC] Versuch, eine nicht existierende Zahlungsart zu verwenden')
         return true
     }
 
@@ -279,7 +279,7 @@ CustomEvent.registerCef('lsc:buyTuning', (player, shopId:number, carId: number, 
     if (totalTuningIncome < totalComponentsPurchasePrice)
         totalTuningIncome = totalComponentsPurchasePrice + tuningCost * 0.9
 
-    business.addMoney(shop, totalTuningIncome, `Тюнинг ТС [${player.user.id}]`, false, false, true,
+    business.addMoney(shop, totalTuningIncome, `Fahrzeugtuning [${player.user.id}]`, false, false, true,
         true, totalComponentsPurchasePriceRaw, getProfitFromTuningCost(tuningCost));
     player.user.achiev.setAchievTickBiz(shop.type, shop.sub_type, tuningCost)
 
@@ -341,8 +341,8 @@ export const exitLsc = (player: PlayerMp, shopId: number, carId: number, healthe
     const shop = business.get(shopId);
     busyLscPoints.delete(shop.id)
 
-    if(!shop) return player.notify('Произошла ошибка тюнинга #LSCE2, обратитесь к Администрации сервера');
-    if (shop.type !== BUSINESS_TYPE.TUNING) return player.notify("Произошла ошибка тюнинга #LSCE3, обратитесь к Администрации сервера", "error");
+    if(!shop) return player.notify('Tuning-Fehler #LSCE2 ist aufgetreten, bitte kontaktiere die Server-Administration');
+    if (shop.type !== BUSINESS_TYPE.TUNING) return player.notify("Tuning-Fehler #LSCE3 ist aufgetreten, bitte kontaktiere die Server-Administration", "error");
 
     if(!mp.vehicles.at(carId) || !vehicle || player.vehicle != mp.vehicles.at(carId)) {
         player.user.teleport(shop.positions[1].x, shop.positions[1].y, shop.positions[1].z, shop.positions[1].h, 0)
@@ -358,23 +358,23 @@ export function checkVehicleTuningAvailable(player: PlayerMp, vehicle: VehicleMp
     const user = player.user
 
     if(!vehicle || vehicle.id != carId) {
-        player.notify("Вы должны быть в ТС", "error");
+        player.notify("Du musst in der CU sein", "error");
         return false;
     }
     if (!user.isDriver) {
-        player.notify("Вы должны быть за рулём", "error")
+        player.notify("Du solltest fahren", "error")
         return false
     }
     if(vehicle.getOccupants().length > 1) {
-        player.notify("В транспорте не должно быть пассажиров", "error")
+        player.notify("Es sollten sich keine Passagiere im Transport befinden", "error")
         return false
     }
     if((!vehicle.entity || !vehicle.entity.data) && !user.isAdminNow()) {
-        player.notify("Данный ТС недоступен для тюнинга", "error");
+        player.notify("Dieses Fahrzeug ist nicht für Tuning verfügbar", "error");
         return false
     }
     if (!user.isAdminNow() && ((vehicle.entity.owner && vehicle.entity.owner !== user.id) || (vehicle.entity.familyOwner && vehicle.entity.familyOwner !== user.familyId))){
-        user.notify("ТС, который вы тюнингуете, должен принадлежать Вам.", "error", "CHAR_TOM");
+        user.notify("Das Fahrzeug, das du tunest, muss dir gehören.", "error", "CHAR_TOM");
         return false
     }
     return true
@@ -406,7 +406,7 @@ export const lscMenu = (player: PlayerMp, item: BusinessEntity) => {
     if (!player.user) return;
     const user = player.user;
     if (!user.isAdminNow(6) && item.userId !== user.id && !needUnload(player, item) && !canUserStartBizWar(user))
-        return player.notify('У вас нет доступа к управлению бизнесом', 'error')
+        return player.notify('Du hast keinen Zugang zur Unternehmensführung', 'error')
     let m = menu.new(player, "", user.isAdminNow(6) ? `Бизнес #${item.id}` : "");
     let sprite = "";
     switch (item.sub_type) {
@@ -433,7 +433,7 @@ export const lscMenu = (player: PlayerMp, item: BusinessEntity) => {
 
     if (needUnload(player, item)) {
         m.newItem({
-            name: "~g~Выгрузить заказ",
+            name: "~g~Auftrag abladen",
             onpress: () => {
                 m.close();
                 deliverSet(player)
@@ -445,7 +445,7 @@ export const lscMenu = (player: PlayerMp, item: BusinessEntity) => {
     
     if (user.isAdminNow(6) || item.userId === user.id) {
         m.newItem({
-            name: '~b~Управление бизнесом',
+            name: '~b~Business Management',
             onpress: () => {
                 businessCatalogMenu(player, item, () => {
                     lscMenu(player, item)
@@ -453,7 +453,7 @@ export const lscMenu = (player: PlayerMp, item: BusinessEntity) => {
             }
         })
         m.newItem({
-            name: '~g~Заказ продукции',
+            name: '~g~Produktbestellung',
             onpress: () => {
                 orderDeliverMenu(player, item)
             }

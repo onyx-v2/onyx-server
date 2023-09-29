@@ -7,7 +7,7 @@ import {runCasinoAchievWin} from "./achiev";
 let slots = new Map<number, PlayerMp>();
 
 CustomEvent.registerClient('casino:slots:enter', (player, id: number) => {
-    if(player.user.getJobDress) return 'Снимите рабочую одежду прежде чем начать играть';
+    if(player.user.getJobDress) return 'Zieh deine Arbeitskleidung aus, bevor du anfängst zu spielen';
     verifySlot(id);
     if(slots.get(id)) return false;
     slots.set(id, player);
@@ -37,10 +37,10 @@ CustomEvent.registerClient('casino:slots:roll', (player, id: number, bet: number
     verifySlot(id);
     if(slots.get(id) != player) return null;
     if(user.chips < bet) {
-        user.notify('У вас недостаточно фишек для такой ставки', 'error');
+        user.notify('Du hast nicht genug Chips für diese Wette', 'error');
         return null;
     }
-    user.removeChips(bet, false, 'Ставка в слот машине');
+    user.removeChips(bet, false, 'Einsatz im Spielautomaten');
     const {winString, rule, isWinBet} = generateWin();
     const winBalance = bet * rule;
 
@@ -48,10 +48,10 @@ CustomEvent.registerClient('casino:slots:roll', (player, id: number, bet: number
     setTimeout(() => {
         if (player && mp.players.exists(player) && slots.get(id) == player) {
             if (isWinBet) {
-                user.addChips(winBalance, true, 'Победа в слот машине');
+                user.addChips(winBalance, true, 'Gewinnen am Spielautomaten');
                 runCasinoAchievWin(player, 'Slots', winBalance)
             } else {
-                player.notify(`Вы проиграли ${system.numberFormat(bet)}`, 'error');
+                player.notify(`Du hast verloren ${system.numberFormat(bet)}`, 'error');
             }
         }
     }, 5000);

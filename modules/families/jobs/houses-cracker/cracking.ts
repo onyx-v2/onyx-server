@@ -24,7 +24,7 @@ async function crackHouse(player: PlayerMp) {
     const house = player.housesCrackerData.house;
     if (!house.opened) {
         if (inventory.getItemsCountById(player, PicklockItemId) < 1) {
-            player.notify('У Вас нет отмычек, чтобы взломать эту дверь', 'error');
+            player.notify('Du hast nicht die nötigen Dietriche, um diese Tür aufzubrechen.', 'error');
             return;
         }
 
@@ -36,12 +36,12 @@ async function crackHouse(player: PlayerMp) {
 
         if (!isSuccess) {
             inventory.deleteItemsById(player, PicklockItemId, 1);
-            player.notify('Не получилось взломать, вы можете попробовать ещё раз', 'error');
+            player.notify('Das Hacken ist fehlgeschlagen, du kannst es erneut versuchen', 'error');
             return;
         }
 
         if (tryBrokePlayerPicklock(player)) {
-            player.notify('Вы успешно взломали замок, но пока доставали отмычку, она сломалась');
+            player.notify('Du hast das Schloss erfolgreich geknackt, aber während du den Dietrich geholt hast, wurde das Schloss aufgebrochen');
         }
     }
 
@@ -54,11 +54,11 @@ async function crackHouse(player: PlayerMp) {
 
 function sendRobberyNotifications(player: PlayerMp, house: HouseEntity) {
     mp.players.toArray().filter(u => u.user?.fractionData?.police).forEach(user => {
-        user.notify('Поступило сообщение об ограблении дома. Отметили его на карте', 'warning')
+        user.notify('Wir haben einen Bericht über einen Hauseinbruch erhalten. Wir haben es auf der Karte', 'warning')
     })
 
     player.housesCrackerData.govRobberyBlip = system.createDynamicBlip('robbery_' + house.id, 1, 3,
-        { x: house.x, y: house.y, z: house.z }, 'Ограбление дома', {
+        { x: house.x, y: house.y, z: house.z }, 'Hausfriedensbruch', {
             fraction: fractionCfg.policeFactions,
             shortRange: false
         });

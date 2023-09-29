@@ -24,8 +24,8 @@ export const order_list: { sum: number, comission: number, id: number, biz: numb
 const createFakeOrder = (player: PlayerMp) => {
     const user = player.user;
     if (!user) return;
-    if (order_list.find(item => !item.deliver && !item.fake)) return player.notify("Сейчас можно брать только заказы из списка", "error", "CHAR_BARRY");
-    if (order_list.find(q => q.deliver === user.id)) return player.notify("У вас уже есть активный заказ", "error", "CHAR_BARRY");
+    if (order_list.find(item => !item.deliver && !item.fake)) return player.notify("Momentan kannst du nur Bestellungen aus der Liste annehmen", "error", "CHAR_BARRY");
+    if (order_list.find(q => q.deliver === user.id)) return player.notify("Du hast bereits eine aktive Bestellung", "error", "CHAR_BARRY");
     const commission = system.getRandomInt(ORDER_CONFIG.NPC_DELIVER_COST_MIN, ORDER_CONFIG.NPC_DELIVER_COST_MAX);
 
     const biz = system.randomArrayElement(
@@ -43,8 +43,8 @@ const createFakeOrder = (player: PlayerMp) => {
 
     if(!biz) return;
     let deposit = ((commission / 100) * ORDER_CONFIG.ZALOG)
-    if (!user.tryRemoveBankMoney(deposit, true, 'Залог для выполнения заказа', 'Служба доставки')) return;
-    player.notify("Вы успешно взяли заказ. Проследуйте на свободную погрузочную зону чтобы загрузить заказ", "success", "CHAR_BARRY");
+    if (!user.tryRemoveBankMoney(deposit, true, 'Sicherheiten für die Erfüllung des Auftrags', 'Lieferservice')) return;
+    player.notify("Du hast die Bestellung erfolgreich abgeholt. Gehe zum freien Ladebereich, um die Bestellung zu laden", "success", "CHAR_BARRY");
     menu.close(player);
     order_list.push({
         sum: 0,
@@ -58,22 +58,22 @@ const createFakeOrder = (player: PlayerMp) => {
     })
 }
 
-colshapes.new(ORDER_CAR_POS, 'Пункт аренды транспорта для доставки', (player, index) => {
+colshapes.new(ORDER_CAR_POS, 'Mietstation für Lieferfahrzeuge', (player, index) => {
     const user = player.user;
     if (!user) return;
-    if (user.level < LEVEL_PERMISSIONS.DELIVER) return player.notify(`Аренда доступна с ${LEVEL_PERMISSIONS.DELIVER} LVL персонажа`)
-    const m = menu.new(player, "Пункт аренды", "Действия");
+    if (user.level < LEVEL_PERMISSIONS.DELIVER) return player.notify(`Miete verfügbar mit ${LEVEL_PERMISSIONS.DELIVER} LVL`)
+    const m = menu.new(player, "Verleihstelle", "Действия");
     if (user.deliverJobCar && !mp.vehicles.exists(user.deliverJobCar)) user.deliverJobCar = null, user.deliverJobLoaded = false;
 
     if (user.deliverJobCar) {
         m.newItem({
-            name: "Вернуть транспорт",
+            name: "Rücktransport",
             more: `$${system.numberFormat(ORDER_CONFIG.VEHICLE_RENT_RETURN)}`,
             onpress: () => {
                 if (user.deliverJobCar && !mp.vehicles.exists(user.deliverJobCar)) user.deliverJobCar = null, user.deliverJobLoaded = false;
-                if (!user.deliverJobCar) return player.notify("У вас нет арендованого транспорта", "error");
-                if (user.deliverJobLoaded) return player.notify("Перед тем как вернуть транспорт отвезите ранее взятый заказ", 'error');
-                user.addBankMoney(ORDER_CONFIG.VEHICLE_RENT_RETURN, true, 'Возврат средств за арендованый транспорт', 'Служба доставки')
+                if (!user.deliverJobCar) return player.notify("Du hast kein Mietauto", "error");
+                if (user.deliverJobLoaded) return player.notify("Bevor du den Transport zurückbringst, nimm die zuvor aufgenommene Bestellung", 'error');
+                user.addBankMoney(ORDER_CONFIG.VEHICLE_RENT_RETURN, true, 'Erstattungen für geleaste Fahrzeuge', 'Lieferservice')
                 if (user.deliverJobCar && mp.vehicles.exists(user.deliverJobCar)) user.deliverJobCar.destroy();
                 user.deliverJobCar = null
                 user.deliverJobLoaded = false
@@ -89,10 +89,10 @@ colshapes.new(ORDER_CAR_POS, 'Пункт аренды транспорта дл�
                 desc: `Доступно с ${level} LVL`,
                 onpress: () => {
                     //if (user.fraction) return player.notify("Нельзя работать в службе доставки работая в организации", 'error')
-                    if (user.deliverJobCar) return player.notify("У вас уже есть арендованный транспорт", "error");
-                    if (!user.bank_have) return player.notify(`Для аренды вам необходимо иметь банковский счёт`, 'error');
-                    if(level && player.user.entity.deliver_level < level) return player.notify('Вам недоступен данный ТС', 'error');
-                    if (!user.tryRemoveBankMoney(cost, true, 'Аренда служебного транспорта', 'Служба доставки')) return;
+                    if (user.deliverJobCar) return player.notify("Du hast bereits ein geleastes Fahrzeug", "error");
+                    if (!user.bank_have) return player.notify(`Du musst ein Bankkonto haben, um zu mieten`, 'error');
+                    if(level && player.user.entity.deliver_level < level) return player.notify('Dieses Fahrzeug ist für dich nicht verfügbar', 'error');
+                    if (!user.tryRemoveBankMoney(cost, true, 'Vermietung von Firmenfahrzeugen', 'Lieferservice')) return;
 
                     menu.close(player);
                     user.deliverJobCar = Vehicle.spawn(model, new mp.Vector3(ORDER_CAR_POS[index].x, ORDER_CAR_POS[index].y, ORDER_CAR_POS[index].z + 1), ORDER_CAR_HEADING, 0, true, false);
@@ -128,11 +128,11 @@ export const deliverSet = (player: PlayerMp) => {
     const user = player.user;
     if (!user) return;
     if (user.deliverJobCar && !mp.vehicles.exists(user.deliverJobCar)) user.deliverJobCar = null, user.deliverJobLoaded = false;
-    if (!user.deliverJobCar) return player.notify("Транспорт пропал", "error", "CHAR_BARRY");
-    if (!user.deliverJobLoaded) return player.notify("Чтобы доставить заказ - необходимо сначала погрузить заказ в транспорт", "error", "CHAR_BARRY");
-    if(player.dimension == 0 && system.distanceToPos(user.deliverJobCar.position, player.position) > 60) return player.notify('Транспорт находится слишком далеко', 'error');
+    if (!user.deliverJobCar) return player.notify("Der Transport ist weg.", "error", "CHAR_BARRY");
+    if (!user.deliverJobLoaded) return player.notify("Um die Bestellung auszuliefern - musst du die Bestellung zunächst in das Fahrzeug laden", "error", "CHAR_BARRY");
+    if(player.dimension == 0 && system.distanceToPos(user.deliverJobCar.position, player.position) > 60) return player.notify('Der Transport ist zu weit weg', 'error');
     let item = order_list.find(q => q.deliver === user.id);
-    if (!item) return player.notify("У вас нет активного заказа", "error", "CHAR_BARRY");
+    if (!item) return player.notify("Du hast keine aktive Bestellung", "error", "CHAR_BARRY");
     const biz = business.get(item.biz);
     if (!biz) return;
     if(!item.fake){
@@ -145,7 +145,7 @@ export const deliverSet = (player: PlayerMp) => {
         biz.catalog = catalog;
         if (biz.userId){
             const owner = User.get(biz.userId);
-            if (owner) owner.notify("Заказ для вашего бизнеса был успешно доставлен", "success", "CHAR_BARRY");
+            if (owner) owner.notify("Die Bestellung für dein Unternehmen wurde erfolgreich ausgeliefert", "success", "CHAR_BARRY");
         }
         biz.save();
     }
@@ -162,32 +162,32 @@ export const deliverSet = (player: PlayerMp) => {
     player.user.achiev.achievTickByType("deliverCount")
     player.user.achiev.achievTickByType("deliverSum", comission)
     mp.events.call(JOB_TASK_MANAGER_EVENT, player, 'trucker')
-    user.addBankMoney(comission, true, 'Оплата доставки', 'Служба доставки')
+    user.addBankMoney(comission, true, 'Bezahlung der Lieferung', 'Lieferservice')
     setTimeout(() => {
         if(multiple){
-            user.addBankMoney(multiple, true, 'Надбавка за уровень', 'Служба доставки')
+            user.addBankMoney(multiple, true, 'Niveauzulage', 'Lieferservice')
         }
-        user.addBankMoney(zalog, true, 'Возврат залога', 'Служба доставки')
+        user.addBankMoney(zalog, true, 'Erstattung der Kaution', 'Lieferservice')
     }, 3000)
     user.deliverJobLoaded = false
     if(order_list.findIndex(q => q.id === item.id) > -1)order_list.splice(order_list.findIndex(q => q.id === item.id), 1);
 }
 
 
-colshapes.new(ORDER_MENU_POS, 'Доставка продукции', player => {
+colshapes.new(ORDER_MENU_POS, 'Produktlieferung', player => {
     const user = player.user;
     if (!user) return;
     if (user.deliverJobCar && !mp.vehicles.exists(user.deliverJobCar)) user.deliverJobCar = null, user.deliverJobLoaded = false;
-    const m = menu.new(player, "Выбор заказа", "Список");
+    const m = menu.new(player, "Auswahl bestellen", "Liste");
     m.newItem({
-        name: 'Ваш уровень дальнобойщика',
+        name: 'Dein Trucker-Level',
         more: `${user.entity.deliver_level} LVL (${player.user.entity.deliver_current} / ${ORDER_CONFIG.LEVEL_STEP})`
     })
     m.newItem({
-        name: "Взять случайный заказ",
-        desc: `Случайный заказ на сумму $${system.numberFormat((ORDER_CONFIG.NPC_DELIVER_COST_MIN))} до $${system.numberFormat(ORDER_CONFIG.NPC_DELIVER_COST_MAX)}. Залог - ${ORDER_CONFIG.ZALOG}%`,
+        name: "Nimm eine zufällige Reihenfolge",
+        desc: `Zufällige Reihenfolge der $${system.numberFormat((ORDER_CONFIG.NPC_DELIVER_COST_MIN))} vor $${system.numberFormat(ORDER_CONFIG.NPC_DELIVER_COST_MAX)}. Pfand - ${ORDER_CONFIG.ZALOG}%`,
         onpress: () => {
-            if (!user.deliverJobCar) return player.notify("Для того, чтобы взять заказ необходимо иметь служебный транспорт", "error", "CHAR_BARRY");
+            if (!user.deliverJobCar) return player.notify("Ein Servicetransport ist erforderlich, um die Bestellung entgegenzunehmen", "error", "CHAR_BARRY");
             createFakeOrder(player)
         }
     })
@@ -204,12 +204,12 @@ colshapes.new(ORDER_MENU_POS, 'Доставка продукции', player => {
             more: `+$${system.numberFormat(item.comission)}`,
             desc: `Залог: $${system.numberFormat(zalog)}`,
             onpress: () => {
-                if (!user.deliverJobCar) return player.notify("Для того, чтобы взять заказ необходимо иметь служебный транспорт", "error", "CHAR_BARRY");
-                if (item.deliver) return player.notify("Данный заказ уже кто то взял", "error", "CHAR_BARRY");
-                if (order_list.find(q => q.deliver === user.id)) return player.notify("У вас уже есть активный заказ", "error", "CHAR_BARRY");
-                if (!user.tryRemoveBankMoney(zalog, true, 'Залог для выполнения заказа', 'Служба доставки')) return;
+                if (!user.deliverJobCar) return player.notify("Ein Servicetransport ist erforderlich, um die Bestellung entgegenzunehmen", "error", "CHAR_BARRY");
+                if (item.deliver) return player.notify("Jemand anderes hat diese Bestellung bereits angenommen", "error", "CHAR_BARRY");
+                if (order_list.find(q => q.deliver === user.id)) return player.notify("Du hast bereits eine aktive Bestellung", "error", "CHAR_BARRY");
+                if (!user.tryRemoveBankMoney(zalog, true, 'Sicherheiten für die Erfüllung des Auftrags', 'Lieferservice')) return;
                 item.deliver = user.id;
-                player.notify("Вы успешно взяли заказ. Проследуйте на свободную погрузочную зону чтобы загрузить заказ", "success", "CHAR_BARRY");
+                player.notify("Du hast die Bestellung erfolgreich abgeholt. Gehe zum freien Ladebereich, um die Bestellung zu laden", "success", "CHAR_BARRY");
                 menu.close(player);
             }
         })
@@ -222,44 +222,44 @@ colshapes.new(ORDER_MENU_POS, 'Доставка продукции', player => {
     type: 27
 })
 
-colshapes.new(ORDER_LOAD_COORDS, 'Погрузочная зона', (player, index) => {
+colshapes.new(ORDER_LOAD_COORDS, 'Ladefläche', (player, index) => {
     const user = player.user;
     if (!user) return;
     if (user.deliverJobCar && !mp.vehicles.exists(user.deliverJobCar)) user.deliverJobCar = null, user.deliverJobLoaded = false;
-    if (!user.deliverJobCar) return player.notify("Для того, чтобы взять заказ необходимо иметь служебный транспорт", "error", "CHAR_BARRY");
+    if (!user.deliverJobCar) return player.notify("Ein Servicetransport ist erforderlich, um die Bestellung entgegenzunehmen", "error", "CHAR_BARRY");
     const veh = user.deliverJobCar;
-    if(user.deliverJobLoaded) return player.notify("Заказ уже погружен", 'error')
-    if(mp.labels.toArray().find(q => q.deliver === index)) return player.notify("Погрузочная зона занята", 'error')
+    if(user.deliverJobLoaded) return player.notify("Die Bestellung wurde bereits geladen", 'error')
+    if(mp.labels.toArray().find(q => q.deliver === index)) return player.notify("Die Ladezone ist besetzt", 'error')
     const check = () => {
         if(!mp.players.exists(player)) return false;
         if (user.deliverJobCar && !mp.vehicles.exists(user.deliverJobCar)) user.deliverJobCar = null, user.deliverJobLoaded = false;
         if (!user.deliverJobCar){
-            player.notify("Для того, чтобы взять заказ необходимо иметь служебный транспорт", "error", "CHAR_BARRY");
+            player.notify("Ein Servicetransport ist erforderlich, um die Bestellung entgegenzunehmen", "error", "CHAR_BARRY");
             return false
         }
         let item = order_list.find(q => q.deliver === user.id);
         if (!item) {
-            player.notify("У вас нет активного заказа", "error", "CHAR_BARRY");
+            player.notify("Du hast keine aktive Bestellung", "error", "CHAR_BARRY");
             return false;
         }
         if (user.deliverJobLoaded){
-            player.notify("Заказ уже погружен", "error", "CHAR_BARRY");
+            player.notify("Die Bestellung wurde bereits geladen", "error", "CHAR_BARRY");
             return false;
         }
         if(!mp.vehicles.exists(veh)){
-            player.notify("Транспорт пропал", "error", "CHAR_BARRY");
+            player.notify("Der Transport ist weg", "error", "CHAR_BARRY");
             return false;
         }
         if (system.distanceToPos2D(veh.position, ORDER_LOAD_COORDS[index]) > 5){
-            player.notify("Транспорт отсутствует в погрузочной зоне", "error", "CHAR_BARRY");
+            player.notify("Kein Transport in der Ladezone", "error", "CHAR_BARRY");
             return false;
         }
         return true;
     }
     if (!check()) return;
-    player.notify("Погрузка займёт 30 секунд. Ожидайте", "error");
+    player.notify("Das Laden dauert 30 Sekunden. Bereithalten", "error");
     let t = 30;
-    let text = mp.labels.new(`Погрузка: ${t}`, ORDER_LOAD_COORDS[index], {
+    let text = mp.labels.new(`Laden: ${t}`, ORDER_LOAD_COORDS[index], {
         dimension: player.dimension,
         drawDistance: 5,
         los: false
@@ -268,16 +268,16 @@ colshapes.new(ORDER_LOAD_COORDS, 'Погрузочная зона', (player, ind
     let int = setInterval(() => {
         let q = check();
         t--;
-        if (mp.labels.exists(text)) text.text = `Погрузка: ${t}`;
+        if (mp.labels.exists(text)) text.text = `Laden: ${t}`;
         if (t <= 0 || !q){
             if (mp.labels.exists(text)) text.destroy();
             clearInterval(int);
             if(!t){
                 user.deliverJobLoaded = true;
                 const biz = business.get(order_list.find(q => q.deliver === user.id).biz);
-                if(!biz) return player.notify("Возникла ошибка с поиском местоположения бизнеса", "error");
-                player.notify("Маршрут в вашем навигаторе, постарайтесь как можно быстрее доставить товар", "success");
-                user.setWaypoint(biz.positions[0].x, biz.positions[0].y, biz.positions[0].z, 'Доставка продукции', true);
+                if(!biz) return player.notify("Es gab einen Fehler bei der Standortsuche", "error");
+                player.notify("Die Route befindet sich in deinem Navigator. Versuche, die Ware so schnell wie möglich abzuliefern.", "success");
+                user.setWaypoint(biz.positions[0].x, biz.positions[0].y, biz.positions[0].z, 'Produktlieferung', true);
             }
         }
     }, 1000)
@@ -348,15 +348,15 @@ function createFilterByCountOnStock(lessThenCount: number): BusinessCatalogFilte
 export const orderDeliverMenu = (player: PlayerMp, biz: BusinessEntity) => {
     const user = player.user;
     if (!user) return;
-    if (order_list.find(q => q.biz === biz.id && !q.fake)) return player.notify("У вас уже есть активный заказ. Дождитесь его выполнения", "error")
+    if (order_list.find(q => q.biz === biz.id && !q.fake)) return player.notify("Du hast bereits eine aktive Bestellung. Warte darauf, dass sie erfüllt wird", "error")
     let order = new Map<number, number>();
     let catalogFilter: BusinessCatalogFilterFunc = null;
 
     const sm = () => {
-        const m = menu.new(player, "Оформление заказа", "");
+        const m = menu.new(player, "Auftragserteilung", "");
 
         const orderSumMenuItem: MenuItem = {
-            name: 'Сумма заказа',
+            name: 'Betrag bestellen',
             more: `$${getOrderSum(biz, order)}`
         };
 
@@ -370,9 +370,9 @@ export const orderDeliverMenu = (player: PlayerMp, biz: BusinessEntity) => {
             : catalogFilter(biz, biz.catalog);
 
         m.newItem({
-            name: '~o~Фильтр по кол-ву на складе',
+            name: '~o~Nach Lagermenge filtern',
             onpress: () => {
-                menu.input(player, 'На складе меньше, чем...', 0, 6, 'int').then(count => {
+                menu.input(player, 'Auf Lager für weniger als...', 0, 6, 'int').then(count => {
                     catalogFilter = createFilterByCountOnStock(count);
                     sm();
                 });
@@ -380,9 +380,9 @@ export const orderDeliverMenu = (player: PlayerMp, biz: BusinessEntity) => {
         });
 
         m.newItem({
-            name: '~o~Фильтр по имени',
+            name: '~o~Nach Namen filtern',
             onpress: () => {
-                menu.input(player, 'Имя продукта', "", 20, 'text').then(name => {
+                menu.input(player, 'Produktname', "", 20, 'text').then(name => {
                     catalogFilter = createFilterByItemName(name);
                     sm();
                 });
@@ -390,7 +390,7 @@ export const orderDeliverMenu = (player: PlayerMp, biz: BusinessEntity) => {
         });
 
         m.newItem({
-            name: '~r~Сбросить фильтр',
+            name: '~r~Filter zurücksetzen',
             onpress: () => {
                 catalogFilter = null;
                 sm();
@@ -403,7 +403,7 @@ export const orderDeliverMenu = (player: PlayerMp, biz: BusinessEntity) => {
             m.newItem({
                 name,
                 type: "range",
-                desc: `Изменяйте по одному стрелками влево-вправо, либо введите новое количество нажав на Enter. У вас на складе ${item.count} / ${item.max_count}`,
+                desc: `Ändere sie einzeln mit den Links-Rechts-Pfeiltasten oder gib eine neue Menge ein, indem du Enter drückst. Du hast auf Lager ${item.count} / ${item.max_count}`,
                 rangeselect: [0, canMax],
                 listSelected: order.has(item.item) ? order.get(item.item) : 0,
                 onchange: (val) => {
@@ -413,7 +413,7 @@ export const orderDeliverMenu = (player: PlayerMp, biz: BusinessEntity) => {
                     updateOrderSum();
                 },
                 onpress: () => {
-                    menu.input(player, 'Введите количество', order.has(item.item) ? order.get(item.item) : 0, 6, 'int').then(count => {
+                    menu.input(player, 'Gib die Menge ein', order.has(item.item) ? order.get(item.item) : 0, 6, 'int').then(count => {
                         if(typeof count !== "number") return;
                         if(!count && count !== 0) return;
                         if(count < 0) return;
@@ -429,25 +429,25 @@ export const orderDeliverMenu = (player: PlayerMp, biz: BusinessEntity) => {
         m.newItem(orderSumMenuItem);
 
         m.newItem({
-            name: '~g~Перейти к оформлению',
-            desc: 'Оплата производится со счета бизнеса. В случае если доставка не будет выполнена - средства будут возвращены',
+            name: '~g~Zur Kasse gehen',
+            desc: 'Die Zahlung muss vom Geschäftskonto erfolgen. Im Falle einer Nichtlieferung wird das Geld zurückerstattet.',
             onpress: () => {
                 const sum = getOrderSum(biz, order);
-                if (!sum) return player.notify("Чтобы оформить заказ укажите товары для заказа", "error");
-                if (sum < 10000) return player.notify("Сумма заказа не может быть менее 10000$", "error");
-                if (order_list.find(q => q.biz === biz.id)) return player.notify("У вас уже есть активный заказ. Дождитесь его выполнения", "error"), menu.close(player);
-                const submenu = menu.new(player, "Оформление заказа", "Результат");
+                if (!sum) return player.notify("Um eine Bestellung aufzugeben, gib bitte die zu bestellenden Artikel an", "error");
+                if (sum < 10000) return player.notify("Der Bestellwert darf nicht weniger als $10000 betragen", "error");
+                if (order_list.find(q => q.biz === biz.id)) return player.notify("Du hast bereits eine aktive Bestellung. Warte darauf, dass sie erfüllt wird", "error"), menu.close(player);
+                const submenu = menu.new(player, "Auftragserteilung", "Результат");
                 const comission = ((sum / 100) * ORDER_CONFIG.COMISSION)
                 submenu.newItem({
-                    name: "Сумма продукции",
+                    name: "Menge der Produktion",
                     more: `$${system.numberFormat(sum)}`
                 })
                 submenu.newItem({
-                    name: "Услуги доставки",
+                    name: "Lieferdienste",
                     more: `$${system.numberFormat(comission)}`
                 })
                 submenu.newItem({
-                    name: "Итоговая сумма",
+                    name: "Gesamtbetrag",
                     more: `$${system.numberFormat(sum + comission)}`
                 })
 
@@ -457,10 +457,10 @@ export const orderDeliverMenu = (player: PlayerMp, biz: BusinessEntity) => {
                 });
 
                 submenu.newItem({
-                    name: "~g~Оформить",
+                    name: "~g~Arrangement",
                     onpress: () => {
-                        if (order_list.find(q => q.biz === biz.id)) return player.notify("У вас уже есть активный заказ. Дождитесь его выполнения", "error"), menu.close(player);
-                        if (biz.money < sum) return player.notify("На счету бизнеса недостаточно средств для оплаты данного заказа", "error")
+                        if (order_list.find(q => q.biz === biz.id)) return player.notify("Du hast bereits eine aktive Bestellung. Warte darauf, dass sie erfüllt wird", "error"), menu.close(player);
+                        if (biz.money < sum) return player.notify("Das Geschäftskonto ist nicht ausreichend gedeckt, um diese Bestellung zu bezahlen", "error")
                         order_list.push({
                             sum: sum + comission,
                             comission,
@@ -470,9 +470,9 @@ export const orderDeliverMenu = (player: PlayerMp, biz: BusinessEntity) => {
                             time: system.timestamp,
                             deliver: 0
                         })
-                        business.removeMoney(biz, sum + comission, 'Оплата заказа продукции', true)
+                        business.removeMoney(biz, sum + comission, 'Bezahlung der Produktbestellung', true)
                         menu.close(player);
-                        player.notify("Заказ успешно оформлен", "success");
+                        player.notify("Die Bestellung wurde erfolgreich aufgegeben", "success");
                     }
                 })
 
@@ -504,7 +504,7 @@ setInterval(() => {
                 biz.catalog = catalog;
                 if (biz.userId) {
                     const owner = User.get(biz.userId);
-                    if (owner) owner.notify("Заказ для вашего бизнеса был успешно доставлен", "success", "CHAR_BARRY");
+                    if (owner) owner.notify("Die Bestellung für dein Unternehmen wurde erfolgreich ausgeliefert", "success", "CHAR_BARRY");
                 }
             }
             order_list.splice(index, 1)

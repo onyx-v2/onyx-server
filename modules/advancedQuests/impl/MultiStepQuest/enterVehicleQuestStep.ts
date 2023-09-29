@@ -34,7 +34,7 @@ class EnterVehicleQuestStep extends QuestStep {
 
     get hudDto(): QuestStepDto {
         return {
-            name: `Доберитесь и сядьте в машину`,
+            name: `Komme dort an und steige ins Auto.`,
             completed: this.isComplete
         }
     }

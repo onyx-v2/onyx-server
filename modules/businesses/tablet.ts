@@ -75,7 +75,7 @@ class TabletBusiness {
 
     /** Обновление цены в каталоге */
     private updatePriceFromCatalog(player: PlayerMp, item: number, price: number) {
-        if (!player.user.business) return player.notify("У вас нет бизнеса", 'error');
+        if (!player.user.business) return player.notify("Du hast kein Geschäft", 'error');
 
         const biz = player.user.business;
 
@@ -89,7 +89,7 @@ class TabletBusiness {
 
         player.user.business.catalog = catalogCopy;
 
-        player.notify("Цена успешно изменена", 'success');
+        player.notify("Der Preis wurde erfolgreich geändert", 'success');
         CustomEvent.triggerCef(player, 'tablet:business:update:pricesCatalog');
     }
 
@@ -131,18 +131,18 @@ class TabletBusiness {
 
     /** Оплата налогов */
     private payTaxHandler = (player: PlayerMp, days: number) => {
-        if (!player.user || !player.user.business) return player.notify('Произошла ошибка', 'error');
-        if (days === 0) return player.notify('Нельзя оплатить на 0 дней', 'error');
+        if (!player.user || !player.user.business) return player.notify('Es ist ein Fehler aufgetreten', 'error');
+        if (days === 0) return player.notify('Kann für 0 Tage nicht zahlen', 'error');
         const biz = player.user.business;
         let taxMoney = days * biz.taxDay;
 
         if (taxMoney + biz.tax > biz.taxMax) taxMoney = biz.taxMax - biz.tax;
         biz.tax += taxMoney
 
-        const res = player.user.tryRemoveBankMoney(taxMoney, true, `Оплата налога бизнеса [${biz.id}] на ${days} дней`, "business");
+        const res = player.user.tryRemoveBankMoney(taxMoney, true, `Zahlung der Gewerbesteuer [${biz.id}] auf ${days} Tage`, "business");
 
         if (res) {
-            player.notify('Вы успешно оплатили налог на бизнес', "success");
+            player.notify('Du hast deine Gewerbesteuer erfolgreich gezahlt', "success");
             CustomEvent.triggerCef(player, 'tablet:business:update:taxData');
 
             const data = BusinessTaxLogEntity.create({
@@ -365,9 +365,9 @@ class TabletBusiness {
     /** Заказ продукции */
     private orderProductsHandler = (player: PlayerMp, items: IOrderCatalogDTO[]) => {
         if (!player.user) return;
-        if (!player.user.business) return player.notify('Произошла ошибка', 'error');
+        if (!player.user.business) return player.notify('Es ist ein Fehler aufgetreten', 'error');
         const biz = player.user.business;
-        if (order_list.find(q => q.biz === biz.id)) return player.notify("У вас уже есть активный заказ. Дождитесь его выполнения", "error");
+        if (order_list.find(q => q.biz === biz.id)) return player.notify("Du hast bereits eine aktive Bestellung. Warte darauf, dass sie erfüllt wird", "error");
 
         let sum = 0;
         const discount = TabletBusiness.getOrderDiscount(biz);
@@ -383,9 +383,9 @@ class TabletBusiness {
 
         const comission = Math.floor(((sum / 100) * ORDER_CONFIG.COMISSION));
 
-        if (sum < 10000) return player.notify("Сумма заказа не может быть менее 10000$", "error");
+        if (sum < 10000) return player.notify("Der Bestellwert darf nicht weniger als $10000 betragen", "error");
 
-        if (biz.money < sum) return player.notify("На счету бизнеса недостаточно средств для оплаты данного заказа", "error")
+        if (biz.money < sum) return player.notify("Das Geschäftskonto ist nicht ausreichend gedeckt, um diese Bestellung zu bezahlen", "error")
 
         order_list.push({
             sum: sum + comission,
@@ -397,7 +397,7 @@ class TabletBusiness {
             deliver: 0
         })
 
-        business.removeMoney(biz, sum + comission, 'Оплата заказа продукции', true);
+        business.removeMoney(biz, sum + comission, 'Bezahlung der Produktbestellung', true);
 
         const data = BusinessTaxLogEntity.create({
             userId: player.user.id,
@@ -409,7 +409,7 @@ class TabletBusiness {
         biz.save();
         data.save();
 
-        player.notify("Заказ успешно оформлен", "success");
+        player.notify("Bestellung erfolgreich aufgegeben", "success");
     }
 }
 

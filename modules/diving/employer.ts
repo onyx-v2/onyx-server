@@ -5,7 +5,7 @@ import {DIVING_COSTUME_ITEM_ID} from "../../../shared/diving/work.config";
 
 function interaction(player: PlayerMp) {
     if (!player.user.haveItem(DIVING_COSTUME_ITEM_ID))
-        return player.notify('У вас нету дайверского костюма для данной работы', 'error');
+        return player.notify('Du hast keinen Taucheranzug für diesen Job', 'error');
 
     CustomEvent.triggerClient(player, 'diving:openEmployer');
 }

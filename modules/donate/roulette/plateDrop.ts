@@ -10,7 +10,7 @@ export class PlateDrop extends DropBase {
     protected onDropActivated(player: PlayerMp): boolean {
         let m = menu.new(player, 'Выбор машины', 'Список');
         if (player.user.myVehicles.length === 0) {
-            player.notify('У вас нет транспорта на который можно установить номер');
+            player.notify('Du hast kein Fahrzeug, auf das du eine Nummer setzen kannst');
             return false;
         }
         

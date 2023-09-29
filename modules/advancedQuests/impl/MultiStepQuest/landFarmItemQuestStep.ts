@@ -27,7 +27,7 @@ class LandFarmItemQuestStep extends QuestStep implements IQuestSavable {
 
     get hudDto(): QuestStepDto {
         return {
-            name: `Посадите на ферме ${getBaseItemNameById(this._item_id)}`,
+            name: `Pflanzen auf dem Bauernhof ${getBaseItemNameById(this._item_id)}`,
             completed: this.isComplete,
             count: this._plantedCount,
             countGoal: this._goalCount

@@ -65,7 +65,7 @@ class FindObjectQuestStep extends QuestStep implements IQuestSavable {
 
     get hudDto(): QuestStepDto {
         return {
-            name: `Найдите ${this._objectName}`,
+            name: `Finde ${this._objectName}`,
             completed: this.isComplete,
             count: this._count,
             countGoal: this._goal

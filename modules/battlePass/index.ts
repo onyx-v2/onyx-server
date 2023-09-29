@@ -46,16 +46,16 @@ class BattlePass {
 
         const target = User.get(parseInt(id));
 
-        if (!target || !target.user) return player.notify('Игрок не найден', 'error');
+        if (!target || !target.user) return player.notify('Spieler nicht gefunden', 'error');
         if (!target.user.battlePass || !target.user.battlePass.battlePassEntity)
-            return player.notify('У игрока отсутсвует боевой пропуск', 'error');
+            return player.notify('Der Spieler hat keinen Kampfpass', 'error');
 
         const exp = parseInt(count);
 
-        if (exp < 0 || exp > 9999) return player.notify('Неверное количество опыта', 'error');
+        if (exp < 0 || exp > 9999) return player.notify('Falsche Menge an Erfahrung', 'error');
 
         target.user.battlePass.addExp(exp);
-        writeSpecialLog(`Выдал опыт боевого пропуска - ${exp}`, player, target.user.id);
+        writeSpecialLog(`Verschenkte die Erfahrung eines Kampfpasses - ${exp}`, player, target.user.id);
     }
 
     private setRating = (staticId: number, name: string, exp: number) => {
@@ -97,7 +97,7 @@ class BattlePass {
         players.forEach(player => {
             if (!player.user) return;
 
-            player.outputChatBox(`${name} - выиграл ежедневный розыгрыш опыта от боевого пропуска`);
+            player.outputChatBox(`${name} - gewann die tägliche Erfahrung aus dem Battle Pass ziehen`);
         })
     }
 
@@ -182,7 +182,7 @@ class BattlePass {
         const cost = levels * this._season.levelPrice;
 
         if (player.user.donate_money < cost)
-            return player.user.notify('У вас недостаточно коинов');
+            return player.user.notify('Du hast nicht genug Koins');
 
         let online = true,
             target = User.get(staticId)
@@ -191,15 +191,15 @@ class BattlePass {
 
         const userEntity = await User.getData(staticId)
 
-        if (!userEntity) return player.notify('Игрок не найден', 'error');
+        if (!userEntity) return player.notify('Spieler nicht gefunden', 'error');
 
         if (online) {
             if (target.user.battlePass.battlePassEntity === undefined)
-                return player.notify('У игрока отсутствует боевой пропуск', 'error');
+                return player.notify('Der Spieler hat keinen Kampfpass', 'error');
             player.user.donate_money = player.user.donate_money - cost;
 
             target.user.battlePass.addExp(levels * this._season.levelExp);
-            target.notify(`Вам подарили уровни боевого пропуска в размере - ${levels}`, 'info');
+            target.notify(`Du hast die Gabe, Kampfpass-Levels von - ${levels}`, 'info');
         } else {
             const battlePassEntities = await BattlePassEntity.find({
                 where: {
@@ -209,7 +209,7 @@ class BattlePass {
             });
 
             if (!battlePassEntities || !battlePassEntities[0])
-                return player.notify('У игрока отсутствует боевой пропуск', 'error');
+                return player.notify('Der Spieler hat keinen Kampfpass', 'error');
 
             player.user.donate_money = player.user.donate_money - cost;
 
@@ -224,8 +224,8 @@ class BattlePass {
             this._rating.set(staticId, {name: UserEntity.rp_name, exp: battlePassEntities[0].exp})
         }
 
-        player.notify('Вы успешно подарили уровни боевого пропуска');
-        player.user.log('battlePass', `Подарил уровни battle pass'а ${levels}`, staticId);
+        player.notify('Du hast erfolgreich Stufen des Battle Pass gespendet');
+        player.user.log('battlePass', `Verschenke die Battle Pass Level ${levels}`, staticId);
     }
 
     private giftPass = async (player: PlayerMp, staticId: number) => {
@@ -240,7 +240,7 @@ class BattlePass {
         }
 
         if (player.user.donate_money < cost)
-            return player.notify('У вас недостаточно коинов', 'error');
+            return player.notify('Du hast nicht genug Coins', 'error');
 
         let online = true,
             target = User.get(staticId)
@@ -249,15 +249,15 @@ class BattlePass {
 
         const userEntity = await User.getData(staticId)
 
-        if (!userEntity) return player.notify('Игрок не найден', 'error');
+        if (!userEntity) return player.notify('Spieler nicht gefunden', 'error');
 
         if (online) {
             if (target.user.battlePass.battlePassEntity !== undefined)
-                return player.notify('У игрока уже имеется пропуск', 'error');
+                return player.notify('Der Spieler hat bereits einen Pass', 'error');
             player.user.donate_money = player.user.donate_money - cost;
 
             target.user.battlePass.giftBattlePass();
-            target.notify('Вам подарили боевой пропуск', 'info');
+            target.notify('Du hast einen Kampfpass erhalten', 'info');
         } else {
             const battlePassEntities = await BattlePassEntity.find({
                 where: {
@@ -267,7 +267,7 @@ class BattlePass {
             });
 
             if (battlePassEntities && battlePassEntities[0])
-                return player.notify('У игрока уже имеется пропуск', 'error');
+                return player.notify('Der Spieler hat bereits einen Pass', 'error');
 
             player.user.donate_money = player.user.donate_money - cost;
 
@@ -284,8 +284,8 @@ class BattlePass {
             this._rating.set(staticId, {name: userEntity.rp_name, exp: 0});
         }
 
-        player.notify('Вы успешно подарили боевой пропуск');
-        player.user.log('battlePass', `Подарил battle pass`, staticId);
+        player.notify('Du hast erfolgreich einen Battle Pass gespendet');
+        player.user.log('battlePass', `Präsentiert battle pass`, staticId);
 
         //data = target && target.user ? target.user.entity : await User.getData(staticId);
     }
@@ -299,7 +299,7 @@ class BattlePass {
         if (!player.user) return;
         if (!player.user.battlePass || !player.user.battlePass.battlePassEntity) return;
         if (Math.trunc(player.user.battlePass.battlePassEntity.exp / this._season.levelExp) < level + 1)
-            return player.notify('Вам недоступен данный приз', 'error');
+            return player.notify('Dieser Preis ist für dich nicht verfügbar', 'error');
         player.user.battlePass.giveReward(level);
     }
 
@@ -329,9 +329,9 @@ class BattlePass {
                 battlePassExpires: expires,
                 coins: player.user.donate_money,
                 discountActive: this._season.discount.expires - system.timestamp > 5,
-                everyDayExp: player.user.battlePass.haveEveryDayExp ? 'Получен'
+                everyDayExp: player.user.battlePass.haveEveryDayExp ? 'Empfangen'
                     :
-                    `${this._season.everyDayExp.time - player.user.stats.getDto().dailyOnline} час/ов`
+                    `${this._season.everyDayExp.time - player.user.stats.getDto().dailyOnline} Std/Woche`
             });
 
             CustomEvent.triggerCef(player, 'battlePass:setRating', this.getRatingForPlayer(player.user.id));

@@ -58,7 +58,7 @@ export class MonopolyGame {
     }
 
     private createColshape() {
-        colshapes.new(system.getVector3Mp(this._settings.pos[0]), 'Играть в монополию', player => {
+        colshapes.new(system.getVector3Mp(this._settings.pos[0]), 'Monopoly spielen', player => {
             this.addPlayer(player)
         }, {
             rotation: this._settings.pos[1],
@@ -106,7 +106,7 @@ export class MonopolyGame {
 
     public onPlayerSellFirms(playerMp: PlayerMp, firmIds: number[]) {
         const player = this.players.find(p => p.player == playerMp)
-        if (this._currentPlayer != player) return playerMp.notify('Сейчас ход другого игрока', 'error')
+        if (this._currentPlayer != player) return playerMp.notify('Jetzt ist der andere Spieler an der Reihe.', 'error')
         firmIds.map(id => player.removeFirm((<FirmField>this.fields.find(f => f.id == id)).firm))
     }
 
@@ -133,7 +133,7 @@ export class MonopolyGame {
     }
 
     public addPlayer(player: PlayerMp) {
-        if (this._started) return player.notify('Игра уже началась', 'error')
+        if (this._started) return player.notify('Das Spiel hat bereits begonnen', 'error')
         const monopolyPlayer = new MonopolyPlayer(player, this)
 
         this.players.map(p => CustomEvent.triggerCef(p.player, 'monopoly:addPlayer', monopolyPlayer.getDto()))

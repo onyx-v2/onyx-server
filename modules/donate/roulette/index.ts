@@ -57,7 +57,7 @@ CustomEvent.registerCef('droulette:request', (player: PlayerMp, type: string, co
     if (!player.user) return;
     const totalSpinCost = SPIN_COSTS[type] * count
     if (player.user.donate_money < totalSpinCost) {
-        player.notify(`Недостаточно ONYX coins для прокрутки`, 'error');
+        player.notify(`Nicht genug ONYX-Münzen zum Scrollen`, 'error');
         return;
     }
     

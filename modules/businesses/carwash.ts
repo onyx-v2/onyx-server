@@ -14,29 +14,29 @@ export const openWashBuyMenu = (player: PlayerMp, item: BusinessEntity) => {
     if(!user) return;
 
     if(!vehicle) {
-        player.notify("Вы должны быть в ТС", "error");
+        player.notify("Du musst in  einem Fahrzeug sein", "error");
         return false;
     }
     if (!user.isDriver) {
-        player.notify("Вы должны быть за рулём", "error")
+        player.notify("Du solltest fahren", "error")
         return false
     }
-    if(Vehicle.getDirtLevel(vehicle) < 0.02) return player.notify('Транспорт не нуждается в мойке', 'error');
+    if(Vehicle.getDirtLevel(vehicle) < 0.02) return player.notify('Die Fahrzeuge müssen nicht gewaschen werden', 'error');
     const cfg = item.catalog[0];
 
 
     user.tryPayment(cfg.price, 'all', () => {
         return player.vehicle == vehicle && user.isDriver && Vehicle.getDirtLevel(vehicle) >= 0.02
-    }, 'Оплата автомойки', `Автомойка #${item.id}`).then(status => {
+    }, 'Bezahlung der Autowäsche', `Автомойка #${item.id}`).then(status => {
         if(!status) return;
         Vehicle.setDirtLevel(vehicle, 0.0)
-        player.notify('Транспорт чист', 'success');
-        writeClientRatingLog(player, item.id, cfg.price, "Мойка ТС", 1);
+        player.notify('Der Transport ist sauber', 'success');
+        writeClientRatingLog(player, item.id, cfg.price, "Autowäsche", 1);
         if(cfg.count > 0){
             cfg.count--;
             item.catalog = [cfg];
             //@ts-ignore
-            business.addMoney(item, cfg.p, 'Мойка ТС', false, false, true,
+            business.addMoney(item, cfg.p, 'Autowäsche', false, false, true,
                 true, businessDefaultCostItem(item, cfg.item));
         }
     })
@@ -53,12 +53,12 @@ export const washMenu = (player: PlayerMp, item: BusinessEntity) => {
     if (!user.isAdminNow(6) && 
         item.userId !== user.id && 
         !needUnload(player, item) &&
-        !canUserStartBizWar(user)) return player.notify('У вас нет доступа к управлению бизнесом', 'error')
-    let m = menu.new(player, "Автомойка", user.isAdminNow(6) ? `Бизнес #${item.id}` : "");
+        !canUserStartBizWar(user)) return player.notify('Du hast keinen Zugang zur Unternehmensführung', 'error')
+    let m = menu.new(player, "Autowäsche", user.isAdminNow(6) ? `Business #${item.id}` : "");
 
     if (needUnload(player, item)) {
         m.newItem({
-            name: "~g~Выгрузить заказ",
+            name: "~g~Auftrag abladen",
             onpress: () => {
                 m.close();
                 deliverSet(player)
@@ -70,7 +70,7 @@ export const washMenu = (player: PlayerMp, item: BusinessEntity) => {
     
     if (user.isAdminNow(6) || item.userId === user.id) {
         m.newItem({
-            name: '~b~Управление бизнесом',
+            name: '~b~Business Management',
             onpress: () => {
                 businessCatalogMenu(player, item, () => {
                     washMenu(player, item)
@@ -78,7 +78,7 @@ export const washMenu = (player: PlayerMp, item: BusinessEntity) => {
             }
         })
         m.newItem({
-            name: '~g~Заказ продукции',
+            name: '~g~Produktbestellung',
             onpress: () => {
                 orderDeliverMenu(player, item)
             }

@@ -23,28 +23,28 @@ export const parkingMenu = async (player: PlayerMp, item?: BusinessEntity) => {
     const user = player.user;
     if (!user) return;
     if (!item) item = parking.getParkingFromDimension(player.dimension);
-    if (!item) return player.notify('Вам нужна помощь администрации, поскольку вы застряли', "error");
+    if (!item) return player.notify('Du brauchst die Hilfe der Verwaltung, denn du steckst fest', "error");
     let slots = parking.getParkingZones(item);
     if (player.vehicle) {
         const veh = player.vehicle
-        if (!veh.entity) return player.notify("Парковка предназначена только для транспорта, который принадлежит жителю", "error");
-        if (!user.isDriver) return player.notify("Доступно только водителю", "error");
+        if (!veh.entity) return player.notify("Der Parkplatz ist nur für Fahrzeuge, die dem Bewohner gehören", "error");
+        if (!user.isDriver) return player.notify("Nur für den Fahrer verfügbar", "error");
         let slot = slots.find(q => q.veh === player.vehicle);
         if (!slot) {
-            if (veh.entity.owner != player.dbid) return player.notify("Данная машина не числится на данной парковке, и поставить её сюда может только владелец", "error");
-            if (slots.filter(q => !q.veh).length === 0) return player.notify("На парковке нет свободного места", "error")
-            if((item.sub_type === 1) !== veh.entity.avia) return player.notify(`Данная парковка не подходит под ${veh.entity.name}`, 'error');
+            if (veh.entity.owner != player.dbid) return player.notify("Dieses Auto ist nicht auf diesem Parkplatz zugelassen und kann nur vom Besitzer hier geparkt werden.", "error");
+            if (slots.filter(q => !q.veh).length === 0) return player.notify("Es gibt keinen Platz im Parkhaus", "error")
+            if((item.sub_type === 1) !== veh.entity.avia) return player.notify(`Dieser Parkplatz ist nicht geeignet für${veh.entity.name}`, 'error');
             const allVehs = parking.allVehsInAllParking()
             const myCarsOnParks = allVehs.filter(veh => veh.entity.owner === user.id && veh.entity.id !== player.vehicle.entity.id).length
             if (myCarsOnParks >= PARKING_CARS_PLAYER_MAX) {
-                return player.notify(`Вам недоступны новые парковочные места, поскольку у вас уже есть ${myCarsOnParks} ТС на парковке`, 'error');
+                return player.notify(`Neue Parkplätze stehen dir nicht zur Verfügung, weil du bereits einen hast ${myCarsOnParks} Fahrzeug auf dem Parkplatz`, 'error');
             }
-            if (!(await menu.accept(player, `Поставить ТС на парковку? Стоимость $${system.numberFormat(PARKING_START_COST)} + $${system.numberFormat(PARKING_DAY_COST)} за каждый день`))) return;
-            if (!parking.getFreeSlot(item)) return player.notify("Свободных парковочных мест больше нет", "error");
+            if (!(await menu.accept(player, `Das Fahrzeug in einem Parkhaus abstellen? Kosten $${system.numberFormat(PARKING_START_COST)} + $${system.numberFormat(PARKING_DAY_COST)} pro Tag`))) return;
+            if (!parking.getFreeSlot(item)) return player.notify("Es gibt keine freien Parkplätze mehr", "error");
             if (!(await user.tryPayment(PARKING_START_COST, 'all', () => {
                 slot = parking.getFreeSlot(item);
                 return !!slot
-            }, 'Оплата парковки', 'Парковка #' + item.id))) return;
+            }, 'Bezahlung für das Parken', 'Parken #' + item.id))) return;
             if (!mp.vehicles.exists(veh)) return;
             veh.entity.position = {
                 x: slot.x,
@@ -53,8 +53,8 @@ export const parkingMenu = async (player: PlayerMp, item?: BusinessEntity) => {
                 h: slot.h,
                 d: slot.d,
             }
-            player.notify("Вы успешно поставили ТС на парковку", "success");
-            writeClientRatingLog(player, item.id, PARKING_START_COST, "Начало парковки", 1);
+            player.notify("Du hast das Fahrzeug erfolgreich geparkt", "success");
+            writeClientRatingLog(player, item.id, PARKING_START_COST, "Zuhause Parken", 1);
         }
         if (slot) {
             user.teleportVeh(slot.x, slot.y, slot.z, slot.h, slot.d);
@@ -186,7 +186,7 @@ CustomEvent.registerCef('parking:exit', (player: PlayerMp, pos: Vector3Mp, headi
 });
 
 CustomEvent.registerCef('parking:toFloor', (player: PlayerMp, dimension: number, sub_type: number) => {
-    if (dimension === player.dimension) return player.notify("Вы уже на этом этаже", "error");
+    if (dimension === player.dimension) return player.notify("Du bist bereits auf dieser Etage", "error");
     const pos = sub_type == 0 ? PARKING_EXIT : PARKING_AVIA_EXIT;
     player.user.teleport(pos.x, pos.y, pos.z, player.heading, dimension);
 });
@@ -214,7 +214,7 @@ CustomEvent.register('newDay', () => {
         User.getData(owner).then(data => {
             if(!data) return;
             if (data.bank_number) {
-                User.writeBankNotify(owner, data.bank_money >= sum ? 'remove' : 'reject', sum, 'Суточная оплата парковки', 'Парковка')
+                User.writeBankNotify(owner, data.bank_money >= sum ? 'remove' : 'reject', sum, 'Tägliche Parkgebühr', 'Парковка')
                 if (data.bank_money >= sum) {
                     data.bank_money -= sum;
                     data.save()
@@ -223,7 +223,7 @@ CustomEvent.register('newDay', () => {
         })
     })
     parkingsReward.forEach((sum, biz) => {
-        business.addMoney(biz, (sum / 100 * BUSINESS_REWARD_PERCENT), 'Доход от суточной стоянки транспорта')
+        business.addMoney(biz, (sum / 100 * BUSINESS_REWARD_PERCENT), 'Einnahmen aus dem täglichen Parken')
     })
 })
 
@@ -283,6 +283,6 @@ export const parking = {
 }
 
 
-colshapes.new([PARKING_EXIT, PARKING_AVIA_EXIT], "Парковка", player => {
+colshapes.new([PARKING_EXIT, PARKING_AVIA_EXIT], "Parken", player => {
     parkingMenu(player)
 }, { dimension: -1, type: 27, color: [0, 0, 120, 200] })

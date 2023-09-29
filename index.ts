@@ -27,25 +27,25 @@ import {promocodes1x} from "./modules/onetimePromocodes";
 import { initLogsDatabaseConnection } from './modules/typeorm/logs'
 import {loadConfig} from "./modules/businesses/lsc";
 
-process.env.TZ = 'Europe/Moscow'
+process.env.TZ = 'Europe/Berlin'
 mp.events.delayInitialization = true;
-system.debug.success('Загрузка модулей сервера')
+system.debug.success('Laden von Servermodulen')
 
 initLogsDatabaseConnection()
 
 initDatabaseConnection().then(async (q) => {
     await houses.load();
     if (fs.existsSync('./client_packages/dress.json.js')){
-        system.debug.debug(`Конфиг одежды существует, удаляем`);
+        system.debug.debug(`Die Bekleidungskonfiguration existiert, lösche sie`);
         fs.unlinkSync('./client_packages/dress.json.js');
     } else {
-        system.debug.debug(`Конфиг одежды не существует`);
+        system.debug.debug(`Bekleidungskonfigurationen gibt es nicht`);
     }
     await loadConfig()
     await dress.load();
     await business.load();
     await fetchIp()
-    system.debug.success('Основные модули, необходимые до инициализации загружены');
+    system.debug.success('Die vor der Initialisierung benötigten Grundmodule werden geladen');
     if(!mp.config.announce) mp.events.delayInitialization = false;
     await inventory.load();
     await loadVehicleConfigs()
@@ -66,7 +66,7 @@ initDatabaseConnection().then(async (q) => {
     await marketItemsDb.init();
     await promocodes1x.load();
     loadGangZone()
-    system.debug.success('Все модули загружены');
+    system.debug.success('Alle Module sind geladen');
     system.debug.success('--------------------');
     if (mp.config.announce) mp.events.delayInitialization = false;
 });

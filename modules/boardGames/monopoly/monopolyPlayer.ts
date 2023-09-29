@@ -93,7 +93,7 @@ export class MonopolyPlayer {
     public acceptCurrectFirmBuySuggestion() {
         const firm = (<FirmField>this._game.fields.find(f => f.id == this._currentFieldId))?.firm
         if (firm?.owner || this.balance < firm.cost)
-            return this._player.notify('Серверная ошибка', 'error')
+            return this._player.notify('Server-Fehler', 'error')
 
         this.balance -= firm.cost
         this._firms.push(firm)

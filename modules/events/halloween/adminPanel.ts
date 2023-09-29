@@ -6,11 +6,11 @@ import {weather} from "../../weather";
 export const HALLOWEEN_MANAGE_MENU_HOOK = 'halloween-manage-menu';
 
 export function openHalloweenManageMenu(player: PlayerMp) {
-    const _menu = menu.new(player, 'Управление хэллоуином');
+    const _menu = menu.new(player, 'Halloween Management');
     invokeHook(HALLOWEEN_MANAGE_MENU_HOOK, player, _menu, () => openHalloweenManageMenu(player));
 
     _menu.newItem({
-        name: 'Включить/выключить хельсинскую погоду',
+        name: 'Schalte das Wetter in Helsinki ein/aus',
         onpress: () => {
             weather.halloweenEnabled = !weather.halloweenEnabled;
             weather.setWeather(weather.halloweenEnabled ? 'HALLOWEEN' : 'EXTRASUNNY')

@@ -13,7 +13,7 @@ import {getAchievConfigBiz} from "../../../shared/achievements";
 import {canUserStartBizWar, createBizMenuBizWarItem, startBizWar} from "../bizwar";
 
 export const loadData = (player: PlayerMp, item: BusinessEntity) => {
-    if(!player.user.mp_character) return player.notify('Вы не можете использовать барбершоп пока используется не стандартный скин', 'error')
+    if(!player.user.mp_character) return player.notify('Du kannst den Barbershop nur nutzen, wenn du ein nicht standardisiertes Fell verwendest.', 'error')
     player.dimension = player.id + 1;
     player.user.reloadSkin()
     CustomEvent.triggerClient(player, 'barber:load', player.user.barbershopData, item.positions[0], item.catalog.map(q => {
@@ -34,11 +34,11 @@ CustomEvent.registerCef('barbershop:buy', (player, data:Partial<BarberData>, id:
     if(!item) return;
     if(!player.dimension) return;
     const cost = finalySum(data, item);
-    user.tryPayment(cost[0], 'all', () => true, 'Оплата услуг барбершопа', `Барбершоп #${item.id}`).then(q => {
+    user.tryPayment(cost[0], 'all', () => true, 'Bezahlung für Friseurdienstleistungen', `Барбершоп #${item.id}`).then(q => {
         if(q){
             user.barbershopData = {...user.barbershopData, ...data};
             if(cost[1] > 0){
-                business.addMoney(item, cost[1], `Оплата услуг клиентом ${player.dbid}`,
+                business.addMoney(item, cost[1], `Bezahlung durch den Kunden ${player.dbid}`,
                     false, false, true, true, cost[3]);
                 player.user.achiev.setAchievTickBiz(item.type, item.sub_type, cost[1])
                 cost[2].map(itm => {
@@ -99,13 +99,13 @@ export const barberMenu = (player: PlayerMp, item: BusinessEntity) => {
             m.sprite = "shopui_title_barber4";
             break;
         default:
-            m.title = 'Барбершоп'
+            m.title = 'Barbershop'
             break;
     }
     m.sprite = sprite as any;
 
     m.newItem({
-        name: "Каталог товаров",
+        name: "Produktkatalog",
         onpress: () => {
             m.close();
             openShop()
@@ -113,7 +113,7 @@ export const barberMenu = (player: PlayerMp, item: BusinessEntity) => {
     })
     if (needUnload(player, item)){
         m.newItem({
-            name: "~g~Выгрузить заказ",
+            name: "~g~Auftrag abladen",
             onpress: () => {
                 m.close();
                 deliverSet(player)
@@ -125,7 +125,7 @@ export const barberMenu = (player: PlayerMp, item: BusinessEntity) => {
     
     if (user.isAdminNow(6) || item.userId === user.id) {
         m.newItem({
-            name: '~b~Управление бизнесом',
+            name: '~b~Business Management',
             onpress: () => {
                 businessCatalogMenu(player, item, () => {
                     barberMenu(player, item)
@@ -133,7 +133,7 @@ export const barberMenu = (player: PlayerMp, item: BusinessEntity) => {
             }
         })
         m.newItem({
-            name: '~g~Заказ продукции',
+            name: '~g~Produktbestellung',
             onpress: () => {
                 orderDeliverMenu(player, item)
             }

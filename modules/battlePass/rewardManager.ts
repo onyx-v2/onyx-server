@@ -38,7 +38,7 @@ export class RewardManager {
     public static give(user: User, level: number): void {
         const reward = BATTLE_PASS_SEASON.rewards[level];
 
-        if (!reward) return user.notify('Произошла ошибка при выдаче приза');
+        if (!reward) return user.notify('Bei der Preisverleihung ist ein Fehler aufgetreten');
 
         if (reward.type === RewardType.COINS) {
             this.coins(user, level, reward as CoinsReward);
@@ -59,7 +59,7 @@ export class RewardManager {
         } else if (reward.type === RewardType.ANIMATION) {
             this.animation(user, level, reward as AnimationReward);
         } else {
-            user.notify('Произошла ошибка при выдаче приза');
+            user.notify('Bei der Preisverleihung ist ein Fehler aufgetreten');
         }
     }
 
@@ -71,8 +71,8 @@ export class RewardManager {
             user.battlePass.battlePassEntity.receiveRewards);
 
         battlePassStorage.updatePlayerStorage(user.player);
-        user.notify(`Приз получен - ${BATTLE_PASS_SEASON.rewards[level].name}`, 'success');
-        user.player.outputChatBox(`Вы получили приз - ${BATTLE_PASS_SEASON.rewards[level].name}`);
+        user.notify(`Der Preis wurde erhalten - ${BATTLE_PASS_SEASON.rewards[level].name}`, 'success');
+        user.player.outputChatBox(`Du hast einen Preis gewonnen - ${BATTLE_PASS_SEASON.rewards[level].name}`);
 
         user.battlePass.battlePassEntity.save();
     }
@@ -89,7 +89,7 @@ export class RewardManager {
 
     private static luckyWheel(user: User, level: number): void {
         if (system.timestamp - user.account.lucky_wheel > 86400)
-            return user.notify('У вас уже имеется прокрут колеса');
+            return user.notify('Du hast bereits ein Rad gedreht');
 
         user.account.lucky_wheel = 0;
         user.account.save();
@@ -101,16 +101,16 @@ export class RewardManager {
             vehConf = Vehicle.getVehicleConfig(reward.vehicleModel);
 
         if (!vehConf) {
-            player.notify('Данную машину невозможно активировать. Обратитесь к администрации', 'error');
+            player.notify('Diese Maschine kann nicht aktiviert werden. Bitte kontaktiere die Verwaltung', 'error');
             return;
         }
         if (vehConf.license && !user.haveActiveLicense(vehConf.license)) {
-            player.notify(`Чтобы получить ${vehConf.name} необходимо иметь активную лицензию на ${LicenseName[vehConf.license]}`, "error");
+            player.notify(`Um zu erhalten ${vehConf.name} Du musst eine aktive Lizenz haben, um ${LicenseName[vehConf.license]}`, "error");
             return;
         }
         if (user.myVehicles.length >= user.current_vehicle_limit) {
-            player.notify(`Вы можете иметь не более ${user.current_vehicle_limit} ТС.
-             Дополнительные слоты можно приобрести в личном кабинете`, "error");
+            player.notify(`Du kannst nicht mehr haben als ${user.current_vehicle_limit} Fahrzeuge.
+             Zusätzliche Slots können in deinem persönlichen Schrank gekauft werden`, "error");
             return;
         }
 
@@ -162,7 +162,7 @@ export class RewardManager {
 
     private static vip(user: User, level: number, reward: VipReward): void {
         if (user.vip && user.vip !== reward.vipType && system.timestamp < user.vip_end) {
-            user.notify(`У вас уже есть VIP другого уровня`, "error")
+            user.notify(`Du hast bereits eine andere VIP-Ebene`, "error")
             return;
         }
         user.giveVip(reward.vipType as VipId, reward.vipDays);
@@ -194,11 +194,11 @@ export class RewardManager {
     private static async animation(user: User, level: number, reward: AnimationReward): Promise<void> {
         const anim = PURCHASEABLE_ANIMS.find(a => a.id == reward.animationId)
         if (!anim) {
-            user.notify("Недоступная анимация. Обратитесь к администрации", "error")
+            user.notify("Nicht verfügbare Animation. Kontaktiere die Verwaltung", "error")
             return
         }
         await user.animation.givePurchaseableAnimation(reward.animationId)
-        user.notify(`Вы получили анимацию ${anim.name}`, "success")
+        user.notify(`Du erhältst die Animation ${anim.name}`, "success")
         this.dropReceived(user, level);
     }
 }

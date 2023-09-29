@@ -21,18 +21,18 @@ import {VIP_TARIFS} from "../../../shared/vip";
 let tables = new Map<number, DiceData>();
 
 
-colshapes.new(new mp.Vector3(DICE_TABLE_SETTINGS.DRESS_POS.x, DICE_TABLE_SETTINGS.DRESS_POS.y, DICE_TABLE_SETTINGS.DRESS_POS.z), `Раздевалка`, player => {
+colshapes.new(new mp.Vector3(DICE_TABLE_SETTINGS.DRESS_POS.x, DICE_TABLE_SETTINGS.DRESS_POS.y, DICE_TABLE_SETTINGS.DRESS_POS.z), `Umkleideraum`, player => {
     const user = player.user;
     if(!user) return;
     if(player.inCasinoDress){
         user.setJobDress(null);
         player.inCasinoDress = false;
-        return player.notify('Вы сняли рабочую одежду', 'success');
+        return player.notify('Du hast deine Arbeitskleidung ausgezogen', 'success');
     }
-    if(user.level < LEVEL_PERMISSIONS.CASINO_DEALER) return player.notify(`Доступно с ${LEVEL_PERMISSIONS.CASINO_DEALER} уровня персонажа`, 'error');
+    if(user.level < LEVEL_PERMISSIONS.CASINO_DEALER) return player.notify(`Erhältlich bei ${LEVEL_PERMISSIONS.CASINO_DEALER} LVL`, 'error');
     player.inCasinoDress = true
     user.setJobDress(user.is_male ? DICE_TABLE_SETTINGS.DRESS_MALE : DICE_TABLE_SETTINGS.DRESS_FEMALE);
-    player.notify('Вы переоделись в рабочую одежду. Теперь вам доступна работа крупье', 'success');
+    player.notify('Du hast deine Arbeitskleidung angezogen. Der Job des Croupiers steht dir jetzt offen', 'success');
 }, {
     type: 27,
     dimension: CASINO_MAIN_DIMENSION,
@@ -56,21 +56,21 @@ CustomEvent.registerClient('casino:dice:enter', (player, table: number, seat: nu
     const user = player.user;
     check(table);
     const cfg = DICE_TABLES_LIST[table];
-    if (!cfg) return 'Стол не обнаружен. Ошибка';
-    if (cfg.isVip && (!user.vipData || !user.vipData.casino)) return `Стол предназначен только для VIP членов казино. Вип членство можно получить купив ${VIP_TARIFS.filter(q => !q.media && q.casino).map(q => q.name).join(', ')}`;
+    if (!cfg) return 'Tabelle nicht erkannt. Fehler';
+    if (cfg.isVip && (!user.vipData || !user.vipData.casino)) return `Der Tisch ist nur für VIP-Mitglieder. Die VIP-Mitgliedschaft erhältst du durch den Kauf von ${VIP_TARIFS.filter(q => !q.media && q.casino).map(q => q.name).join(', ')}`;
     let data = tables.get(table);
-    if (!data) return 'Стол не обнаружен';
+    if (!data) return 'Tabelle nicht gefunden';
     // if (data.stage !== 'wait') return 'Во время игры нельзя зайти на стол';
     if (seat === 9999) {
-        if (typeof cfg.npc === "number" || data.croupier) return 'Место крупье занято';
-        if(!player.inCasinoDress) return 'Переоденьтесь в рабочую форму';
+        if (typeof cfg.npc === "number" || data.croupier) return 'Der Platz des Croupiers ist besetzt';
+        if(!player.inCasinoDress) return 'Zieh deine Arbeitsuniform an';
         tables.set(table, {...data, croupier: player.dbid});
     } else {
-        if(typeof seat !== "number" || seat < 0 || seat > 3) return 'Выбрано не правильное место';
-        if (data.players[seat]) return 'Место занято';
-        if (data.players.find(q => q && q.id === user.id)) return 'Вы уже заняли другое место';
-        if(player.inCasinoDress) return 'Крупье не может играть';
-        if(player.user.getJobDress) return 'Снимите рабочую одежду прежде чем начать играть';
+        if(typeof seat !== "number" || seat < 0 || seat > 3) return 'Es ist der falsche Ort';
+        if (data.players[seat]) return 'Sitzplatz besetzt';
+        if (data.players.find(q => q && q.id === user.id)) return 'Du hast bereits einen anderen Platz eingenommen';
+        if(player.inCasinoDress) return 'Der Croupier kann nicht spielen';
+        if(player.user.getJobDress) return 'Zieh deine Arbeitskleidung aus, bevor du anfängst zu spielen';
         let players:[DicePlayer, DicePlayer, DicePlayer, DicePlayer] = [...data.players];
         players[seat] = {
             id: user.id,
@@ -95,16 +95,16 @@ CustomEvent.registerCef('casino:dice:bet', (player, table: number) => {
     const user = player.user;
     check(table);
     const cfg = DICE_TABLES_LIST[table];
-    if (!cfg) return player.notify('Стол не обнаружен', 'error');
+    if (!cfg) return player.notify('Tabelle nicht gefunden', 'error');
     const data = tables.get(table);
-    if (data.stage !== 'wait') return player.notify('Ставки больше не принимаются', 'error');
+    if (data.stage !== 'wait') return player.notify('Wetten werden nicht mehr angenommen', 'error');
     const myPos = data.players.findIndex(q => q && q.id === user.id);
-    if (myPos === -1) return player.notify('Вы не участник стола', 'error');
-    if (data.players[myPos].stage !== "wait") return player.notify('Вы уже сделали ставку', 'error');
+    if (myPos === -1) return player.notify('Du bist kein Mitglied des Tisches', 'error');
+    if (data.players[myPos].stage !== "wait") return player.notify('Du hast deine Wette bereits abgegeben', 'error');
     const sum = data.bet;
-    if (!sum) return player.notify('Ставка пока не выбрана', 'error');
-    if (user.chips < sum) return player.notify('У вас недостаточно фишек для ставки', 'error');
-    user.removeChips(sum, false, `Ставка в костях`);
+    if (!sum) return player.notify('Das Angebot ist noch nicht ausgewählt worden', 'error');
+    if (user.chips < sum) return player.notify('Du hast nicht genug Chips zum Setzen', 'error');
+    user.removeChips(sum, false, `Der Pflock im Knochen`);
     user.playAnimation([[`anim_casino_b@amb@casino@games@threecardpoker@ped_${user.feemale ? 'fe' : ''}male@regular@01a@play@v02`, 'bet_plus']], true)
     data.betsum += data.bet
     data.players[myPos].stage = 'ready';
@@ -124,7 +124,7 @@ const betCancel = (player: PlayerMp, table: number, exit = false) => {
     if (data.players[myPos].stage !== "ready") return;
     const sum = data.bet;
     data.betsum -= data.bet;
-    user.addChips(sum, false, `Отмена ставки в костях`);
+    user.addChips(sum, false, `Annullierung einer Wette beim Würfeln`);
     data.players[myPos].stage = 'wait';
     if(!exit) user.playAnimation([[`anim_casino_b@amb@casino@games@threecardpoker@ped_${user.feemale ? 'fe' : ''}male@regular@01a@play@v02`, 'collect_chips']], true)
     tables.set(table, data);
@@ -140,10 +140,10 @@ CustomEvent.registerCef('casino:dice:roll', (player, table: number, res: number)
     const cfg = DICE_TABLES_LIST[table];
     if (!cfg) return;
     let data = tables.get(table);
-    if (data.stage !== 'dice') return player.notify('Уже поздно бросать', 'error');
+    if (data.stage !== 'dice') return player.notify('Zum Aufhören ist es zu spät', 'error');
     const myPos = data.players.findIndex(q => q && q.id === user.id);
-    if (myPos === -1) return player.notify('Вы не участник стола', 'error');
-    if (data.players[myPos].stage !== "dice") return player.notify('Вам уже поздно бросать', 'error');
+    if (myPos === -1) return player.notify('Du bist kein Mitglied des Tisches', 'error');
+    if (data.players[myPos].stage !== "dice") return player.notify('Es ist zu spät für dich, um aufzuhören', 'error');
     if (!data.players[myPos].scoreArr || !data.players[myPos].score) data.players[myPos].scoreArr = [];
     data.players[myPos].score += res;
     data.players[myPos].scoreArr.push(res)
@@ -165,7 +165,7 @@ const clearTable = async (id: number) => {
         if (!player) return players.push(null);
         if(player.stage === 'ready'){
             const target = User.get(player.id);
-            if(target) target.user.addChips(data.bet, false, 'Возврат ставки на костях')
+            if(target) target.user.addChips(data.bet, false, 'Rückgabe einer Wette auf die Knochen')
         }
         players.push({...player, stage: 'wait', scoreArr: [], score: 0, time: 0})
     })
@@ -179,8 +179,8 @@ CustomEvent.registerCef('casino:dice:start', (player, table: number) => {
     check(table);
     const q = tables.get(table);
     if (!q) return;
-    if (q.croupier !== player.dbid) return player.notify('Вы не крупье чтобы начать игру', 'error')
-    if(q.players.filter(s => s && s.stage === 'ready').length < 2) return player.notify('Недостаточно участников чтобы начать', 'error');
+    if (q.croupier !== player.dbid) return player.notify('Du bist kein Croupier, um ein Spiel zu beginnen', 'error')
+    if(q.players.filter(s => s && s.stage === 'ready').length < 2) return player.notify('Nicht genug Teilnehmer für den Start', 'error');
     startTable(table);
 })
 
@@ -220,11 +220,11 @@ const startTable = async (id: number) => {
         data.players.map(q => {
             if(!q) return;
             const z = User.get(q.id)
-            if(z) z.notify('Недостаточно участников для начала', 'error')
+            if(z) z.notify('Nicht genug Teilnehmer für den Start', 'error')
         })
         if(data.croupier){
             const z = User.get(data.croupier)
-            if(z) z.notify('Недостаточно участников для начала', 'error')
+            if(z) z.notify('Nicht genug Teilnehmer für den Start', 'error')
         }
         return autoStart(id);
     }
@@ -284,7 +284,7 @@ const startTable = async (id: number) => {
                 data.players.map(player => {
                     if(!player) return;
                     const t = User.get(player.id)
-                    if(t) t.notify('Ничья, переброс', 'error');
+                    if(t) t.notify('Unentschieden, überfahren', 'error');
                     if(player.stage !== 'ok') return;
                     if(player.score === res[0].score) player.stage = 'ready';
                     player.score = 0;
@@ -292,7 +292,7 @@ const startTable = async (id: number) => {
                 })
                 if(data.croupier){
                     const t = User.get(data.croupier)
-                    if(t) t.notify('Ничья, переброс', 'error');
+                    if(t) t.notify('Unentschieden, überfahren', 'error');
                 }
                 tables.set(id, data)
                 updateTableData(id);
@@ -319,7 +319,7 @@ const startTable = async (id: number) => {
     if (res.length > 0) {
         let player = User.get(res[0].id);
         if (player) {
-            player.user.addChips(data.betsum - toDealer, false, `Победа в костях`);
+            player.user.addChips(data.betsum - toDealer, false, `Der Sieg in den Knochen`);
             runCasinoAchievWin(player, 'Dice', data.betsum - toDealer)
             player.user.playAnimation([[`anim_casino_b@amb@casino@games@threecardpoker@ped_${player.user.feemale ? 'fe' : ''}male@regular@01a@play@v02`, 'reaction_good_var01']], true)
             data.players.map(q => {
@@ -332,7 +332,7 @@ const startTable = async (id: number) => {
             const targetCr = User.get(data.croupier);
             const toDealerGiveSum = ((toDealer / 100) * DICE_TABLE_SETTINGS.DEALER_PERCENT.TOPLAYER)
             runCasinoAchievWin(targetCr, 'DiceDealer', toDealerGiveSum)
-            targetCr.user.addChips(toDealerGiveSum, false, 'Комиссия крупье в кости');
+            targetCr.user.addChips(toDealerGiveSum, false, 'Die Provision eines Croupiers beim Craps');
             CustomEvent.triggerCef(targetCr, 'casino:dice:crRew', ((toDealer / 100) * DICE_TABLE_SETTINGS.DEALER_PERCENT.TOPLAYER))
             if(player) CustomEvent.triggerCef(targetCr, 'casino:dice:win', data.betsum - toDealer, player.user.name);
         }
@@ -344,8 +344,8 @@ CustomEvent.registerCef('casino:dice:setBet', (player, table: number, bet: numbe
     check(table);
     const data = tables.get(table);
     if (!data) return;
-    if (data.stage !== "wait") return player.notify('Игра уже запущена', 'error');
-    if (data.players.find(q => q && q.stage !== 'wait')) return player.notify('Нельзя сменить ставку пока кто то из игроков уже её сделал', 'error')
+    if (data.stage !== "wait") return player.notify('Das Spiel wurde bereits veröffentlicht', 'error');
+    if (data.players.find(q => q && q.stage !== 'wait')) return player.notify('Du kannst eine Wette erst ändern, wenn einer der Spieler sie bereits abgegeben hat', 'error')
     data.bet = bet;
     tables.set(table, data);
     updateTableData(table);

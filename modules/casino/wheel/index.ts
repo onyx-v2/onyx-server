@@ -17,14 +17,14 @@ class LuckyWheel {
     constructor() {
         this.wheel = new Wheel();
 
-        this.interaction = colshapes.new(WHEEL_INTERACTION_POSITION, "Крутить колесо", (player: PlayerMp) => {
-            if (this.locked) return player.notify('Колесо удачи временно закрыто, попробуйте позже', 'warning');
+        this.interaction = colshapes.new(WHEEL_INTERACTION_POSITION, "Dreh das Rad", (player: PlayerMp) => {
+            if (this.locked) return player.notify('Das Glücksrad ist vorübergehend geschlossen, versuche es später noch einmal', 'warning');
             if (system.timestamp - player.user.account.lucky_wheel < 86400)
-                return player.notify('С прошлого прокрута колеса прошло менее суток, попробуйте позже', 'warning');
+                return player.notify('Die letzte Drehung des Rades ist weniger als 24 Stunden her, versuche es später noch einmal.', 'warning');
 
             this.checkResetOccupator();
 
-            if (this.wheel.occupator !== null) return player.notify("Колесо уже крутит другой игрок", "error");
+            if (this.wheel.occupator !== null) return player.notify("Das Rad wird bereits von einem anderen Spieler gedreht", "error");
             this.wheel.occupator = player.user.id;
             CustomEvent.triggerClient(player, "casino:wheel:towheel");
             this.lastRoll = system.timestamp;
@@ -35,7 +35,7 @@ class LuckyWheel {
         });
 
         gui.chat.registerCommand('luckywheel', (player) => {
-            if (!player.user.isAdminNow(7)) return player.notify("Нет доступа", "error");
+            if (!player.user.isAdminNow(7)) return player.notify("Kein Zugang", "error");
             this.locked = !this.locked;
             player.notify(this.locked ? "Колесо удачи - было отключено" : "Колесо удачи - было включено", "info");
         });

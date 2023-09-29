@@ -11,9 +11,9 @@ CustomEvent.registerClientAndCef('casino:chips:buy', (player, count: number) => 
     if(!user) return;
     if(!count || count < CHIP_MIN_BUY) return;
     const sum = CHIP_COST * count;
-    if(user.money < sum) return player.notify('У вас недостаточно наличных средств для оплаты', 'error');
-    user.removeMoney(sum, true, 'Покупка фишек');
-    user.addChips(count, false, `Покупка фишек`)
+    if(user.money < sum) return player.notify('Du hast nicht genug Geld, um zu bezahlen', 'error');
+    user.removeMoney(sum, true, 'Kauf von Chips');
+    user.addChips(count, false, `Kauf von Chips`)
 })
 
 CustomEvent.registerClientAndCef('casino:chips:sell', (player, count: number) => {
@@ -21,9 +21,9 @@ CustomEvent.registerClientAndCef('casino:chips:sell', (player, count: number) =>
     if(!user) return;
     if(!count || count < CHIP_MIN_SELL) return;
     const sum = CHIP_SELL_COST * count;
-    if(user.chips < count) return player.notify('У вас недостаточно фишек для обмена', 'error');
-    user.addMoney(sum, true, 'Обмен фишек');
-    user.removeChips(count, false, `Обмен фишек`)
+    if(user.chips < count) return player.notify('Du hast nicht genug Chips zum Tauschen', 'error');
+    user.addMoney(sum, true, 'Chips tauschen');
+    user.removeChips(count, false, `Chips tauschen`)
 })
 
 CustomEvent.registerClient('casino:freeze', (player, status: {x: number, y: number, z: number}) => {
