@@ -63,6 +63,7 @@ export class ZombiesDemolitionEvent {
 
             const model = randomArrayElement(HALLOWEEN_ZOMBIES_MODELS);
 
+            // @ts-ignore
             const ped = createDynamicPed(position[0], position[1], model, false, this._dimension);
             ped.setVariable('halloweenZombie', true);
 

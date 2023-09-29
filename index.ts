@@ -27,9 +27,6 @@ import {promocodes1x} from "./modules/onetimePromocodes";
 import { initLogsDatabaseConnection } from './modules/typeorm/logs'
 import {loadConfig} from "./modules/businesses/lsc";
 
-let hack: NodeJS.Timeout = setInterval(() => { }, 0);
-
-
 process.env.TZ = 'Europe/Moscow'
 mp.events.delayInitialization = true;
 system.debug.success('Загрузка модулей сервера')
