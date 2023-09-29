@@ -41,7 +41,7 @@ export class Hookah {
             }
         );
 
-        this.interaction = colshapes.new(this.position, 'Кальян', this.interactionHandler, {
+        this.interaction = colshapes.new(this.position, 'Wasserpfeife', this.interactionHandler, {
             dimension: this.dimension,
             radius: 1.5,
             type: -1
@@ -49,7 +49,7 @@ export class Hookah {
     }
 
     interactionHandler = (player: PlayerMp) => {
-        const menu = new MenuClass(player, 'Кальян');
+        const menu = new MenuClass(player, 'Wasserpfeife');
 
         menu.newItem({
             name: 'Сделать затяг',
@@ -59,7 +59,7 @@ export class Hookah {
         })
 
         menu.newItem({
-            name: 'Заправить кальян',
+            name: 'Fülle die Wasserpfeife nach',
             more: `${this.puffs}`,
             onpress: () => {
                 this.fill(player);
@@ -68,7 +68,7 @@ export class Hookah {
 
         if (player.user.isAdminNow() || player.user.id === this.ownerId) {
             menu.newItem({
-                name: '~r~Забрать кальян',
+                name: '~r~Nimm die Wasserpfeife',
                 onpress: () => {
                     this.remove(player);
                 }
@@ -80,10 +80,10 @@ export class Hookah {
 
     use (player: PlayerMp) {
         if (system.timestamp - player.user.lastSmoke < 5)
-            return player.notify('Слишком быстро', 'error');
+            return player.notify('Es ist zu schnell', 'error');
 
         if (this.puffs === 0)
-            return player.notify('Сперва необходимо заправить кальян');
+            return player.notify('Zuerst muss die Wasserpfeife nachgefüllt werden');
         this.puffs -= 1;
 
         player.user.lastSmoke = system.timestamp;
@@ -92,30 +92,30 @@ export class Hookah {
 
     fill (player: PlayerMp) {
         if (this.puffs + PUFFS_IN_ONE_FILL > MAX_PUFFS)
-            return player.notify('В кальян больше не помещается', 'error');
+            return player.notify('Es passt nicht mehr in die Bong', 'error');
 
         const items: ItemEntity[] = inventory.getInventory(OWNER_TYPES.PLAYER, player.user.id);
 
         const charcoal: boolean = items.find(el => el.item_id === HOOKAH_CHARCOAL) !== undefined;
 
         if (!charcoal)
-            return player.notify('У вас нет угля', 'error');
+            return player.notify('Du hast keine Kohle', 'error');
 
         const tobacco = items.find(el => HOOKAH_TOBACCO.includes(el.item_id));
 
         if (!tobacco)
-            return player.notify('У вас нет табака', 'error');
+            return player.notify('Du hast keinen Tabak', 'error');
 
         inventory.deleteItemsById(player, tobacco.item_id, 1);
         inventory.deleteItemsById(player, HOOKAH_CHARCOAL, 1);
 
         this.puffs += PUFFS_IN_ONE_FILL;
-        player.notify('Кальян успешно заправлен', 'success');
+        player.notify('Die Wasserpfeife wurde erfolgreich aufgetankt', 'success');
     }
 
     remove(player: PlayerMp) {
         if (player.user.id !== this.ownerId && !player.user.isAdminNow())
-            return player.notify('Нет доступа', 'error');
+            return player.notify('Kein Zugang', 'error');
 
         this.interaction.destroy();
         this.prop.destroy();

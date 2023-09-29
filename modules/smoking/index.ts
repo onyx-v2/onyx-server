@@ -44,7 +44,7 @@ class Smoking {
 
         if (!item) return;
 
-        if (item.advancedNumber <= 0) return player.notify('В вейпе не осталось жидкости', 'error');
+        if (item.advancedNumber <= 0) return player.notify('Es ist keine Flüssigkeit mehr im Vape', 'error');
 
         item.advancedNumber -= 1;
         CustomEvent.triggerClient(player, 'smoking:useVape');
@@ -75,13 +75,13 @@ class Smoking {
     bongAction() {
         this.smokingActions.set(BONG_ITEM_ID, (player: PlayerMp, item: ItemEntity) => {
             if (system.timestamp - player.user.lastSmoke < 5)
-                return player.notify('Слишком быстро', 'error');
+                return player.notify('Es ist zu schnell', 'error');
 
             const cbd = inventory.getInventory(OWNER_TYPES.PLAYER, player.user.id)
                 .find(el => el.item_id === CBD_ITEM_ID);
 
             if (!cbd)
-                return player.notify('У вас нет CBD для бонга', 'error');
+                return player.notify('Du hast kein CBD für eine Bong', 'error');
 
             inventory.deleteItemsById(player, CBD_ITEM_ID, 1);
             player.user.lastSmoke = system.timestamp;
@@ -102,22 +102,22 @@ class Smoking {
                 items = items.filter(el => el.item_id === VAPE_ITEM_ID);
 
                 if (items.length === 0) {
-                    return player.notify(`У вас нет вейпa в инвентаре`)
+                    return player.notify(`Du hast kein Vape in deinem Inventar.`)
                 }else if (items.length === 1) {
                     if (items[0].advancedNumber + size > 20)
-                        return player.notify(`В баке недостаточно места`);
+                        return player.notify(`Es ist nicht genug Platz im Tank`);
 
                     inventory.deleteItemsById(player, item.item_id, 1);
                     items[0].advancedNumber = items[0].advancedNumber + size;
                 }else{
-                    let m = new MenuClass(player, 'Заправить вейп', '');
+                    let m = new MenuClass(player, 'Fülle dein Vape nach', '');
 
                     items.forEach(el => {
                         m.newItem({
                             name: `Вейп ${el.id}`,
                             onpress: async () => {
                                 if (el.advancedNumber + size > 20)
-                                    return player.notify(`В баке недостаточно места`);
+                                    return player.notify(`Es ist nicht genug Platz im Tank`);
 
                                 inventory.deleteItemsById(player, item.item_id, 1);
                                 el.advancedNumber = el.advancedNumber + size;

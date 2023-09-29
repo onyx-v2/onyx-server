@@ -12,7 +12,7 @@ function openSupplyWarMenu(player: PlayerMp, item: ISupplyWarCreate) {
 
         _menu.newItem({
             type: 'range',
-            name: 'Кол-во машин для погрузки',
+            name: 'Anzahl der Maschinen zum Beladen',
             rangeselect: [1, 100],
             listSelected: item.maxVehiclesLoad,
             onchange: (value) => {
@@ -21,10 +21,10 @@ function openSupplyWarMenu(player: PlayerMp, item: ISupplyWarCreate) {
         });
 
         _menu.newItem({
-            name: 'Предметы',
-            more: item.items ? item.items : '~r~Необходимо указать',
+            name: 'Themen',
+            more: item.items ? item.items : '~r~Du musst angeben',
             onpress: async () => {
-                const newItems = await menu.input(player, 'Предметы', item.items, 150, 'text');
+                const newItems = await menu.input(player, 'Themen', item.items, 150, 'text');
                 if (newItems) {
                     item.items = newItems;
                 }
@@ -34,8 +34,8 @@ function openSupplyWarMenu(player: PlayerMp, item: ISupplyWarCreate) {
         });
 
         _menu.newItem({
-            name: "Точка войны за снабжение",
-            more: item.position && item.position.x ? "~g~Указано" : "~r~Можно указать",
+            name: "Kriegspunkt versorgen",
+            more: item.position && item.position.x ? "~g~Angegeben" : "~r~Du kannst angeben",
             onpress: () => {
                 if (item.position && item.position.x !== 0) {
                     item.position = new mp.Vector3(0, 0, 0)
@@ -51,7 +51,7 @@ function openSupplyWarMenu(player: PlayerMp, item: ISupplyWarCreate) {
             name: "~g~Создать",
             onpress: async () => {
                 if (!item.maxVehiclesLoad || !item.items || !item.position || item.position.x === 0) {
-                    player.notify('Необходимо указать все данные');
+                    player.notify('Alle Daten müssen bereitgestellt werden');
                     openSupplyWarMenu(player, item);
                     return;
                 }
@@ -73,10 +73,10 @@ function openSupplyWarMenu(player: PlayerMp, item: ISupplyWarCreate) {
                     })
 
                     war = new SupplyWar(item.position, item.maxVehiclesLoad, items);
-                    player.notify('Война за снабжение начата', 'success');
+                    player.notify('Der Krieg um Nachschub hat begonnen', 'success');
                 }
                 catch (e) {
-                    player.notify('Произошла ошибка в предметах', 'error');
+                    player.notify('Es gab einen Fehler bei den Themen', 'error');
                     console.log(`SupplyWar error (${player.user.id}): ${e}`);
                 }
 
@@ -85,13 +85,13 @@ function openSupplyWarMenu(player: PlayerMp, item: ISupplyWarCreate) {
         })
     } else {
         _menu.newItem({
-            name: "~r~Остановить",
+            name: "~r~Stopp",
             onpress: async () => {
-                if (!war) return player.notify('Произошла ошибка', 'error');
+                if (!war) return player.notify('Es ist ein Fehler aufgetreten', 'error');
                 war.destroy();
                 war = null;
                 _menu.close();
-                player.notify('Война за снабжение остановлена', 'success');
+                player.notify('Der Versorgungskrieg wurde gestoppt', 'success');
             }
         })
     }

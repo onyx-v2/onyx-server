@@ -20,7 +20,7 @@ export default class FarmActivityUi {
         player.user.setGui('farm')
         CustomEvent.triggerCef(player, 'farm:setComponent', 'statistic')
         CustomEvent.triggerCef(player, 'farm:stats:open',
-            ownerUser?.rp_name ?? 'Государство',
+            ownerUser?.rp_name ?? 'Staat',
             ownerUser?.farmerExp ?? 0,
             this._activity.name,
             player.farmWorker.totalEarned,
@@ -36,7 +36,7 @@ export default class FarmActivityUi {
         CustomEvent.triggerCef(player, 'farm:entrance:worker',
             getEntranceWorkerComponentByType(this._activity.type),
             this._activity.id,
-            ownerUser?.rp_name ?? 'Государство',
+            ownerUser?.rp_name ?? 'Staat',
             this._activity.rentedAt,
             SALARY_PER_ACTION,
             getFarmerLevelByExp(player.user.entity.farmerExp))

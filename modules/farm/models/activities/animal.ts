@@ -61,7 +61,7 @@ export class Animal extends BaseActivity {
 
     private async suggestFeed(player: PlayerMp): Promise<ItemEntity> {
         return new Promise(async (resolve, reject) => {
-            const m = menu.new(player, '', 'Выберите корм');
+            const m = menu.new(player, '', 'Wähle ein Futter');
             m.sprite = 'farm'
             m.onclose = () => {
                 resolve(null)
@@ -86,14 +86,14 @@ export class Animal extends BaseActivity {
     public async onPlayerEnterWorkPoint(player: PlayerMp, id: number): Promise<void> {
         const animal = this._animals.find(a => a.id == id)
         if (!animal || animal.state == FarmAnimalState.Idle) 
-            return player.notify('Животное не готово', 'error')
+            return player.notify('Das Tier ist nicht bereit', 'error')
         
         switch (animal.state) {
             case FarmAnimalState.Feed:
                 const feed = await this.suggestFeed(player)
                 if (!feed) return
                 
-                const gameCompleted = await player.user.waitTimer(1, 5, `Используем ${inventoryShared.get(feed.item_id).name.toLowerCase()}`, ["anim@heists@money_grab@duffel", "loop", true])
+                const gameCompleted = await player.user.waitTimer(1, 5, `Verwenden wir ${inventoryShared.get(feed.item_id).name.toLowerCase()}`, ["anim@heists@money_grab@duffel", "loop", true])
                 
                 if (!gameCompleted) return
 

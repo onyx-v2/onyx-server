@@ -41,11 +41,11 @@ export class FireStation {
         mp.blips.new(STATION_BLIP, parameters.EmployerNpc.Position, {
             color: STATION_BLIP_COLOR,
             shortRange: true,
-            name: 'Пожарная станция'
+            name: 'Feuerwache'
         });
 
         parameters.WaterSpotPositions.forEach(waterSpotPosition => {
-            new ScaleformTextMp(waterSpotPosition, 'Выдача огнетушительной смеси', {
+            new ScaleformTextMp(waterSpotPosition, 'Ausgabe von Feuerlöschgemischen', {
                 range: 20
             });
         });
@@ -71,12 +71,12 @@ export class FireStation {
         }
 
         if (player.user.level < MINIMAL_LEVEL) {
-            player.notify(`Для работы пожарником требуется ${MINIMAL_LEVEL} уровень`, 'error');
+            player.notify(`Der Beruf des Feuerwehrmanns/der Feuerwehrfrau erfordert ${MINIMAL_LEVEL} Level`, 'error');
             return;
         }
 
         if (!player.user.bank_have) {
-            player.notify(`Для работы вам необходимо иметь банковский счет`, 'error');
+            player.notify(`Du musst ein Bankkonto haben, um arbeiten zu können`, 'error');
             return;
         }
 
@@ -95,12 +95,12 @@ export class FireStation {
         vehicle.setColorRGB(FIRETRUCK_COLOR.r, FIRETRUCK_COLOR.g, FIRETRUCK_COLOR.b, 0, 0, 0);
 
         const squad = new FireSquad(players, vehicle);
-        squad.notify('Добро пожаловать на службу. Заполните служебный транспорт огнетушительной смесью, а после ожидайте поступления вызова');
+        squad.notify('Willkommen zum Dienst. Fülle das Servicefahrzeug mit Feuerlöschmittel und warte dann auf den Anruf');
     }
 }
 
 function openLeaveSquadMenu(player: PlayerMp) {
-    menu.accept(player, 'Вы хотите выйти из текущего отряда?')
+    menu.accept(player, 'Willst du aus dem aktuellen Kader aussteigen?')
         .then(result => {
             if (!mp.players.exists(player) || !player.user || !player.user.fireSquad) {
                 return;
@@ -113,7 +113,7 @@ function openLeaveSquadMenu(player: PlayerMp) {
             const squad = getFireSquad(player.user.fireSquad);
             squad.kickPlayer(player);
 
-            player.notify('Вы покинули отряд пожарников');
+            player.notify('Du hast den Feuerwehrdienst verlassen');
         });
 }
 

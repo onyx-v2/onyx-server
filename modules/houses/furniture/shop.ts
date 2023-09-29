@@ -30,7 +30,7 @@ mp.blips.new(
         color: FURNITURE_SHOP_BLIP_COLOR,
         shortRange: true,
         dimension: 0,
-        name: 'Магазин мебели'
+        name: 'Möbelgeschäft'
     }
 )
 

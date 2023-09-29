@@ -70,7 +70,7 @@ export class IslandBattle {
                 player.user && player.user.fraction && this.getAvailableFractionsList().includes(player.user.fraction))
                 .forEach(p => {
                     p.notify(
-                        `До начала битвы осталось ${TICKS_FOR_BATTLE_START - this.ticks}, поторопись!`,
+                        `Wir haben noch Zeit, bis die Schlacht beginnt ${TICKS_FOR_BATTLE_START - this.ticks}, beeil dich!`,
                         'info',
                         ISLAND_BATTLE_NOTIFY_IMAGE
                     );
@@ -94,21 +94,21 @@ export class IslandBattle {
             this.fractions.forEach((fraction, key) => {
                 fraction.finishBattle(
                     key === winner[0] ?
-                        'Поздравляем! Твоя команда выиграла эту войну'
+                        'Herzlichen Glückwunsch! Dein Team hat den Krieg gewonnen'
                         :
-                        'К сожалению, твоя команда проиграла эту войну');
+                        'Leider hat dein Team diesen Krieg verloren.');
             })
         } else {
             this.fractions.forEach((fraction, key) => {
                 if (winner.includes(fraction.config.id)) return;
-                fraction.finishBattle('К сожалению, твоя команда проиграла эту войну');
+                fraction.finishBattle('Leider hat dein Team diesen Krieg verloren.');
                 this.fractions.delete(key);
             })
 
             this.state = ISLAND_BATTLE_STATE.EXTRA;
             this.ticks = 0;
 
-            this.battleNotify('Мы не смогли найти победителя, война продолжается!', 'info');
+            this.battleNotify('Wir konnten keinen Gewinner finden, der Krieg geht weiter!', 'info');
         }
     }
 
@@ -195,7 +195,7 @@ export class IslandBattle {
             CustomEvent.triggerCef(player, 'islandBattle:updateStatus', dto);
         })
 
-        this.battleNotify(`${cfg.fullName} захватили точку ${id}`, 'info');
+        this.battleNotify(`${cfg.fullName} hat den Punkt erfasst ${id}`, 'info');
     }
 
     public onPointInteract = (fractionId: number, id: number) => {
@@ -203,7 +203,7 @@ export class IslandBattle {
 
         if (!cfg) return;
 
-        this.battleNotify(`${cfg.fullName} начали захват точки ${id}`, 'warning');
+        this.battleNotify(`${cfg.fullName} aufs Ganze gehen ${id}`, 'warning');
     }
 
     private startBattle() {
@@ -266,7 +266,7 @@ export class IslandBattle {
     }
 
     protected notifyPlayer(player: PlayerMp) {
-        player.notify('Скоро начнётся битва за остров, лови метку и направляйся на подготовку!',
+        player.notify('Der Kampf um die Insel beginnt, schnapp dir den Tag und mach dich auf den Weg!',
             'info', ISLAND_BATTLE_NOTIFY_IMAGE);
 
         const cfg = this.getCommandConfigById(player.user.fraction);

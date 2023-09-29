@@ -49,7 +49,7 @@ export class FireSquad {
         this.notify(`${player.user.name} покинул отряд`);
 
         if (this.players.length < MIN_PLAYERS_IN_SQUAD) {
-            this.notify('Отряд был распущен из-за недостаточного количества игроков', 'warning');
+            this.notify('Die Mannschaft wurde wegen Spielermangels aufgelöst', 'warning');
             this.disband();
         }
     }
@@ -67,14 +67,14 @@ export class FireSquad {
             CustomEvent.triggerClient(player, 'firefighter:setBlip', firespot.position);
         });
 
-        this.notify('Поступило новое сообщение о возгорании. Поскорее отправляйтесь на место', 'warning');
+        this.notify('Es gibt eine neue Meldung über ein Feuer. Komm so schnell wie möglich zum Einsatzort', 'warning');
     }
 
     public endExtinguishingTask(rewardPerPlayer: number) {
         this.players.forEach(player => {
             mp.events.call(JOB_TASK_MANAGER_EVENT, player, 'firefighter')
             player.user.addBankMoney(rewardPerPlayer, true,
-                `Выплата за выезд ${rewardPerPlayer}$`, 'Пожарный департамент LS.');
+                `Zahlung bei der Abreise ${rewardPerPlayer}$`, 'LS Feuerwehr.');
             CustomEvent.triggerClient(player, 'firefighter:deleteBlip');
         });
 

@@ -29,7 +29,7 @@ function CreateWorkVehicle(player: PlayerMp, type: number) {
 }
 
 CustomEvent.registerCef('busman:startWork', (player, type: number) => {
-    if (!player.user.haveActiveLicense("truck")) return player.notify("У вас отсутствует действующая лицензия на грузовой транспорт");
+    if (!player.user.haveActiveLicense("truck")) return player.notify("Du hast keinen gültigen Lkw-Führerschein");
 
     player.user.setJobDress(player.user.male ? DRESS_CONFIG_MALE : DRESS_CONFIG_FEMALE);
 
@@ -69,7 +69,7 @@ CustomEvent.registerClient('busman:salary', (player, index) => {
         amount = 500
     }
 
-    player.user.addMoney(amount, false, "Заработал за остановку на автобуснике");
+    player.user.addMoney(amount, false, "Verdient für das Anhalten an der Bushaltestelle");
     mp.events.call(JOB_TASK_MANAGER_EVENT, player, 'bus');
 });
 
@@ -88,7 +88,7 @@ mp.events.add('vehicleDeath', (vehicle) => {
     if (!player) return;
     player.user.setJobDress(null);
     CustomEvent.triggerClient(player, 'busman:finishWork');
-    player.notify('Ваш транспорт был уничтожен - рабочий день окончен!');
+    player.notify('Dein Transportmittel wurde zerstört - der Arbeitstag ist vorbei!');
 })
 
 

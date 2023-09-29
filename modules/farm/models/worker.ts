@@ -26,7 +26,7 @@ export class FarmWorker {
     
     public addSalary(cashToAdd: number): void {
         if (this.activity.capital <= 0)
-            return this.player.notify('У фермы нет денег чтобы платить вам зарплату', 'warning')
+            return this.player.notify('Der Betrieb hat nicht das Geld, um deinen Lohn zu zahlen.', 'warning')
 
         this.activity.capital -= cashToAdd
         this._totalEarned += cashToAdd

@@ -61,16 +61,16 @@ export class SupplyWar implements ISupplyWar {
         this.fractions.forEach(el => {
             const shape = colshapes.new(
                 el.position,
-                'Выгрузка',
+                'Entladen',
                 (player: PlayerMp) => {
                     if (!player.vehicle)
-                        return player.notify('Необходимо быть в машине', 'error');
+                        return player.notify('Du musst im Auto sein', 'error');
 
                     if (!player.vehicle.fraction || player.vehicle.fraction !== el.id)
-                        return player.notify('Вы не можете здесь разгрузить данный автомобиль', 'error');
+                        return player.notify('Du kannst dieses Fahrzeug hier nicht abladen', 'error');
 
                     if (!player.vehicle.supplyWarCargo)
-                        return player.notify('В машине отсутствует груз', 'error');
+                        return player.notify('Es ist keine Ladung im Auto', 'error');
 
                     const cargo = [...player.vehicle.supplyWarCargo],
                         chest = fractionChest.getByFraction(el.id);
@@ -83,7 +83,7 @@ export class SupplyWar implements ISupplyWar {
                     })
 
                     player.vehicle.supplyWarCargo = undefined;
-                    player.notify('Вы успешно выгрузили автомобиль', 'success');
+                    player.notify('Du hast das Fahrzeug erfolgreich entladen', 'success');
                 },
                 SUPPLY_WAR_INTERACTION_OPTIONS
             )
@@ -97,19 +97,19 @@ export class SupplyWar implements ISupplyWar {
         if (!player.user) return;
 
         if (!player.vehicle)
-            return player.notify('Необходимо быть в машине', 'error');
+            return player.notify('Du musst im Auto sein', 'error');
 
         if (this.vehiclesLoaded >= this.maxVehiclesLoad)
-            return player.notify('Грузов не осталось', 'warning');
+            return player.notify('Es gibt keine Ladung mehr', 'warning');
 
         if (!player.vehicle.fraction || this.fractions.find(el => player.vehicle.fraction === el.id) === undefined)
-            return player.notify('Неподходящий транспорт для погрузки', 'error');
+            return player.notify('Ungeeigneter Transport für die Verladung', 'error');
 
         if (!player.vehicle.modelname || this._allowVehicleModels.find(el => player.vehicle.modelname === el) === undefined)
-            return player.notify('Неподходящий транспорт для погрузки', 'error');
+            return player.notify('Ungeeigneter Transport für die Verladung', 'error');
 
         if (player.vehicle.supplyWarCargo)
-            return player.notify('У вас уже имеется груз', 'error');
+            return player.notify('Du hast bereits eine Ladung', 'error');
 
         CustomEvent.triggerClient(player, 'supplyWar:startLoading', player.vehicle.id);
     }
@@ -118,10 +118,10 @@ export class SupplyWar implements ISupplyWar {
         if (!player.user) return;
 
         if (!player.vehicle)
-            return player.notify('Вы покинули автомобиль', 'error');
+            return player.notify('Du hast das Fahrzeug verlassen', 'error');
 
         if (this.vehiclesLoaded >= this.maxVehiclesLoad)
-            return player.notify('Грузов не осталось', 'warning');
+            return player.notify('Es gibt keine Ladung mehr', 'warning');
 
         if (player.vehicle.id !== vehId) return player.notify("Погрузка не удалась");
 

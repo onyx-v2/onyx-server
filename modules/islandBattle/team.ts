@@ -57,11 +57,11 @@ export class Team {
         if (player.vehicle) return player.notify('Выйдите из авто', 'error');
 
         if (this.players.size >= ISLAND_BATTLE_MAX_COMMAND_PLAYERS)
-            return player.notify('К сожалению мест не осталось, попробуй подойти позже', 'error',
+            return player.notify('Leider gibt es keine Sitzplätze mehr, versuch später wiederzukommen.', 'error',
                 ISLAND_BATTLE_NOTIFY_IMAGE);
 
         this.players.set(player.user.id, player);
-        player.notify('Отлично, ты включен в список участников битвы за остров', 'success',
+        player.notify('Toll, du stehst auf der Liste für die Schlacht um die Insel.', 'success',
             ISLAND_BATTLE_NOTIFY_IMAGE);
     }
 
@@ -71,7 +71,7 @@ export class Team {
         if (!this.players.has(player.user.id)) return;
 
         this.players.delete(player.user.id);
-        player.notify('Ты покинул место сбора, возвращайся, если конечно ещё останется место для тебя',
+        player.notify('Du hast den Treffpunkt verlassen, komm zurück, wenn noch Platz für dich ist.',
             'warning', ISLAND_BATTLE_NOTIFY_IMAGE);
     }
 
@@ -88,7 +88,7 @@ export class Team {
             CustomEvent.triggerCef(player, 'islandBattle:setData', time, dto);
         })
 
-        this.notifyPlayers('Битва за остров началась. Желаю удачи тебе!');
+        this.notifyPlayers('Der Kampf um die Insel hat begonnen. Viel Glück für dich!');
 
         mp.events.remove("playerEnterColshape", this.enterShapeHandler);
         mp.events.remove("playerExitColshape", this.leaveShapeHandler);

@@ -38,7 +38,7 @@ export const FIRE_STATIONS: FireStationParameters[] = [
             Position: new mp.Vector3(-373.68, 6117.71, 31.67),
             Heading: 97,
             Model: 's_m_y_fireman_01',
-            Name: 'Начальник станции'
+            Name: 'Stationsleiter'
         },
         VehiclesSpawns: [
             { Position: new mp.Vector3(-372.41, 6129.86, 31.48), Heading: 40 },

@@ -52,7 +52,7 @@ export class SanitationSquad {
         this.vehicle.setColorRGB(0, 0, 0, 0, 0, 0);
         this.vehicle.numberPlate = "TRASH";
         this.vehicle.trashBags = 0;
-        if (this.password) player.outputChatBox(`Пароль от сессии: ${this.password}`);
+        if (this.password) player.outputChatBox(`Sitzungspasswort: ${this.password}`);
     }
 
     public addPlayer(player: PlayerMp) {
@@ -145,17 +145,17 @@ export class SanitationSquad {
                 this.players.forEach(target => {
                     if (!target.user) return;
 
-                    target.user.addMoney(400, true, 'Заработал в сессии мусоровоза');
+                    target.user.addMoney(400, true, 'Arbeitete in der Müllabfuhr-Session');
                 })
             }
 
             this.syncSquad();
         }else{
             if (!player.vehicle)
-                return player.notify('Вы не находитесь в машине', 'error');
+                return player.notify('Du bist nicht im Auto', 'error');
 
             if (!player.vehicle.getVariable('sanitation') || player.vehicle.getVariable('sanitation') !== this.id)
-                return player.notify('Эта машина не принадлежит вашей сессии', 'error');
+                return player.notify('Diese Maschine gehört nicht zu deiner Sitzung', 'error');
 
             player.vehicle.trashBags = 0;
             this.task.completed = true;

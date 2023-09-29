@@ -23,6 +23,6 @@ export class NpcSeller implements ISeller {
     }
 
     public callToTent(caller: PlayerMp): void {
-        caller.notify('В данный момент владелец лавки не может подойти к ней');
+        caller.notify('Im Moment kann der Ladenbesitzer nicht in die Nähe davon gehen');
     }
 }

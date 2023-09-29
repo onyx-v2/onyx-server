@@ -50,7 +50,7 @@ export default class Farm {
     private static createBestFarmerTable(spot: IBestFarmerSpot): void {
         colshapes.new(
             system.getVector3Mp(spot.pos),
-            'Лучшие фермеры', 
+            'Beste Bauern und Bäuerinnen', 
                 player => {
                     player.user.setGui('farm')
                     CustomEvent.triggerCef(player, 'farm:setComponent', 'best')

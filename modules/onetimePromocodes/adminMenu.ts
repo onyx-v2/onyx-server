@@ -8,7 +8,7 @@ export function openPromocodesAdminMenu(player: PlayerMp) {
     const _menu = new MenuClass(player, 'Одноразовые промокоды');
 
     _menu.newItem({
-        name: '~o~Создать новый',
+        name: '~o~Erstellen Sie eine neue',
         onpress: () => {
             openCreatePromocodeMenu(player);
         }
@@ -17,9 +17,9 @@ export function openPromocodesAdminMenu(player: PlayerMp) {
     promocodes1x.getAll().forEach(promocode => {
         _menu.newItem({
             name: (promocode.expiredAt > system.timestamp ? '~g~' : '~r~') + promocode.name,
-            desc: 'Нажмите, чтобы удалить',
+            desc: 'Zum Löschen klicken',
             onpress: async () => {
-                const isConfirmed = await menu.accept(player, `Вы уверены, что хотите удалить промокод ${promocode.name}`)
+                const isConfirmed = await menu.accept(player, `Bist du sicher, dass du den Promo-Code entfernen möchtest? ${promocode.name}`)
                 if (isConfirmed) {
                     promocodes1x.delete(promocode.id);
                 }
@@ -33,13 +33,13 @@ export function openPromocodesAdminMenu(player: PlayerMp) {
 }
 
 function openCreatePromocodeMenu(player: PlayerMp, name?: string, hours: number = 1, bonuses: BonusData[] = []) {
-    const _menu = new MenuClass(player, 'Создание промокода');
+    const _menu = new MenuClass(player, 'Einen Promo-Code erstellen');
 
     _menu.newItem({
-        name: 'Название',
-        more: name ? name : '~r~Необходимо указать',
+        name: 'Titel',
+        more: name ? name : '~r~Es ist notwendig, Folgendes anzugeben',
         onpress: async () => {
-            const newName = await menu.input(player, 'Название промокода', name, 15, 'text');
+            const newName = await menu.input(player, 'Promo Code Name', name, 15, 'text');
             if (newName) {
                 name = newName;
             }
@@ -59,7 +59,7 @@ function openCreatePromocodeMenu(player: PlayerMp, name?: string, hours: number 
     });
 
     _menu.newItem({
-        name: 'Список бонусов',
+        name: 'Liste der Boni',
         onpress: () => {
             openBonusListMenu(player, bonuses, () => {
                 openCreatePromocodeMenu(player, name, hours, bonuses);
@@ -74,7 +74,7 @@ function openCreatePromocodeMenu(player: PlayerMp, name?: string, hours: number 
 
             const error = await promocodes1x.create(name, hours, bonuses);
 
-            writeSpecialLog(`Создал одноразовый промокод - ${name}`, player, 0);
+            writeSpecialLog(`Ich habe einen einmaligen Promo-Code erstellt - ${name}`, player, 0);
 
             if (error) {
                 player.notify(error, 'error');
@@ -90,11 +90,11 @@ function openCreatePromocodeMenu(player: PlayerMp, name?: string, hours: number 
 }
 
 function openBonusListMenu(player: PlayerMp, bonuses: BonusData[], onClose: () => void) {
-    const _menu = new MenuClass(player, 'Список бонусов промокода');
+    const _menu = new MenuClass(player, 'Liste der Promo Code Boni');
     _menu.onclose = onClose;
 
     _menu.newItem({
-        name: '~g~Добавить новый',
+        name: '~g~Eine neue hinzufügen',
         onpress: () => {
             openCreateBonusMenu(player,
                 (bonus) => {
@@ -110,7 +110,7 @@ function openBonusListMenu(player: PlayerMp, bonuses: BonusData[], onClose: () =
     bonuses.forEach((bonus, index) => {
         _menu.newItem({
             name: promocodeBonuses.types.find(element => element.type === bonus.type).name,
-            desc: 'Нажмите, чтобы удалить',
+            desc: 'Zum Löschen klicken',
             onpress: () => {
                 bonuses.splice(index, 1);
                 openBonusListMenu(player, bonuses, onClose);
@@ -128,12 +128,12 @@ function openCreateBonusMenu(
     selectedType: number = 0,
     data: any = { }
 ) {
-    const _menu = new MenuClass(player, 'Добавление бонуса к промокоду');
+    const _menu = new MenuClass(player, 'Hinzufügen eines Bonus zu einem Promo-Code');
     _menu.onclose = onClose;
 
     _menu.newItem({
         type: 'list',
-        name: '~y~Тип',
+        name: '~y~Typ',
         list: promocodeBonuses.types.map(element => element.name),
         listSelected: selectedType,
         onchange: (value) => {
@@ -147,7 +147,7 @@ function openCreateBonusMenu(
     });
 
     _menu.newItem({
-        name: '~g~Добавить',
+        name: '~g~hinzufügen',
         onpress: () => {
             addBonus({ type: promocodeBonuses.types[selectedType].type, data });
             onClose();

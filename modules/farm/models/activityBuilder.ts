@@ -21,12 +21,12 @@ export default class ActivityBuilder {
         const ped = system.createPed(system.getVector3Mp(spot.pedPos[0]), spot.pedPos[1], activity.settings.managerPedHash)
 
         colshapes.new(system.getVector3Mp(spot.pedPos[0]).subtract(new mp.Vector3(0, 0, 1)),
-            'Устроиться на работу',
+            'Finde einen Job',
             player => activity.onPlayerInteractedWithPed(player),
             { type: -1, onEnterHandler: _ => ped.setVariable('pedHi', 1)}
         )
         colshapes.new(system.getVector3Mp(spot.storagePos),
-            'Склад',
+            'Zusammensetzung',
             player => activity.onPlayerInteractedWithStock(player),
             { type: 1, radius: 0.8 }
         )

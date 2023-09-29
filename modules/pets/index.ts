@@ -23,7 +23,7 @@ class PetController {
                 return
             
             if (this.pets.find(p => p.data.controllerId == player.id))
-                return player.user.notify('Вы уже управляете другой собакой')
+                return player.user.notify('Du hast bereits die Kontrolle über einen anderen Hund')
 
             this.createPet(player, {
                 controllerId: player.id,

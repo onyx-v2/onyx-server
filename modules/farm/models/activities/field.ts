@@ -70,13 +70,13 @@ export class Field extends BaseActivity {
     private startNextStage(): void {
         switch (this.currentStage.type) {
             case FieldStage.Cultivation:
-                this.startStage(FieldStage.Landing, 'Поле готово к посадке растений')
+                this.startStage(FieldStage.Landing, 'Das Feld ist bereit für die Bepflanzung')
                 break;
             case FieldStage.Landing:
-                this.startStage(FieldStage.Collection, 'Соберите растения')
+                this.startStage(FieldStage.Collection, 'Sammle die Pflanzen')
                 break;
             case FieldStage.Collection:
-                this.startStage(FieldStage.Cultivation, 'Поле нуждается в культивации')
+                this.startStage(FieldStage.Cultivation, 'Das Feld muss bestellt werden')
                 break;
         }
         this.points.forEach(p => p.processed = false)
