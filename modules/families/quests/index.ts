@@ -54,9 +54,9 @@ mp.events.add("playerEnterVehicle", (player: PlayerMp, vehicle: VehicleMp, seat:
     if(seat) return;
     if(!vehicle.familyQuest || !player.user || !player.user.family) return;
     if(!Vehicle.getInventory(vehicle).find(i => i.item_id == 864)) return;
-    if(vehicle.familyQuestFamilyID && vehicle.familyQuestFamilyID != player.user.family.id) return player.notify('В машине лежит семейный груз, не принадлежащий Вашей семье');
+    if(vehicle.familyQuestFamilyID && vehicle.familyQuestFamilyID != player.user.family.id) return player.notify('Es befindet sich eine Familienladung im Auto, die nicht zu deiner Familie gehört');
     CustomEvent.triggerClient(player, 'family:quest:setBlip', vehicle.familyQuest.importCoords[0])
-    player.notify('В машине лежит семейный груз. Метка разгрузки указана на карте.')
+    player.notify('Das Auto ist mit einer Familie beladen. Die Entladestelle ist auf der Karte eingezeichnet.')
 })
 
 
@@ -68,7 +68,7 @@ const OnQuestObjectSetOwner = (id:number, newOwnerType:OWNER_TYPES, newOwnerID:n
         if ((newOwnerType == OWNER_TYPES.VEHICLE || newOwnerType == OWNER_TYPES.VEHICLE_TEMP || newOwnerType == OWNER_TYPES.FRACTION_VEHICLE) && (oldOwnerType == OWNER_TYPES.PLAYER)) {
             if(takingAnim) return;
             const player = User.get(oldOwnerID)
-            player.notify('Вы переложили коробку в автомобиль', 'success')
+            player.notify('Du hast die Kiste ins Auto gebracht', 'success')
             findAndDeleteQuestBox(player, true)
         }
         if ((oldOwnerType == OWNER_TYPES.VEHICLE || oldOwnerType == OWNER_TYPES.VEHICLE_TEMP || oldOwnerType == OWNER_TYPES.FRACTION_VEHICLE) && (newOwnerType == OWNER_TYPES.PLAYER)) {
@@ -78,15 +78,15 @@ const OnQuestObjectSetOwner = (id:number, newOwnerType:OWNER_TYPES, newOwnerID:n
             if(oldOwnerType == OWNER_TYPES.VEHICLE) veh = Vehicle.get(oldOwnerID) ? Vehicle.get(oldOwnerID).vehicle : null
             if(oldOwnerType == OWNER_TYPES.VEHICLE_TEMP) veh = Vehicle.getByTmpId(oldOwnerID);
             if(oldOwnerType ==  OWNER_TYPES.FRACTION_VEHICLE) veh = Vehicle.getByCarageCarId(oldOwnerID) || null
-            if(!veh || !veh.familyQuest) return player.notify('Произошла ошибка. Обратитесь к Администрации сервера');
+            if(!veh || !veh.familyQuest) return player.notify('Es ist ein Fehler aufgetreten. Kontaktiere die Server-Administration');
             player.user.familyCargoType = FamilyTasks.findIndex(ft => ft.name == veh.familyQuest.name && ft.type == veh.familyQuest.type && ft.desc == veh.familyQuest.desc)
             takingAnim = true
-            player.user.playAnimationWithResult(["anim@heists@box_carry@", "idle"], 1, 'Получаем коробку', player.heading).then(status => {
+            player.user.playAnimationWithResult(["anim@heists@box_carry@", "idle"], 1, 'Die Box bekommen', player.heading).then(status => {
                 takingAnim = false
                 if(!status) return;
                 if(!mp.players.exists(player)) return;
                 if(!player.user.haveItem(864)) return;
-                player.notify(`Вы взяли коробку из автомобиля. Задание: ${veh.familyQuest.name}`, 'success')
+                player.notify(`Du hast die Kiste aus dem Auto genommen. Aufgabe: ${veh.familyQuest.name}`, 'success')
                 giveFamilyQuestCargo(player)
             })
         }

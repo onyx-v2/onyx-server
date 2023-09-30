@@ -54,22 +54,22 @@ export class PokerGameLobby {
 
     public async addPlayer(player: PlayerMp): Promise<void> {
         if (player.user.chips < this._game.settings.smallBlind * 2) {
-            return player.notify('Недостаточно фишек для игры. Приобрести можно в казино', 'warning')
+            return player.notify('Nicht genug Chips, um das Spiel zu spielen. Du kannst welche im Casino kaufen', 'warning')
         }
 
         const response = await menu.input(
             player,
-            `Укажите число фишек, которые вы возьмете за стол (макс. ${player.user.chips})`,
+            `Gib die Anzahl der Chips an, die du mit an den Tisch nehmen willst (max. ${player.user.chips})`,
             0,
             this._game.settings.smallBlind * 2,
             'int'
         )
 
         if (isNaN(response) || response < 0 || response > 10 * this._game.settings.smallBlind * 2) {
-            return player.notify('Ошибка ввода', 'warning')
+            return player.notify('Eingabefehler', 'warning')
         }
 
-        player.user.removeChips(response, false, 'Игра за покерным столом')
+        player.user.removeChips(response, false, 'Spielen am Pokertisch')
 
         const pokerPlayer = new PokerPlayer(player, response)
         if (this._game.started) {
@@ -88,7 +88,7 @@ export class PokerGameLobby {
         const removedPokerPlayer = this._players.splice(this._players.findIndex(p => p.player == player), 1)
         if (!removedPokerPlayer?.length) return
 
-        player.user.addChips(removedPokerPlayer[0].balance, false, 'Покинул покерный стол с выигрышем')
+        player.user.addChips(removedPokerPlayer[0].balance, false, 'Verließ den Pokertisch mit den Gewinnen.')
         await saveEntity(player.user.entity)
 
         this.players.map(p => CustomEvent.triggerCef(p.player, 'poker:removePlayer', removedPokerPlayer[0].getDto()))

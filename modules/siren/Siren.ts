@@ -27,10 +27,10 @@ export class Siren {
 
         this.remote = colshapes.new(
             this.config.remote,
-            "Пульт управления тревожной сирены",
+            "Alarmsirenen-Bedienfeld",
             (player: PlayerMp) => {
                 if (!player.user || !this.config.fractionIds.includes(player.user.fraction))
-                    return player.notify("Нет доступа");
+                    return player.notify("Kein Zugang");
                 this.openSirenMenu(player)
             }
         )
@@ -99,22 +99,22 @@ export class Siren {
     }
 
     private openSirenMenu = (player: PlayerMp) => {
-        const _menu = new MenuClass(player, 'Меню тревоги', this.config.name);
+        const _menu = new MenuClass(player, 'Menü Alarm', this.config.name);
 
 
         _menu.newItem({
-            name: this.active ? "~g~Выключить" : "~r~Включить",
-            desc: "Включение и выключение тревожной сирены",
+            name: this.active ? "~g~Ausschalten" : "~r~Aktiviere",
+            desc: "Einschalten und Ausschalten der Alarmsirene",
             onpress: () => {
                 if (!this.active && system.timestamp - this.lastStart < this.config.turnOnFrequency * 60)
-                    return player.notify(`Нельзя включать чаще, чем раз в ${this.config.turnOnFrequency} минут`, 'error');
+                    return player.notify(`Schalten Sie nicht mehr als einmal pro ${this.config.turnOnFrequency} Minuten`, 'error');
                 if (!this.active) {
                     this.lastStart = system.timestamp;
                     this.startInterval();
                     if (this.config.dispatchFractionIds) {
                         Dispatch.new(
                             this.config.dispatchFractionIds,
-                            `На объекте ${this.config.name} была включена сирена`,
+                            `Vor Ort ${this.config.name} die Sirene eingeschaltet wurde`,
                             {x: this.config.remote.x, y: this.config.remote.y}
                         );
                     }
@@ -126,17 +126,17 @@ export class Siren {
                     })
                 }
 
-                player.notify(`Сирена ${this.active ? "выключена" : "включена"} успешно`);
+                player.notify(`Sirene ${this.active ? "aus" : "an"} erfolgreich`);
                 this.active ? this.disable() : this.enable();
                 _menu.close();
             }
         })
 
         _menu.newItem({
-            name: "История включений",
-            desc: "Тут отображена история последних включений сирены",
+            name: "Geschichte der Inklusion",
+            desc: "Dies zeigt den Verlauf der letzten Sirenenaktivierungen an",
             onpress: () => {
-                const submenu = new MenuClass(player, 'История включений', this.config.name);
+                const submenu = new MenuClass(player, 'Geschichte der Inklusion', this.config.name);
 
                 this.history.forEach(el => {
                     submenu.newItem({

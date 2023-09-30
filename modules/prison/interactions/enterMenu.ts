@@ -8,31 +8,31 @@ import {fractionCfg} from "../../fractions/main";
 export function enterMenu() {
     colshapes.new(
         PRISON_ENTER_MENU_COORDS,
-        "Регистрация арестанта",
+        "Registrierung von Festgenommenen",
         (player: PlayerMp, index) => {
             const user = player.user;
             if (!user) return;
-            if (!user.is_police) return player.notify("Доступно только сотрудникам полиции", "error");
-            const m = menu.new(player, "База заключённых", "Регистрация арестанта");
+            if (!user.is_police) return player.notify("Nur für Polizeibeamte verfügbar", "error");
+            const m = menu.new(player, "Gefangenenbasis", "Registrierung von Festgenommenen");
 
             m.newItem({
-                name: "Список текущих заключённых",
+                name: "Liste der aktuellen Gefangenen",
                 onpress: () => {
                     const s = () => {
-                        const submenu = menu.new(player, "База заключённых", "Список текущих заключённых");
+                        const submenu = menu.new(player, "Gefangenenbasis", "Liste der aktuellen Gefangenen");
                         mp.players.toArray().filter(target => target.user && target.user.prison && !target.user.prison.byAdmin).map(target => {
                             submenu.newItem({
                                 name: `${target.user.name} (${target.user.id})`,
-                                more: target.user.prison.time > 120 ? `${Math.floor(target.user.prison.time / 60)} мин.` : `${target.user.prison.time} сек.`,
+                                more: target.user.prison.time > 120 ? `${Math.floor(target.user.prison.time / 60)} min.` : `${target.user.prison.time} sec.`,
                                 desc: `Причина: ${target.user.prison.reason}`,
                                 onpress: () => {
                                     if (player.user.id === target.user.id)
-                                        return player.notify("Вы не можете освободить самого себя", 'error');
-                                    menu.accept(player, "Вы хотите освободить заключённого?").then(status => {
+                                        return player.notify("Du kannst dich nicht befreien", 'error');
+                                    menu.accept(player, "ВDu willst den Gefangenen freilassen?").then(status => {
                                         if(!status) return s();
-                                        if(!mp.players.exists(target)) return player.notify("Игрок куда то пропал", "error");
-                                        target.user.writeRpHistory(`Был освобожден из тюрьмы [${fractionCfg.getFractionName(player.user.fraction)}-${player.user.id}], по причине ${target.user.prison.reason}`);
-                                        user.log('gosJob', `Освободил из тюремного заключения. Данные по предыдущему заключению - ${target.user.prison.time} секунд. Причина - ${target.user.prison.reason}`, target);
+                                        if(!mp.players.exists(target)) return player.notify("Ein Spieler ist verschwunden", "error");
+                                        target.user.writeRpHistory(`Er wurde aus dem Gefängnis entlassen [${fractionCfg.getFractionName(player.user.fraction)}-${player.user.id}], aufgrund von ${target.user.prison.reason}`);
+                                        user.log('gosJob', `Aus der Haft entlassen. Daten über frühere Inhaftierungen - ${target.user.prison.time} Sekunden. Grund - ${target.user.prison.reason}`, target);
                                         prison.unjail(player, target.user.id)
                                         s();
                                     })
@@ -47,21 +47,21 @@ export function enterMenu() {
             })
 
             m.newItem({
-                name: "Зарегистрировать арестанта",
+                name: "Einen Gefangenen registrieren",
                 onpress: async () => {
                     const target = await user.selectNearestPlayer(5)
                     if(!target) return;
-                    if (!target.user.cuffed) return player.notify("Арестант должен быть в наручниках", "error");
-                    if (!target.user.wanted_level) return player.notify("Арестант не подходит ни под одну из ориентировок", "error");
+                    if (!target.user.cuffed) return player.notify("Der Gefangene muss mit Handschellen gefesselt werden.", "error");
+                    if (!target.user.wanted_level) return player.notify("Der Gefangene passt in keines der Profile.", "error");
 
-                    menu.input(player, "Введите причину ареста", target.user.wanted_reason, 30).then(val => {
+                    menu.input(player, "Gib den Grund für die Verhaftung ein", target.user.wanted_reason, 30).then(val => {
                         if(!val) return;
-                        if(!mp.players.exists(target)) return player.notify("Арестант пропал", "error");
-                        if (!target.user.cuffed) return player.notify("Арестант должен быть в наручниках", "error");
-                        if (!target.user.wanted_level) return player.notify("Арестант не подходит ни под одну из ориентировок", "error");
+                        if(!mp.players.exists(target)) return player.notify("Der Gefangene ist verschwunden", "error");
+                        if (!target.user.cuffed) return player.notify("Der Gefangene muss mit Handschellen gefesselt werden.", "error");
+                        if (!target.user.wanted_level) return player.notify("Der Gefangene passt in keines der Profile.", "error");
 
                         prison.jail(player, target, target.user.wanted_level * PRISON_TIME_FOR_WANTED_LEVEL, val);
-                        player.notify("Арестант доставлен в тюрьму", "success")
+                        player.notify("Verhafteter wird ins Gefängnis gebracht", "success")
                     })
                 }
             })

@@ -36,7 +36,7 @@ async function payment() {
     if (!chest) return;
 
     chest.money = chest.money + WINNER_PAYMENT;
-    Logs.new(`money_${chest.id}`, `[Система]`, `Получено за ежедневный контроль острова ${WINNER_PAYMENT}$`);
+    Logs.new(`money_${chest.id}`, `[System]`, `Erhalten für die tägliche Überwachung der Insel ${WINNER_PAYMENT}$`);
 
     res[0].lastPayment = system.timestamp;
     res[0].save();

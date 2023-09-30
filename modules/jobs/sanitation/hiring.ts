@@ -34,7 +34,7 @@ new NpcSpawn(
 
 mp.blips.new(527, new mp.Vector3(2407.08, 3128.17, 48.18), {
     color: 31,
-    name: "Свалка",
+    name: "Abladen",
     dimension: 0,
     shortRange: true
 })

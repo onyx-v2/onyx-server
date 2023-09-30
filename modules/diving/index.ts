@@ -33,7 +33,7 @@ async function giveMap(player: PlayerMp) {
 
     await player.user.giveItem(randSlice);
 
-    player.user.log('diving', `Получил кусок карты (${randSlice})`);
+    player.user.log('diving', `Habe ein Stück der Karte (${randSlice})`);
 
     randMap.slices.map(el => {
         if (!player.user.haveItem(el)) haveAllSlices = false;
@@ -50,7 +50,7 @@ async function giveMap(player: PlayerMp) {
 
 CustomEvent.registerClient('diving:dive', (player) => {
     if (!player.user.haveItem(DIVING_COSTUME_ITEM_ID))
-        return player.notify('У вас отсутствует костюм для дайвинга');
+        return player.notify('Du trägst keinen Taucheranzug');
 
     player.user.setJobDress(player.user.male ? DRESS_CONFIG_MALE : DRESS_CONFIG_FEMALE);
     divers.set(player.user.id, true);
@@ -81,7 +81,7 @@ CustomEvent.registerClient('diving:reward', (player, isMapMission: boolean) => {
     player.user.haveDiverMission = false;
 
     const rewardItem: number = REWARDS[Math.floor(Math.random()*REWARDS.length)];
-    player.user.log('diving', `Нашёл на работе дайвера (${rewardItem})`);
+    player.user.log('diving', `Einen Taucher bei der Arbeit gefunden (${rewardItem})`);
     mp.events.call(JOB_TASK_MANAGER_EVENT, player, 'diving');
     player.user.giveItem(rewardItem, true);
     giveMap(player);
@@ -89,6 +89,6 @@ CustomEvent.registerClient('diving:reward', (player, isMapMission: boolean) => {
 
 CustomEvent.registerClient('diving:deleteMapItem', (player, item_id: number) => {
     inventory.deleteItemsById(player, item_id, 1);
-    player.notify('Карта активирована', 'success');
+    player.notify('Karte aktiviert', 'success');
 });
 

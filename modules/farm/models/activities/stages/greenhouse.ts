@@ -21,7 +21,7 @@ export class Landing implements IGreenhouseStage {
 
     private async suggestSelectSupply(player: PlayerMp): Promise<ItemEntity> {
         return new Promise(async (resolve, reject) => {
-            const m = menu.new(player, '', 'Выберите семена для посадки');
+            const m = menu.new(player, '', 'Samen für die Aussaat auswählen');
             m.sprite = 'farm'
             m.onclose = () => {
                 resolve(null)
@@ -50,7 +50,7 @@ export class Landing implements IGreenhouseStage {
 
         const gameTime = getLandingTime(player.farmWorker.level)
         CustomEvent.triggerCef(player, 'hud:farmJobStart', gameTime)
-        const gameCompleted = await player.user.waitTimer(1, gameTime, `Сажаем ${inventoryShared.get(inventoryItem.item_id).name.toLowerCase()}`, ["anim@heists@money_grab@duffel", "loop", true])
+        const gameCompleted = await player.user.waitTimer(1, gameTime, `Bepflanzung ${inventoryShared.get(inventoryItem.item_id).name.toLowerCase()}`, ["anim@heists@money_grab@duffel", "loop", true])
 
         if (!gameCompleted) {
             CustomEvent.triggerCef(player, 'hud:farmJobStop')

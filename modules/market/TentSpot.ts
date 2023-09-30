@@ -30,12 +30,12 @@ export class TentSpot {
 
     private createRentEntities() {
         const colshapePosition = new mp.Vector3(this.position.x, this.position.y, this.position.z - 0.95);
-        this.rentColshape = colshapes.new(colshapePosition, 'Арендовать палатку', this.rentTent.bind(this), {
+        this.rentColshape = colshapes.new(colshapePosition, 'Ein Zelt mieten', this.rentTent.bind(this), {
             type: 27,
             color: this.isBlackMarket ? [0, 0, 0, 200] : [33, 150, 243, 200]
         });
 
-        this.rentScaleform = new ScaleformTextMp(this.position, 'Аренда палатки');
+        this.rentScaleform = new ScaleformTextMp(this.position, 'Ein Zelt mieten');
     }
 
     private destroyRentEntities() {
@@ -50,7 +50,7 @@ export class TentSpot {
 
     private async rentTent(player: PlayerMp) {
         if (getPlayerTent(player)) {
-            return player.notify('У вас уже есть арендованная палатка', 'error');
+            return player.notify('Du hast bereits ein gemietetes Zelt', 'error');
         }
 
         // TODO: Выбор времени аренды (до 5 часов)
@@ -61,12 +61,12 @@ export class TentSpot {
             : rentTicksAmount * RENT_COMMON_TENT_COST + START_RENT_COMMON_TENT_COST;
 
         const isSellerNpc = await menu.accept(player,
-            'Хотите ли вы нанять продавца? Вы сможете покинуть рынок, но будете получать меньше прибыли',
-            'big', 30000, 'Нанять NPC', 'Продавать самому'
+            'Willst du einen Verkäufer einstellen? Du wirst den Markt verlassen können, aber du wirst weniger Gewinn machen',
+            'big', 30000, 'anheuern NPC', 'Verkaufe dich selbst'
         );
 
         const isPaymentSuccess = await player.user.tryPayment(rentCost, 'all',
-            () => this.tent === null, 'Оплата аренды палатки', 'Рынок');
+            () => this.tent === null, 'Zeltmiete', 'Рынок');
 
         if (!isPaymentSuccess) {
             return;
@@ -88,6 +88,6 @@ export class TentSpot {
             ? new BlackViewStrategy(this.tent)
             : new CommonViewStrategy(this.tent);
 
-        player.notify('Вы успешно арендовали палатку и можете начать торговать', 'success');
+        player.notify('Du hast erfolgreich ein Zelt gemietet und kannst mit dem Handel beginnen', 'success');
     }
 }

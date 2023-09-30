@@ -29,7 +29,7 @@ class TradeItemPlayerQuestStep extends QuestStep implements IQuestSavable {
 
     get hudDto(): QuestStepDto {
         return {
-            name: `При помощи функционального обмена передать ${getBaseItemNameById(this._item_id)}`,
+            name: `Mittels eines funktionalen Austauschs, der Übertragung ${getBaseItemNameById(this._item_id)}`,
             completed: this.isComplete,
             count: this._tradedCount,
             countGoal: this._goalCount

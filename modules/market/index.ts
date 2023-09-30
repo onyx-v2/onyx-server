@@ -29,10 +29,10 @@ MARKET_STOCKS.forEach(position => {
         color: MARKET_BLIP_COLOR,
         dimension: 0,
         shortRange: true,
-        name: 'Рынок'
+        name: 'Markt'
     });
 
-    colshapes.new(position, 'Склад рынка', openMarketStock, {
+    colshapes.new(position, 'Markt-Lagerhaus', openMarketStock, {
         type: 27,
         radius: MARKET_STOCK_RADIUS
     });

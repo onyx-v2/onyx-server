@@ -36,12 +36,12 @@ export class Point {
             {
                 color: 4,
                 dimension: ISLAND_BATTLE_DIMENSION,
-                name: `Точка ${this.id}`,
+                name: `Artikel ${this.id}`,
                 shortRange: true,
             }
         )
 
-        this.shape = colshapes.new(this.config.pos, `Захват точки - ${this.id}`, this.shapeHandler, {
+        this.shape = colshapes.new(this.config.pos, `Punktfang - ${this.id}`, this.shapeHandler, {
             dimension: ISLAND_BATTLE_DIMENSION,
             type: 1,
             color: [0, 0, 0, 125],
@@ -54,13 +54,13 @@ export class Point {
     private shapeHandler = (player: PlayerMp) => {
         if (!player.user || !player.user.fraction) return;
         if (this.owner === player.user.fraction) return player.notify(
-            'Данная точка уже под контролем вашей организации',
+            'Dieser Punkt unterliegt bereits der Kontrolle deiner Organisation',
             'error',
             ISLAND_BATTLE_NOTIFY_IMAGE
         );
 
         if (this.busy !== null)
-            return player.notify('Данную точку уже захватывает другой человек', 'error',
+            return player.notify('Dieser Punkt wird bereits von einer anderen Person übernommen', 'error',
                 ISLAND_BATTLE_NOTIFY_IMAGE);
 
         this.busy = player.user.id;

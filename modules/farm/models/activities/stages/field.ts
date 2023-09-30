@@ -21,7 +21,7 @@ export class Landing implements IFieldStage {
 
     private async suggestSelectSupply(player: PlayerMp): Promise<ItemEntity> {
         return new Promise(async (resolve, reject) => {
-            const m = menu.new(player, '', 'Выберите семена для посадки');
+            const m = menu.new(player, '', 'Samen für die Aussaat auswählen');
             m.sprite = 'farm'
             m.onclose = () => {
                 resolve(null)
@@ -31,7 +31,7 @@ export class Landing implements IFieldStage {
                 .map(s => s.inventoryItemId).includes(i.item_id))
                 .map(inventoryItem => {
                     m.newItem({
-                        name: `${inventoryShared.get(inventoryItem.item_id).name} (${inventoryItem.count} шт.)`,
+                        name: `${inventoryShared.get(inventoryItem.item_id).name} (${inventoryItem.count} Stück.)`,
                         type: 'select',
                         icon: `Item_${inventoryItem.item_id}`,
                         onpress: item => {
@@ -51,7 +51,7 @@ export class Landing implements IFieldStage {
 
         const gameTime = getLandingTime(player.farmWorker.level)
         CustomEvent.triggerCef(player, 'hud:farmJobStart', gameTime)
-        const gameCompleted = await player.user.waitTimer(1, gameTime, `Сажаем ${inventoryShared.get(inventoryItem.item_id).name.toLowerCase()}`, ["anim@heists@money_grab@duffel", "loop", true])
+        const gameCompleted = await player.user.waitTimer(1, gameTime, `Bepflanzung ${inventoryShared.get(inventoryItem.item_id).name.toLowerCase()}`, ["anim@heists@money_grab@duffel", "loop", true])
         
         if (!gameCompleted) {
             CustomEvent.triggerCef(player, 'hud:farmJobStop')

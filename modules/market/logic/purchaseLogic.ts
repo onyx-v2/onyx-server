@@ -16,7 +16,7 @@ CustomEvent.registerCef('market::purchase', async (player, tentId: number, itemI
         .find(entity => entity.itemId === itemId);
 
     if (!getItemAmountAvailable(marketItem, amount)) {
-        player.notify('Выбранного товара не осталось на складе', 'error')
+        player.notify('Der ausgewählte Artikel ist nicht auf Lager', 'error')
         await tent.openMarket(player);
         return;
     }
@@ -24,13 +24,13 @@ CustomEvent.registerCef('market::purchase', async (player, tentId: number, itemI
     const itemConfig = inventoryShared.get(marketItem.item.item_id);
     const isPlayerCanTakeItem = player.user.canTakeItem(itemConfig.item_id, amount, amount);
     if (!isPlayerCanTakeItem) {
-        return player.notify('Вы не можете вместить все предметы', 'error');
+        return player.notify('Du kannst nicht alle Artikel unterbringen', 'error');
     }
 
     const totalPrice = marketItem.price * amount;
     if (player.user.money < totalPrice || !player.user.removeMoney(totalPrice, true,
-        `Покупка предметов на рынке (${itemConfig.item_id} x${amount})`)) {
-        return player.notify('У вас недостаточно средств', 'error');
+        `Kauf von Artikeln auf dem Marktе (${itemConfig.item_id} x${amount})`)) {
+        return player.notify('Du hast nicht genug Geld', 'error');
     }
 
     tent.addMoney(totalPrice, marketItem.item, amount, player.user.name);

@@ -123,7 +123,7 @@ export class Family {
     this.fixRanks();
 
     this.familyChat = dialogSystem.createDialogFamily(
-      `Чат семьи ${this.name}`,
+      `Familien-Chat ${this.name}`,
       this.id,
       20
     );
@@ -152,12 +152,12 @@ export class Family {
   }
 
   static load() {
-    console.time("Загрузка семей");
+    console.time("Familien laden");
     return new Promise((resolve) => {
       FamilyEntity.find().then((f) => {
         f.map((item) => new Family(item));
-        console.timeEnd("Загрузка семей");
-        system.debug.success(`Загружено ${f.length} семей`);
+        console.timeEnd("Familien laden");
+        system.debug.success(`Hochgeladen von ${f.length} Familien`);
         resolve(null);
       });
     });
@@ -226,13 +226,13 @@ export class Family {
 
     const familyChat = dialogSystem.getDialog(this.familyChat);
     familyChat.messages.push({
-      name: "Система",
+      name: "System",
       id: 0,
       time: system.timestamp,
       text: `${
         byAdmin
-          ? "Сезонные очки семьи были сброшены Администратором"
-          : "Сезонные очки семьи были сброшены, начался новый сезон"
+          ? "Die saisonalen Punkte der Familie wurden vom Verwalter zurückgesetzt"
+          : "Die Saisonpunkte der Familie wurden zurückgesetzt und eine neue Saison hat begonnen"
       }`,
     });
   }
@@ -268,7 +268,7 @@ export class Family {
     system.saveLogFamily(
       "removeMoney",
       val,
-      reason ? reason : "Снятие баланса",
+      reason ? reason : "Entnahme des Guthabens",
       this.entity,
       player
     );
@@ -282,7 +282,7 @@ export class Family {
     system.saveLogFamily(
       "addMoney",
       val,
-      reason ? reason : "Пополнение баланса",
+      reason ? reason : "Rebalancing",
       this.entity,
       player
     );
@@ -296,7 +296,7 @@ export class Family {
     system.saveLogFamily(
       "removeDonate",
       val,
-      reason ? reason : "Снятие коинов",
+      reason ? reason : "Abheben von Münzen",
       this.entity,
       player
     );
@@ -310,7 +310,7 @@ export class Family {
     system.saveLogFamily(
       "addDonate",
       val,
-      reason ? reason : "Пополнение коинов",
+      reason ? reason : "Münznachschub",
       this.entity,
       player
     );
@@ -558,12 +558,12 @@ export class Family {
     if ((needContracts[id] * 100) / contract.needScore >= 100) {
       contract.win.map((win) => {
         if (win.type == FamilyContractWinTypes.MONEY)
-          this.addMoney(win.amount, null, "Выполнение семейного контракта");
+          this.addMoney(win.amount, null, "Erfüllung des Familienvertrags");
         if (win.type == FamilyContractWinTypes.COINS)
           this.addDonateMoney(
             win.amount,
             null,
-            "Выполнение семейного контракта"
+            "Erfüllung des Familienvertrags"
           );
         if (win.type == FamilyContractWinTypes.FAMILY_POINTS)
           this.addPoints(win.amount);
@@ -703,7 +703,7 @@ export class Family {
       if (isNaN(count) || count <= 0) return resolve(0);
       if (player.user.level <= 1)
         return player.notify(
-          "Пополнить счёт семьи может только игрок, достигший 2 уровня"
+          "Nur ein Spieler, der Stufe 2 erreicht hat, kann das Familienkonto wieder auffüllen"
         );
       if (
         await player.user.tryPayment(
@@ -716,18 +716,18 @@ export class Family {
               player.user.family
             );
           },
-          `Пополнение счета семьи`,
-          `Семья #${player.user.family.id}`
+          `Mittel für das Familienkonto`,
+          `Familie #${player.user.family.id}`
         )
       ) {
         player.notify(
-          `Вы пополнили ${type ? "счет" : "донат-счет"} семьи на ${
-            type ? "$" + count : count + " коинов"
+          `Du hast nachgefüllt ${type ? "Rechnung" : "Spendenkonto"} Familien auf ${
+            type ? "$" + count : count + " Münzen"
           }`,
           "success"
         );
-        if (type) this.addMoney(count, player, `Пополнение счёта`);
-        else this.addDonateMoney(count, player, `Пополнение коинов`);
+        if (type) this.addMoney(count, player, `Kontoauffüllung`);
+        else this.addDonateMoney(count, player, `Münznachschub`);
         return resolve(count);
       } else return resolve(0);
     });
@@ -738,24 +738,24 @@ export class Family {
       if (!mp.players.exists(player) || !player.user || !player.user.family)
         return resolve(false);
       if (!player.user.family.isCan(player.user.familyRank, "kick")) {
-        player.notify("У вас нет полномочий исключать члена семьи", "error");
+        player.notify("Du hast nicht die Befugnis, ein Familienmitglied auszuschließen", "error");
         return resolve(false);
       }
       if (isNaN(id)) return resolve(false);
 
       const user = User.get(id);
       if (user) {
-        player.notify(`Вы исключили из семьи игрока ${user.user.name}`, "info");
+        player.notify(`Du hast einen Spieler aus der Familie ausgeschlossen ${user.user.name}`, "info");
         if (user.user.family != player.user.family) {
-          player.notify("Выбранный игрок не найден в семье", "error");
+          player.notify("Der ausgewählte Spieler ist nicht in der Familie enthalten", "error");
           return resolve(false);
         }
         user.user.family = null;
-        user.user.notify(`${player.user.name} исключил Вас из семьи`, "info");
+        user.user.notify(`${player.user.name} dich aus der Familie entfernt`, "info");
       } else {
         let member = await this.getMemberByID(id);
         if (!member) {
-          player.notify("Выбранный игрок не найден в семье", "error");
+          player.notify("Der ausgewählte Spieler ist nicht in der Familie enthalten", "error");
           return resolve(false);
         }
         member.family = 0;
@@ -773,18 +773,18 @@ export class Family {
       const family = player.user.family;
       if (family.cars.length || family.house)
         return player.notify(
-          "Для удаления семьи у неё не должно быть владений (транспорта, недвижимости)"
+          "Die Familie darf keine Besitztümer (Fahrzeuge, Immobilien) haben, die entfernt werden müssen"
         );
       if ((await family.getMembersCount()) > 1)
         return player.notify(
-          "Для удаления семьи в ней не должно быть участников кроме Вас"
+          "Um eine Familie zu entfernen, darf es außer dir keine weiteren Mitglieder in der Familie geben"
         );
       player.user.addMoney(
         family.money,
         true,
-        "Оставшиеся средства на счету семьи при удалении"
+        "Verbleibendes Guthaben auf dem Konto der Familie bei Auszug"
       );
-      player.notify("Вы удалили семью " + family.name);
+      player.notify("Du hast die Familie entfernt " + family.name);
       player.user.family = null;
 
       family.entity.remove();
@@ -793,7 +793,7 @@ export class Family {
       return; // player.notify('Вы не можете покинуть семью, так как являетесь ее владельцем', 'error')
     }
     player.user.family = null;
-    player.notify("Вы покинули семью");
+    player.notify("Du hast deine Familie verlassen");
     return;
   }
 
@@ -803,7 +803,7 @@ export class Family {
         return resolve(false);
       if (!player.user.family.isCan(player.user.familyRank, "setRank")) {
         player.notify(
-          "У вас нет полномочий изменять ранг члена семьи",
+          "Du hast nicht die Befugnis, den Rang eines Familienmitglieds zu ändern",
           "error"
         );
         return resolve(false);
@@ -821,22 +821,22 @@ export class Family {
       const user = User.get(id);
       if (user) {
         player.notify(
-          `Вы изменили ранг члену семьи ${user.user.name} на ${newRank.name}`,
+          `Du hast den Rang eines Familienmitglieds geändert ${user.user.name} auf ${newRank.name}`,
           "info"
         );
         if (user.user.family != player.user.family) {
-          player.notify("Выбранный игрок не найден в семье", "error");
+          player.notify("Der ausgewählte Spieler ist nicht in der Familie enthalten", "error");
           return resolve(false);
         }
         user.user.familyRank = rank;
         user.user.notify(
-          `${player.user.name} изменил ваш ранг в семье на ${newRank.name}`,
+          `${player.user.name} deinen Rang in der Familie geändert auf ${newRank.name}`,
           "info"
         );
       } else {
         let member = await this.getMemberByID(id);
         if (!member) {
-          player.notify("Выбранный игрок не найден в семье", "error");
+          player.notify("Der ausgewählte Spieler ist nicht in der Familie enthalten", "error");
           return resolve(false);
         }
         member.familyRank = rank;
@@ -866,13 +866,13 @@ export class Family {
       if (!mp.players.exists(player) || !player.user || !player.user.family)
         return resolve(false);
       if (!player.user.family.isCan(player.user.familyRank, "level_up")) {
-        player.notify("У вас нет полномочий повысить уровень семьи", "error");
+        player.notify("Du hast nicht die Autorität, deine Familie zu erziehen", "error");
         return resolve(false);
       }
       const requires = LevelInfo[this.level];
       if (!type) {
         if (this.level >= LevelInfo.length) {
-          player.notify("У вашей семьи максимальный уровень", "error");
+          player.notify("Deine Familie ist auf dem Höchststand", "error");
           return resolve(false);
         }
         const membersCount = await this.getMembersCount();
@@ -882,7 +882,7 @@ export class Family {
           this.points < requires.scores
         ) {
           player.notify(
-            "Ваша семья не достигла требований для повышения уровня",
+            "Deine Familie hat die Voraussetzungen für eine Höherstufung nicht erfüllt",
             "error"
           );
           return resolve(false);
@@ -892,7 +892,7 @@ export class Family {
           !player.user.tryRemoveDonateMoney(
             requires.coin,
             true,
-            "Повышение уровня семьи"
+            "Anhebung des Niveaus der Familie"
           )
         )
           return resolve(false);
@@ -903,7 +903,7 @@ export class Family {
         // this.donate -= requires.coin
         // system.saveLogFamily('removeDonate', 'Повышение уровня семьи', this.entity, player.user.id, player.user.name)
       }
-      player.notify("Уровень семьи повышен", "success");
+      player.notify("Die Familienebene ist erhöht", "success");
       this.level += 1;
       return resolve(true);
     });

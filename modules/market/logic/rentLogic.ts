@@ -13,15 +13,15 @@ CustomEvent.registerCef('market::finishRent', async (player) => {
 
     const compensation = getMarketRentCompensation(tent.timeLeftS);
     const playerAnswer = await menu.accept(player,
-        `Вы уверены, что хотите досрочно завершить аренду и получить ${systemUtil.numberFormat(compensation)}`);
+        `Bist du sicher, dass du deinen Mietvertrag vorzeitig beenden und eine ${systemUtil.numberFormat(compensation)}`);
 
     if (!playerAnswer || !tent.exists) {
         return;
     }
 
     tent.destroy();
-    player.user.addMoney(compensation, true, 'Возврат за досрочное завершение аренды палатки');
-    player.notify('Вы завершили аренду палатки досрочно, нераспроданные предметы перемещены на склад', 'success');
+    player.user.addMoney(compensation, true, 'Rückerstattung bei vorzeitiger Beendigung der Zeltmiete');
+    player.notify('Du hast deine Zeltmiete vorzeitig beendet, nicht verkaufte Artikel werden ins Lager gebracht', 'success');
 });
 
 CustomEvent.registerCef('market::expandRent', async (player, expandTimeMin: number) => {
@@ -33,12 +33,12 @@ CustomEvent.registerCef('market::expandRent', async (player, expandTimeMin: numb
 
     const expandRentCost = expandTimeMin / RENT_TICK_MINUTES * RENT_COMMON_TENT_COST;
     const isPaymentSuccess = await player.user.tryPayment(expandRentCost, 'all',
-        () => tent.exists, 'Продление аренды палатки', 'Рынок');
+        () => tent.exists, 'Verlängerung der Zeltmiete', 'Markt');
 
     if (!isPaymentSuccess) {
         return;
     }
 
     tent.expandRentTime(expandTimeMin * 60);
-    player.notify(`Вы увеличили время аренда на ${expandTimeMin} мин.`, 'success');
+    player.notify(`Du hast die Mietzeit erhöht um ${expandTimeMin} min.`, 'success');
 });

@@ -8,8 +8,8 @@ FRACTION_TASK_ITEMS.map(npc => {
     new NpcSpawn(npc.pos, npc.heading, npc.model, npc.name, player => {
         const user = player.user;
         if(!user) return;
-        if(npc.fraction && !npc.fraction.includes(user.fraction)) return player.notify(`У вас нет доступа`, 'error');
-        const m = menu.new(player, npc.name, 'Список заданий');
+        if(npc.fraction && !npc.fraction.includes(user.fraction)) return player.notify(`Du hast keinen Zugang`, 'error');
+        const m = menu.new(player, npc.name, 'Liste der Aufgaben');
         currentList.forEach((owner, id) => {
             if(owner === -1) return;
             const cfg = npc.tasks[id];
@@ -19,8 +19,8 @@ FRACTION_TASK_ITEMS.map(npc => {
                 desc: cfg.desc,
                 onpress: () => {
                     let owner = currentList.get(id);
-                    if(owner === -1) return player.notify('Данное задание более не доступно', 'error')
-                    if(owner !== 0) return player.notify('Данное уже взял другой человек', 'error')
+                    if(owner === -1) return player.notify('Dieser Auftrag ist nicht mehr verfügbar', 'error')
+                    if(owner !== 0) return player.notify('Dieses wurde bereits von jemand anderem genommen', 'error')
                     currentList.set(id, user.id);
 
                 }

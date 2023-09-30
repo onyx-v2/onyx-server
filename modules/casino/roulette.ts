@@ -23,7 +23,7 @@ gui.chat.registerCommand("casinostats", (player) => {
     const user = player.user;
     if (!user) return;
     if (!user.isAdminNow(6)) return;
-    player.outputChatBox(`На ставках в рулетке выиграли сегодня: ${roulleteDailyWinning} фишек | всего поставили: ${roulleteDailyLoosing} фишек`)
+    player.outputChatBox(`Die Roulette-Wette hat heute gewonnen: ${roulleteDailyWinning} die insgesamt gesetzten Chips: ${roulleteDailyLoosing} Chips`)
 })
 
 interface TableData {
@@ -108,7 +108,7 @@ ROULETTE_TABLE_POSITIONS.map((table, index) => {
                         const player = User.get(owner);
                         if(!player) return;
                         roulleteDailyWinning += sum
-                        player.user.addChips(sum, false, `Победа в рулетке`)
+                        player.user.addChips(sum, false, `Gewinnen beim Roulette`)
                         runCasinoAchievWin(player, 'Roulette', sum)
                     })
                     looseList.forEach((sum, owner) => {
@@ -188,11 +188,11 @@ CustomEvent.registerClient('casino:roulette:removeBet', (player, tableId: number
     const table = tables.get(tableId);
     if (!table) return 0;
     if (table.status !== ROULETTE_STATENAMES_ID.WAIT) {
-        player.notify('Ставки сделаны', 'error')
+        player.notify('Die Wetten sind in', 'error')
         return 0;
     }
     if (table.winNumber === 9999) {
-        player.notify('Ставки пока что не принимаются', 'error')
+        player.notify('Es werden noch keine Wetten angenommen', 'error')
         return 0;
     }
 
@@ -202,13 +202,13 @@ CustomEvent.registerClient('casino:roulette:removeBet', (player, tableId: number
     })
     const mybet = system.sortArrayObjects(mybets, [{id: 'dist', type: "ASC"}])[0];
     if (!mybet) {
-        player.notify('У вас нет ставки в данной области', 'error');
+        player.notify('Du hast kein Interesse an diesem Gebiet', 'error');
         return 0;
     }
     if (mybet.object && mp.objects.exists(mybet.object)) mybet.object.destroy();
     bets.splice(bets.findIndex(q => q.id === mybet.id), 1)
     table.bets = [...bets];
-    user.addChips(mybet.chip, false, `Отмена ставки`)
+    user.addChips(mybet.chip, false, `Wette stornieren`)
     tables.set(tableId, table);
     return mybet.id;
     // table.bets.push({owner: user.id, chip: sum, pos: {x: pos.x, y: pos.y, z: pos.z}, object: chipObject})
@@ -220,31 +220,31 @@ CustomEvent.registerClient('casino:roulette:setBet', (player, tableId: number, b
     const table = tables.get(tableId);
     if (!table) return 0;
     if (table.status !== ROULETTE_STATENAMES_ID.WAIT) {
-        player.notify('Ставки больше не принимаются', 'error')
+        player.notify('Wetten werden nicht mehr angenommen', 'error')
         return 0;
     }
     if (table.winNumber === 9999) {
-        player.notify('Ставки пока что не принимаются', 'error')
+        player.notify('Es werden noch keine Wetten angenommen', 'error')
         return 0;
     }
     const count = table.getBetsCount(player);
     if (count >= ROULETTE_MAX_BETS) {
-        player.notify(`Нельзя выставить более чем ${ROULETTE_MAX_BETS} ставок`, 'error');
+        player.notify(`Du kannst nicht mehr ausstellen als ${ROULETTE_MAX_BETS} Wetten`, 'error');
         return 0;
     }
     if (table.bets.length >= ROULETTE_MAX_BETS_TABLE) {
-        player.notify(`На столе уже максимальное количество ставок`, 'error');
+        player.notify(`Es gibt bereits eine maximale Anzahl von Wetten auf dem Tisch`, 'error');
         return 0;
     }
     const sum = CHIPS_TYPE[ChipType]
     if(user.chips < sum){
-        player.notify(`У вас недостаточно фишек для данной ставки`, 'error');
+        player.notify(`Du hast nicht genug Chips für diese Wette`, 'error');
         return 0;
     }
     const sumTotal = table.getBetsSum(player) + sum;
     const maxsum = table.chipTypePrices[table.chipTypePrices.length - 1];
     if (sumTotal > maxsum) {
-        player.notify(`Сумма ваших ставок не может превышать $${system.numberFormat(maxsum)}`, 'error');
+        player.notify(`Der Betrag deiner Wetten darf nicht höher sein als $${system.numberFormat(maxsum)}`, 'error');
         return 0;
     }
     const rule = ROULETTE_RULES[betKey];
@@ -269,7 +269,7 @@ CustomEvent.registerClient('casino:roulette:setBet', (player, tableId: number, b
     betid++;
     bets.push({owner: user.id, chip: sum, pos: {x: pos.x, y: pos.y, z: pos.z}, object: chipObject, betKey, id: betid})
     table.bets = [...bets]
-    user.removeChips(sum, false, 'Ставка в рулетке')
+    user.removeChips(sum, false, 'Roulette Wette')
 
     tables.set(tableId, table);
     // }
@@ -283,7 +283,7 @@ CustomEvent.registerClient('casino:roulette:entertable', (player, tableId: numbe
     if(cfg.isVip && (!player.user.vipData || !player.user.vipData.casino)) return null;
     const table = tables.get(tableId);
     if (!table) return null;
-    if(player.user.getJobDress) return 'Снимите рабочую одежду прежде чем начать играть';
+    if(player.user.getJobDress) return 'Zieh deine Arbeitskleidung aus, bevor du anfängst zu spielen';
     let seatEnter: number = null;
     if(!table.seats[mySeat]) seatEnter = mySeat
 

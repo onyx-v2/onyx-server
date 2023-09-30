@@ -33,7 +33,7 @@ class TalkWithNpcQuestStep extends QuestStep implements IQuestSavable {
 
     get hudDto(): QuestStepDto {
         return {
-            name: `Поговорите с ${this._npcName}`,
+            name: `Sprich mit ${this._npcName}`,
             completed: this.isComplete,
             notShowIfCompleted: true
         }

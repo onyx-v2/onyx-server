@@ -55,7 +55,7 @@ CustomEvent.registerCef('server:item_shop:buy_item', (player, shopId: number, it
         const itemConf = inventoryShared.get(itemId);
         if (!itemConf) return ok = false;
         const conf = catalog.find(q => q.item == itemId);
-        if (!conf || (!conf.price && conf.count)) return player.notify(itemConf.name + ' больше не продаётся', 'error'), reloadShopData(player, shop), ok = false;
+        if (!conf || (!conf.price && conf.count)) return player.notify(itemConf.name + ' nicht mehr zu verkaufen', 'error'), reloadShopData(player, shop), ok = false;
         if ([ITEM_TYPE.WEAPON_MAGAZINE, ITEM_TYPE.WEAPON, ITEM_TYPE.AMMO_BOX].includes(itemConf.type)) {
             let needLic = false;
             if (ITEM_TYPE.WEAPON_MAGAZINE === itemConf.type) needLic = true;
@@ -65,11 +65,11 @@ CustomEvent.registerCef('server:item_shop:buy_item', (player, shopId: number, it
                 if (wConf.need_license) needLic = true;
             }
             if (needLic && !user.haveActiveLicense('weapon'))
-                return player.notify(`Чтобы приобрести ${getBaseItemNameById(itemId)} необходимо иметь активную лицензию на ${LicenseName['weapon']}`, "error"), ok = false;
+                return player.notify(`Zum Kauf ${getBaseItemNameById(itemId)} Du musst eine aktive Lizenz haben, um ${LicenseName['weapon']}`, "error"), ok = false;
         }
         const multiple = shop.sub_type === 3 && user.haveActiveLicense('med') ? 0.6 : 1.0
         if (donate) {
-            if (conf.count < amount) return player.notify(`${itemConf.name} закончился`, 'error'), ok = false;
+            if (conf.count < amount) return player.notify(`${itemConf.name} über`, 'error'), ok = false;
             sum += conf.price * amount;
         } else {
             sum += (((conf.count && conf.count >= amount) || !itemConf.defaultCost ? conf.price : itemConf.defaultCost) * multiple) * amount;
@@ -84,20 +84,20 @@ CustomEvent.registerCef('server:item_shop:buy_item', (player, shopId: number, it
 
 
     if ((inventory.getWeightItems(inventory.getInventory(OWNER_TYPES.PLAYER, user.id)) + weight) > inventory.getWeightInventoryMax(OWNER_TYPES.PLAYER, user.id))
-        return player.notify(`Недостаточно места в инвентаре для покупки всех товаров в корзине`, 'error'), reloadShopData(player, shop);
+        return player.notify(`Nicht genug Platz im Inventar, um alle Artikel im Korb zu kaufen`, 'error'), reloadShopData(player, shop);
 
     if (donate) {
         if (user.donate_money < sum)
-            return player.notify(`У вас недостаточно ${DONATE_MONEY_NAMES[2]} для оплаты`, 'error'), reloadShopData(player, shop);
-        user.removeDonateMoney(sum, `Покупка товаров в магазине ${shop.name} ${shop.id}`)
+            return player.notify(`Du hast nicht genug ${DONATE_MONEY_NAMES[2]} gegen Bezahlung`, 'error'), reloadShopData(player, shop);
+        user.removeDonateMoney(sum, `Waren im Laden kaufen ${shop.name} ${shop.id}`)
     } else {
         if (paytype === 0) {
-            if (user.money < sum) return player.notify(`У вас недостаточно средств для оплаты`, 'error'), reloadShopData(player, shop);
-            user.removeMoney(sum, true, `Покупка товаров в магазине ${shop.name} ${shop.id}`)
+            if (user.money < sum) return player.notify(`Du hast nicht genügend Geld, um zu bezahlen`, 'error'), reloadShopData(player, shop);
+            user.removeMoney(sum, true, `Waren im Laden kaufen ${shop.name} ${shop.id}`)
         } else if (paytype === 1) {
             if (!user.verifyBankCardPay(pin))
-                return player.notify(`Либо вы ввели не верный пин-код, либо у вас нет при себе банковской карты`, 'error'), reloadShopData(player, shop);
-            if (!user.tryRemoveBankMoney(sum, true, `Покупка товаров`, `${shop.name} ${shop.id}`)) return reloadShopData(player, shop);
+                return player.notify(`Entweder hast du den falschen Pin-Code eingegeben oder du hast deine Bankkarte nicht dabei`, 'error'), reloadShopData(player, shop);
+            if (!user.tryRemoveBankMoney(sum, true, `Kauf von Waren`, `${shop.name} ${shop.id}`)) return reloadShopData(player, shop);
         } else {
             return;
         }
@@ -162,7 +162,7 @@ CustomEvent.registerCef('server:item_shop:buy_item', (player, shopId: number, it
         totalItemsPurchasePrice += businessDefaultCostItem(shop, conf.item, amount);
     })
     if (bizadd > 0) {
-        business.addMoney(shop, bizadd, `Клиент (${player.dbid}) купил товары`, false, false,
+        business.addMoney(shop, bizadd, `Kunde (${player.dbid}) gekaufte Waren`, false, false,
             true, true, totalItemsPurchasePrice);
     }
 
@@ -178,7 +178,7 @@ CustomEvent.registerCef('server:item_shop:buy_item', (player, shopId: number, it
         })
     })
 
-    player.notify('Товары успешно приобретены', 'success');
+    player.notify('Erfolgreich gekaufte Waren', 'success');
     player.user.setGui(null);
     return;
 
@@ -204,7 +204,7 @@ export const shopMenu = (player: PlayerMp, item: BusinessEntity) => {
     if (!player.user) return;
     const user = player.user;
     const openShop = () => {
-        if (item.catalog.length == 0) return player.notify('Каталог магазина на данный момент пустой', 'error');
+        if (item.catalog.length == 0) return player.notify('Der Shop-Katalog ist derzeit leer', 'error');
         if (item.sub_type == 5) {
             user.setGui('farm')
             CustomEvent.triggerCef(player, 'farm:setComponent', 'shop')
@@ -240,7 +240,7 @@ export const shopMenu = (player: PlayerMp, item: BusinessEntity) => {
     m.sprite = sprite as any;
 
     m.newItem({
-        name: "Каталог товаров",
+        name: "Produktkatalog",
         onpress: () => {
             m.close();
             openShop()
@@ -249,7 +249,7 @@ export const shopMenu = (player: PlayerMp, item: BusinessEntity) => {
 
     if (needUnload(player, item)) {
         m.newItem({
-            name: "~g~Выгрузить заказ",
+            name: "~g~Auftrag abladen",
             onpress: () => {
                 m.close();
                 deliverSet(player)
@@ -261,7 +261,7 @@ export const shopMenu = (player: PlayerMp, item: BusinessEntity) => {
 
     if (user.isAdminNow(6) || item.userId === user.id) {
         m.newItem({
-            name: '~b~Управление бизнесом',
+            name: '~b~Business Management',
             onpress: () => {
                 businessCatalogMenu(player, item, () => {
                     shopMenu(player, item)
@@ -269,7 +269,7 @@ export const shopMenu = (player: PlayerMp, item: BusinessEntity) => {
             },
         })
         m.newItem({
-            name: '~g~Заказ продукции',
+            name: '~g~Produktbestellung',
             onpress: () => {
                 orderDeliverMenu(player, item)
             }

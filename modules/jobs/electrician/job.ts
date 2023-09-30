@@ -72,7 +72,7 @@ mp.events.add('vehicleDeath', (vehicle) => {
     if (!player) return;
     player.user.setJobDress(null);
     CustomEvent.triggerClient(player, 'electrician:finish');
-    player.notify('Ваш транспорт был уничтожен - рабочий день окончен!');
+    player.notify('Dein Transportmittel wurde zerstört - der Arbeitstag ist vorbei!');
 })
 
 function getSalaryCode(type: WORK_TYPE): string {
@@ -90,7 +90,7 @@ function getSalaryCode(type: WORK_TYPE): string {
 CustomEvent.registerCef('electrician:check', (player: PlayerMp, type: WORK_TYPE) => {
     let veh: null | VehicleMp;
     if (type === WORK_TYPE.houses || type === WORK_TYPE.large){
-        if (!player.user.haveActiveLicense("car")) return player.notify("У вас отсутствует действующая лицензия");
+        if (!player.user.haveActiveLicense("car")) return player.notify("Du hast keinen gültigen Führerschein");
         veh = Job.CreateWorkVehicle(player);
     }
 
@@ -136,7 +136,7 @@ CustomEvent.registerClient('electrician:payment', (player, index: string) => {
     }
 
     if (amount === 0)
-        writeSpecialLog(`Обман электрик ${index}`, player);
+        writeSpecialLog(`Betrügerischer Elektriker ${index}`, player);
 
-    player.user.addMoney(amount, false, "Заработал на электриках, починил щиток");
+    player.user.addMoney(amount, false, "Habe etwas Geld für die Elektriker verdient und die Schalttafel repariert.");
 });

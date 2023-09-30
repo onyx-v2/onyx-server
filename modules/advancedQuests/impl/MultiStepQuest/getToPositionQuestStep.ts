@@ -25,7 +25,7 @@ class GetToPositionQuestStep extends QuestStep {
 
     get hudDto(): QuestStepDto {
         return {
-            name: `Доберитесь до метки`,
+            name: `Ins Schwarze treffen`,
             completed: this.isComplete,
             notShowIfCompleted: true
         }

@@ -19,7 +19,7 @@ class Furniture {
     private placementHandler = (player: PlayerMp, id: number, toggle: boolean) => {
         if (!player.user || toggle === undefined || !player.user.houseEntity) return;
         if (!this.isInteriorForFurniture(player.user.houseEntity.interrior))
-            return player.notify('Ваш интерьер не поддерживает мебель');
+            return player.notify('Dein Interieur trägt die Möbel nicht');
 
         const house = player.user.houseEntity,
             item = house.furnitureData.find(el => el.id === id);
@@ -38,19 +38,19 @@ class Furniture {
         if (!player.user) return;
 
         if (!player.user.houseEntity)
-            return player.notify('У вас нет дома', 'error');
+            return player.notify('Du hast kein Zuhause', 'error');
 
         if (!this.isInteriorForFurniture(player.user.houseEntity.interrior))
-            return player.notify('Интерьер вашего дома не поддерживает мебель', 'error');
+            return player.notify('Das Innere deines Hauses trägt die Möbel nicht', 'error');
 
         const cfg = furnitureList.find(el => cfgId === el.id);
 
         if (!cfg) return;
 
         if (player.user.money < cfg.cost)
-            return player.notify('У вас недостаточно денег', 'error');
+            return player.notify('Du hast nicht genug Geld', 'error');
 
-        player.user.removeMoney(cfg.cost, false, `покупка мебели ${cfgId}`);
+        player.user.removeMoney(cfg.cost, false, `Möbelkauf ${cfgId}`);
 
         const house: HouseEntity = player.user.houseEntity;
 
@@ -67,8 +67,8 @@ class Furniture {
 
         house.furnitureData = furnitureData;
 
-        player.user.log('houses', `Купил мебель - ${cfg.id} за ${cfg.cost}`);
-        player.notify(`Вы успешно приобрели ${cfg.name}`, 'success');
+        player.user.log('houses', `Kaufte die Möbel - ${cfg.id} за ${cfg.cost}`);
+        player.notify(`Du hast erfolgreich erworben ${cfg.name}`, 'success');
     }
 
     private sellHandler = (player: PlayerMp, id: number) => {
@@ -82,7 +82,7 @@ class Furniture {
         if (!item) return;
 
         if (item.pos)
-            return player.notify('Необходимо сперва убрать мебель');
+            return player.notify('Wir müssen zuerst die Möbel aus dem Weg räumen');
 
         const cfgId = item.cfgId,
             index = furniture.indexOf(item);
@@ -107,7 +107,7 @@ class Furniture {
             })
         })
         CustomEvent.triggerCef(player, 'homeMenu:furniture', furnitureItems)
-        player.user.addMoney(Math.floor(cfg.cost * 0.2), true, `Продажа мебели ${cfgId}`);
+        player.user.addMoney(Math.floor(cfg.cost * 0.2), true, `Möbel zu verkaufen ${cfgId}`);
     }
 
     private removeHandler = (player: PlayerMp, id: number) => {

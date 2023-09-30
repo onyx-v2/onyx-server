@@ -20,7 +20,7 @@ export class RouletteManager {
         player.user.log("DonateMoney", `dropUse (${dropData.dropId})`);
         const drop = createDropByData(dropData);
         if (!drop.activate(player)) {
-            player.notify('Приз не может быть активирован')
+            player.notify('Der Preis kann nicht aktiviert werden')
             return;
         }
         
@@ -48,10 +48,10 @@ export class RouletteManager {
 
         if (dropData.sellType === DropSellType.DOLLARS)
             player.user.addMoney(
-                dropData.sellPrice, false, `Клиент (${player.dbid}) продал дроп с рулетки(${dropData.dropId})`
+                dropData.sellPrice, false, `Kunde (${player.dbid}) verkaufte den Roulettetropfen(${dropData.dropId})`
             );
         else player.user.addDonateMoney(
-            dropData.sellPrice, `Клиент (${player.dbid}) продал дроп с рулетки(${dropData.dropId}) за донат`
+            dropData.sellPrice, `Kunde (${player.dbid}) verkaufte den Roulettetropfen(${dropData.dropId}) für eine Spende`
         );
         
         this.deleteDrop(player, dropId);

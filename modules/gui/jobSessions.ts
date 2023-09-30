@@ -53,12 +53,12 @@ class Session implements SessionInfo {
         }
 
         if (this.players.length == this.Type.MaxPlayers) {
-            player.notify('Нет мест в сессии', 'error');
+            player.notify('Keine Sitze in der Sitzung', 'error');
             return;
         }
 
         if (this.IsProtected && password.toUpperCase() !== this.password) {
-            player.notify('Неправильный пароль', 'error');
+            player.notify('Falsches Passwort', 'error');
             return;
         }
 
@@ -133,7 +133,7 @@ class Session implements SessionInfo {
 CustomEvent.registerCef('sessions::create', (player, withPassword: boolean) => {
     const session = getPlayerSession(player);
     if (session) {
-        player.notify('Вы не можете сейчас создать сессию', 'error');
+        player.notify('Du kannst im Moment keine Sitzung erstellen', 'error');
         return;
     }
 

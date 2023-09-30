@@ -93,9 +93,9 @@ export default abstract class BaseActivity {
     public abstract onPlayerEnterWorkPoint(player: PlayerMp, pointIdx: number): void
     
     public startWorkForPlayer(player: PlayerMp): void {
-        if (player.farmWorker) return player.notify('Вы уже работаете на другой ферме', 'error')
+        if (player.farmWorker) return player.notify('Du arbeitest bereits auf einem anderen Hof', 'error')
         if (this.workers.length >= 5 && player.user.id != this.owner) 
-            return player.notify('Здесь работает слишком много людей')
+            return player.notify('Es gibt zu viele Menschen, die hier arbeiten')
         
         player.farmWorker = new FarmWorker(player, this)
         
@@ -105,10 +105,10 @@ export default abstract class BaseActivity {
     
     public rentTo(player: PlayerMp): void {
         if (player.farmWorker)
-            return player.notify('Вы уже работаете на другой ферме', 'error')
+            return player.notify('Du arbeitest bereits auf einem anderen Hof', 'error')
         
-        if (player.user.money < ACTIVITY_RENT_COST || !player.user.removeMoney(ACTIVITY_RENT_COST, false, 'Аренда на ферме')) 
-            return player.notify('Недостаточно средств для аренды', 'warning')
+        if (player.user.money < ACTIVITY_RENT_COST || !player.user.removeMoney(ACTIVITY_RENT_COST, false, 'Hofmiete')) 
+            return player.notify('Unzureichende Mittel für die Miete', 'warning')
         
         this.rentedAt = system.timestamp
         this.owner = player.user.id
@@ -128,7 +128,7 @@ export default abstract class BaseActivity {
         this.workers.splice(this.workers.indexOf(player), 1)
         CustomEvent.triggerClient(player, 'farm:work:stop')
         
-        player.user.addMoney(player.farmWorker.totalEarned, true, 'Заработал на ферме')
+        player.user.addMoney(player.farmWorker.totalEarned, true, 'Er arbeitete auf dem Bauernhof')
         this.totalPaid += player.farmWorker.totalEarned
         
         delete player.farmWorker
@@ -138,7 +138,7 @@ export default abstract class BaseActivity {
         if (!this.owner || this.owner == 0) return
         this.workers.map(worker => {
             this.stopWorkForPlayer(worker)
-            worker.notify('Аренда фермы закончилась, ваш рабочий день закончен')
+            worker.notify('Die Hofpacht ist abgelaufen, dein Arbeitstag ist vorbei')
         })
         this.owner = 0
         this.capital = 0

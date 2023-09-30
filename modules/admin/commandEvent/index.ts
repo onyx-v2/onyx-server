@@ -27,20 +27,20 @@ class CommandEvent {
     private playerCommandHandler = (player: PlayerMp): void => {
         if (!player.user) return;
         if (this._state === null)
-            return player.notify('В данный момент не происходит никаких мероприятий', 'error');
+            return player.notify('Zurzeit finden keine Aktivitäten statt', 'error');
 
         if (!this._state.teleportActive)
-            return player.notify('Телепорт на мероприятие закрыт', 'error');
+            return player.notify('Teleport zum Ereignis ist geschlossen', 'error');
 
         if (this._state.players.length >= this._state.maxPlayers)
-            return player.notify('На мероприятие максимальное количество участников', 'error');
+            return player.notify('Maximale Anzahl von Teilnehmern pro Veranstaltung', 'error');
 
         if (
             this._state.players.find(el => el === player.user.id) !== undefined
             &&
             player.dimension === COMMAND_EVENT_DIMENSION
         )
-            return player.notify('Вы уже находитесь на мероприятие', 'error');
+            return player.notify('Du bist bereits bei der Veranstaltung', 'error');
 
         if (this._state.players.find(el => el === player.user.id) === undefined)
             this._state.players.push(player.user.id);
@@ -56,7 +56,7 @@ class CommandEvent {
             COMMAND_EVENT_DIMENSION
         );
 
-        player.notify('Вы были телепортированы на мероприятие, следуйте указаниям администратора', 'success');
+        player.notify('Du wurdest zu dem Ereignis teleportiert, folge den Anweisungen des Administrators', 'success');
     }
 
     private static getEmptyState(): ICommandEventState {
@@ -69,14 +69,14 @@ class CommandEvent {
     }
 
     private openAdminMenu(player: PlayerMp): void {
-        const _menu = new MenuClass(player, 'Мероприятие по команде');
+        const _menu = new MenuClass(player, 'Team-Event');
 
         if (this._state === null) {
             _menu.newItem({
-                name: 'Название',
-                more: this._data.name !== '' ? this._data.name : '~r~Необходимо указать',
+                name: 'Titel',
+                more: this._data.name !== '' ? this._data.name : '~r~Es ist notwendig, Folgendes anzugeben',
                 onpress: async () => {
-                    const name = await menu.input(player, 'Название', this._data.name, 150, 'text');
+                    const name = await menu.input(player, 'Titel', this._data.name, 150, 'text');
                     if (name) this._data.name = name;
 
                     this.openAdminMenu(player);
@@ -85,7 +85,7 @@ class CommandEvent {
 
             _menu.newItem({
                 type: 'range',
-                name: 'Максимальное кол-во игроков на мероприятие',
+                name: 'Maximale Anzahl von Spielern pro Veranstaltung',
                 more: this._data.maxPlayers,
                 rangeselect: [1, 1500],
                 onchange: (value) => {
@@ -94,8 +94,8 @@ class CommandEvent {
             });
 
             _menu.newItem({
-                name: "Точка появления на мероприятие",
-                more: this._data.spawnPosition.x !== 0 ? "~g~Указано" : "~r~Нужно указать",
+                name: "Punkt des Auftritts bei der Veranstaltung",
+                more: this._data.spawnPosition.x !== 0 ? "~g~Angegeben" : "~r~Du musst angeben",
                 onpress: () => {
                     if (this._data.spawnPosition.x !== 0) {
                         this._data.spawnPosition = new mp.Vector3(0, 0, 0)
@@ -108,8 +108,8 @@ class CommandEvent {
             })
 
             _menu.newItem({
-                name: "Точка появления после мероприятия",
-                more: this._data.returnPosition.x !== 0 ? "~g~Указано" : "~r~Нужно указать",
+                name: "Ort des Erscheinens nach der Veranstaltung",
+                more: this._data.returnPosition.x !== 0 ? "~g~Angegeben" : "~r~Du musst angeben",
                 onpress: () => {
                     if (this._data.returnPosition.x !== 0) {
                         this._data.returnPosition = new mp.Vector3(0, 0, 0)
@@ -122,16 +122,16 @@ class CommandEvent {
             })
 
             _menu.newItem({
-                name: "~g~Запустить",
+                name: "~g~Anlassen",
                 onpress: async () => {
                     if (this._data.name === '')
-                        return player.notify('Необходимо указать название мероприятия', 'error');
+                        return player.notify('Der Name der Veranstaltung sollte angegeben werden', 'error');
 
                     if (this._data.spawnPosition.x === 0)
-                        return player.notify('Необходимо указать место появления на мероприятие', 'error');
+                        return player.notify('Der Ort des Auftritts bei der Veranstaltung muss angegeben werden', 'error');
 
                     if (this._data.returnPosition.x === 0)
-                        return player.notify('Необходимо указать место появления после мероприятия', 'error');
+                        return player.notify('Der Ort des Erscheinens nach dem Ereignis sollte angegeben werden', 'error');
 
                     const state = {...this._data};
                     state.teleportActive = true;
@@ -143,20 +143,20 @@ class CommandEvent {
 
                     validPlayers.forEach(p => {
                         p.outputChatBox(
-                            `!{${COMMAND_EVENT_CHAT_COLOR}}Администратор ${state.adminName}` +
-                            ` запустил мероприятие ${state.name},` +
-                            `чтобы принять участие введите команду - /event`
+                            `!{${COMMAND_EVENT_CHAT_COLOR}}Administrator ${state.adminName}` +
+                            ` startete die Veranstaltung ${state.name},` +
+                            `um teilzunehmen, nutze den Befehl - /event`
                         );
                     })
 
                     this._state = state
                     _menu.close();
-                    player.notify('Мероприятие успешно запущено', 'success');
+                    player.notify('Die Veranstaltung wurde erfolgreich gestartet', 'success');
                 }
             });
 
             _menu.newItem({
-                name: "~y~Очистить",
+                name: "~y~Clear",
                 onpress: async () => {
                     this._data = CommandEvent.getEmptyState();
                     this.openAdminMenu(player);
@@ -164,16 +164,16 @@ class CommandEvent {
             });
         } else {
             _menu.newItem({
-                name: `${this._state.name} создал ${this._state.adminName}`
+                name: `${this._state.name} erstellt ${this._state.adminName}`
             });
 
             _menu.newItem({
-                name: `Игроков в дименшене`,
+                name: `Spieler in Dimensionen`,
                 more: `${mp.players.toArray().filter(target => target.user && target.dimension === COMMAND_EVENT_DIMENSION).length}`
             });
 
             _menu.newItem({
-                name: this._state.teleportActive ? "~r~Закрыть телепорт" : "~g~Открыть телепорт",
+                name: this._state.teleportActive ? "~r~Schließe den Teleporter" : "~g~Öffne den Teleporter",
                 onpress: async () => {
                     this._state.teleportActive = !this._state.teleportActive;
                     this.openAdminMenu(player);
@@ -183,12 +183,12 @@ class CommandEvent {
                     validPlayers.forEach(p => {
                         if (this._state.teleportActive) {
                             p.outputChatBox(
-                                `!{${COMMAND_EVENT_CHAT_COLOR}} Мероприятие: Телепорт открыт, чтобы телепортироваться` +
-                                ` введите команду - /event`
+                                `!{${COMMAND_EVENT_CHAT_COLOR}} Ereignis: Teleport ist offen für Teleport.` +
+                                ` Gib das Kommando ein - /event`
                             );
                         } else {
                             p.outputChatBox(
-                                `!{${COMMAND_EVENT_CHAT_COLOR}} Мероприятие: Телепорт закрыт.`
+                                `!{${COMMAND_EVENT_CHAT_COLOR}} Ereignis: Teleport geschlossen.`
                             );
                         }
                     })
@@ -218,7 +218,7 @@ class CommandEvent {
                     });
 
 
-                    player.notify('Мероприятие успешно закончено', 'success');
+                    player.notify('Das Ereignis wurde erfolgreich abgeschlossen', 'success');
                     _menu.close();
                 }
             });

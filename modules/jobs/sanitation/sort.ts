@@ -9,7 +9,7 @@ class Sort {
         if (!player.user) return;
 
         if (player.user.sanitationSquad)
-            return player.notify('Вы уже работаете, сперва нужно покинуть сессию', 'error');
+            return player.notify('Du arbeitest bereits, du musst die Sitzung erst verlassen', 'error');
         player.user.setGui(null);
         player.user.setJobDress(player.user.male ? DRESS_CONFIG_MALE_SORT : DRESS_CONFIG_FEMALE_SORT);
 
@@ -37,7 +37,7 @@ class Sort {
             time: system.timestamp
         }
 
-        player.user.addMoney(50, true, 'Заработал на сортировке мусора');
+        player.user.addMoney(50, true, 'Ich verdiene Geld mit Müllsortieren');
 
         this.addInteraction(player);
     }

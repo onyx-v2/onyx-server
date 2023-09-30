@@ -81,10 +81,10 @@ CustomEvent.registerCef('family:saveBio', async (player: PlayerMp, text: string)
     if (!mp.players.exists(player) || !player.user || !player.user.family) return;
     if (player.user.isFamilySubLeader || player.user.isFamilyLeader) {
         player.user.family.biography = text;
-        player.user.notify('Вы успешно изменили биографию')
+        player.user.notify('Du hast deine Biografie erfolgreich geändert')
         await tablet.updateFamilyData(player.user.family)
     }
-    else player.user.notify('У вас нет доступа к редактированию биографии', 'error')
+    else player.user.notify('Du hast keinen Zugang, um deine Bio zu bearbeiten', 'error')
 })
 
 CustomEvent.registerCef('family:upgrade',(player:PlayerMp, id:number, cashType:number) => {
@@ -98,24 +98,24 @@ CustomEvent.registerCef('family:upgrade',(player:PlayerMp, id:number, cashType:n
         getFamilyUpgradeLevelPrice(id, (family.upgrades[id] || 0) + 1, "money")
     ]
 
-    if(!player.user.isFamilyLeader) return player.notify('Покупать улучшения может только владелец семьи', 'error')
-    if(((family.upgrades[id] || 0)+1)*updateInfo.amount > updateInfo.max) return player.notify('Вы уже достигли максимального значения для этого улучшения', 'error')
+    if(!player.user.isFamilyLeader) return player.notify('Nur der Eigentümer der Familie darf Verbesserungen erwerben', 'error')
+    if(((family.upgrades[id] || 0)+1)*updateInfo.amount > updateInfo.max) return player.notify('Du hast den maximalen Wert für diese Verbesserung bereits erreicht', 'error')
 
     if(id == 4) {
         if(cashType != CASH_TYPE_COINS) return;
-        menu.input(player, 'Введите новое название семьи:', '', 15).then(name => {
+        menu.input(player, 'Gib einen neuen Familiennamen ein:', '', 15).then(name => {
             if (!name) return;
             if (!name || ! /^[a-zA-Z_-]{0,15}$/i.test(name)) {
-                player.notify('Не удалось изменить семье название. Найдены недопустимые символы.', "error")
+                player.notify('Die Änderung des Familiennamens ist fehlgeschlagen. Ungültige Zeichen gefunden.', "error")
                 return false
             }
             if (Family.getAll().find(f => f.name == name)) {
-                player.notify('Семья с таким названием уже существует', "error")
+                player.notify('Es gibt bereits eine Familie mit diesem Namen', "error")
                 return false;
             }
-            if(family.donate < cost[cashType]) return player.notify('На счету семьи недостаточно коинов для смены названия', 'error')
-            family.removeDonateMoney(cost[cashType], player, 'Смена названия семьи')
-            player.notify('Вы сменили название семьи. С семейного счёта списано '+system.numberFormat(cost[cashType])+' коинов')
+            if(family.donate < cost[cashType]) return player.notify('Das Konto der Familie hat nicht genug Koins, um den Namen zu ändern', 'error')
+            family.removeDonateMoney(cost[cashType], player, 'Änderung des Familiennamens')
+            player.notify('Du hast deinen Familiennamen geändert. Das Familienkonto wurde belastet '+system.numberFormat(cost[cashType])+' Münzen')
             family.name = name
             tablet.updateFamilyData(family)
         })
@@ -123,14 +123,14 @@ CustomEvent.registerCef('family:upgrade',(player:PlayerMp, id:number, cashType:n
     }
 
     if(cashType == CASH_TYPE_MONEY) {
-        if(family.money < cost[cashType]) return player.notify('На счету семьи недостаточно средств для покупки улучшения', 'error')
-        family.removeMoney(cost[cashType], player, 'Покупка улучшения')
-        player.notify('Вы приобрели улучшение для семьи. С семейного счёта списано $'+system.numberFormat(cost[cashType]))
+        if(family.money < cost[cashType]) return player.notify('Es gibt nicht genug Geld auf dem Konto der Familie, um die Verbesserung zu kaufen', 'error')
+        family.removeMoney(cost[cashType], player, 'Eine Erweiterung kaufen')
+        player.notify('Du hast eine Verbesserung für deine Familie gekauft. Das Familienkonto wurde belastet $'+system.numberFormat(cost[cashType]))
     }
     else {
-        if(family.donate < cost[cashType]) return player.notify('На счету семьи недостаточно коинов для покупки улучшения', 'error')
-        family.removeDonateMoney(cost[cashType], player, 'Покупка улучшения')
-        player.notify('Вы приобрели улучшение для семьи. С семейного счёта списано '+system.numberFormat(cost[cashType])+' коинов')
+        if(family.donate < cost[cashType]) return player.notify('Das Konto der Familie hat nicht genug Koins, um die Verbesserung zu kaufen', 'error')
+        family.removeDonateMoney(cost[cashType], player, 'Eine Erweiterung kaufen')
+        player.notify('Du hast eine Verbesserung für deine Familie gekauft. Das Familienkonto wurde belastet '+system.numberFormat(cost[cashType])+' Münzen')
     }
     family.setUpgrade(id, (family.upgrades[id]||0)+1)
 })
@@ -224,12 +224,12 @@ CustomEvent.registerCef('family:editrank', async (player, rankID: number, name: 
     if(rankIndex === -1) return false;
 
     if (!name || ! /^(?!.*([\s])\1)[а-яА-ЯA-Za-z_\s-]{0,20}$/i.test(name)) {
-        player.notify('Название ранга содержит недопустимые символы', "error")
+        player.notify('Der Rangname enthält ungültige Zeichen', "error")
         tablet.updateFamilyData(family)
         return false
     }
     if (currentRanks.find(f => f.id != rankID && f.name == name)) {
-        player.notify('Ранг с таким названием уже существует', "error")
+        player.notify('Ein Rang mit diesem Namen existiert bereits', "error")
         tablet.updateFamilyData(family)
         return false;
     }
@@ -247,7 +247,7 @@ CustomEvent.registerCef('family:addrank', async(player:PlayerMp) => {
 
     const currentRanks = family.ranks
     if(currentRanks.find(r => r.id == rankID)) return false;
-    currentRanks.splice(1, 0, {id: rankID, name: 'Новый ранг', rules: []})
+    currentRanks.splice(1, 0, {id: rankID, name: 'Neuer Rang', rules: []})
 
     family.ranks = currentRanks
 
@@ -274,7 +274,7 @@ CustomEvent.registerCef('family:contract:drop', async(player:PlayerMp, id: numbe
     menu.accept(player).then(status => {
         if (!status) return
         family.resetContracts()
-        player.notify('Вы отказались от контракта. Новые контракты могут появиться не сразу')
+        player.notify('Du hast deinen Vertrag gekündigt. Neue Verträge sind möglicherweise nicht sofort verfügbar')
     })
 
     tablet.updateFamilyData(family)
@@ -309,6 +309,6 @@ CustomEvent.registerCef('family:setCarRank', (player, vehicleId, rank) => {
     if(!player.user || !player.user.family) return false;
     const veh = Vehicle.get(vehicleId)
     if(!veh || !veh.familyOwner || veh.familyOwner != player.user.familyId) return;
-    player.notify('Вы изменили минимальный ранг для использования автомобиля '+veh.name+' на '+ player.user.family.getRank(rank).name)
+    player.notify('Du hast den Mindestrang für die Nutzung eines Fahrzeugs geändert '+veh.name+' auf '+ player.user.family.getRank(rank).name)
     veh.fromRank = rank
 })

@@ -66,7 +66,7 @@ class FractionsManager {
             this.fractionsDTOs.push(dto);
         });
 
-        console.log(`Загружено ${this.fractionsList.length} фракций`)
+        console.log(`Hochgeladen von ${this.fractionsList.length} Brüche`)
     }
 
     public getFractionRanks(fractionId: number): IFractionRank[] {
@@ -218,11 +218,11 @@ CustomEvent.registerCef('tablet:setRanks', (player: PlayerMp, ranks: IFractionRa
         timeouts.set(player.user.fraction, system.timestamp);
         manager.setFractionRanks(player.user.fraction, ranks);
         fraction.updateFractionsData(manager.fractionsList);
-        player.notify('Изменения успешно сохранены', 'success');
+        player.notify('Die Änderungen wurden erfolgreich gespeichert', 'success');
         player.user.log("tabletFraction", `Изменил ранги во фракции ${player.user.fraction}`)
 
     }else{
-        player.notify('Слишком часто! Можно сохранять раз в 5 минут', 'error');
+        player.notify('Zu oft! Kann alle 5 Minuten gespeichert werden', 'error');
     }
 })
 

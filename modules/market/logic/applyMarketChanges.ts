@@ -9,7 +9,7 @@ import {inventory} from "../../inventory";
 import {ItemEntity} from "../../typeorm/entities/inventory";
 import {AlertType} from "../../../../shared/alert";
 
-const ITEMS_MOVED_STOCK_MSG = 'Некоторые предметы были перемещены на склад рынка, заберите их в течении 24 часов или они пропадут';
+const ITEMS_MOVED_STOCK_MSG = 'Einige Artikel wurden in das Marktlager gebracht. Hol sie innerhalb von 24 Stunden ab, sonst sind sie weg.';
 
 type NotifyType = { msg: string, type: AlertType }
 
@@ -33,7 +33,7 @@ CustomEvent.registerCef('market::applyChanges', async (player, changes: MarketIt
 
     await marketItemsDb.save(marketItems);
     player.user.setGui(null);
-    player.notify('Изменения были успешно применены', 'success');
+    player.notify('Die Änderungen wurden erfolgreich angewendet', 'success');
 
     for (let notify of [...notifies.values()]) {
         player.notify(notify.msg, notify.type);

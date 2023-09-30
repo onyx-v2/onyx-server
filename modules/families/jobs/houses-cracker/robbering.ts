@@ -40,7 +40,7 @@ CustomEvent.registerClient('jobs:houseCracking:rob', async (player) => {
     generateRobberyItem(player);
 
     if (player.housesCrackerData.robbedPoints === interiorCfg.robberyPoints.length) {
-        player.notify('Всё обыскали, пора сваливать отсюда');
+        player.notify('Alles ist durchsucht worden, lass uns hier verschwinden.');
     }
 });
 

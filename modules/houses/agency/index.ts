@@ -51,7 +51,7 @@ class Agency {
             );
         });
 
-        colshapes.new(positions, 'Риелторское агенство', this.interactionHandler, {
+        colshapes.new(positions, 'Maklerbüro', this.interactionHandler, {
             dimension: 0,
             radius: 1,
             color: [255, 255, 255, 255],
@@ -65,17 +65,17 @@ class Agency {
         const house = houses.get(houseId);
 
         if (player.user.money < cost)
-            return player.notify('У вас недостаточно денег', 'error');
+            return player.notify('Du hast nicht genug Geld', 'error');
 
         if (!house) return;
 
-        player.user.log('houses', `Купил метку на дом - ${house.id}`);
+        player.user.log('houses', `Habe einen Anhänger für zu Hause gekauft - ${house.id}`);
 
         player.user.money = player.user.money - cost;
 
         let pos = new mp.Vector3(house.x, house.y, house.z);
 
-        if (house.name.includes('Многоквартирный дом')) {
+        if (house.name.includes('Wohnblock')) {
             const h = HousesTeleportsList.find(el => el.name === house.name);
 
             if (h !== undefined) {
@@ -86,7 +86,7 @@ class Agency {
         player.user.setWaypointBlips([{
             x: pos.x,
             y: pos.y,
-            name: `Свободный дом`,
+            name: `Freies Haus`,
             shortRange: true,
             color: 2,
             type: 492,

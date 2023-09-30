@@ -65,7 +65,7 @@ class EnterWordQuestStep extends QuestStep implements IQuestSavable {
         }
 
         if (word.toLowerCase() !== this._word) {
-            return player.notify('Неверное слово', 'error');
+            return player.notify('Falsches Wort', 'error');
         }
 
         this._isCompleted = true;

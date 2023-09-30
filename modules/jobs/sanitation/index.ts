@@ -52,13 +52,13 @@ class Sanitation {
 
     private joinSquadHandler = (player: PlayerMp, squadId: number, password: string) => {
         if (player.user.sanitationSquad)
-            return player.notify('Вы уже находитесь в сессии', 'error');
+            return player.notify('Du bist bereits in der Sitzung', 'error');
 
         if (!this.squads.has(squadId))
-            return player.notify('Сессия не найдена', 'error');
+            return player.notify('Sitzung nicht gefunden', 'error');
 
         if (this.squads.get(squadId).password !== password)
-            return player.notify('Неверный пароль', 'error');
+            return player.notify('Falsches Passwort', 'error');
 
         this.squads.get(squadId).addPlayer(player);
         this.openMyLobby(player);
@@ -66,10 +66,10 @@ class Sanitation {
 
     private leaveSquadHandler = (player: PlayerMp) => {
         if (!player.user.sanitationSquad)
-            return player.notify('Вы не состоите в сессии', 'error');
+            return player.notify('Du bist nicht in der Sitzung', 'error');
 
         if (!this.squads.has(player.user.sanitationSquad))
-            return player.notify('Ваш сессия не найден', 'error');
+            return player.notify('Deine Sitzung wurde nicht gefunden', 'error');
 
         this.squads.get(player.user.sanitationSquad).removePlayer(player);
         CustomEvent.triggerCef(player, 'sanitation:setComponent', 'enter');

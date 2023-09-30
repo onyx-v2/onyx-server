@@ -24,12 +24,12 @@ class BoardGameManager {
     constructor() {
         colshapes.new(
             new mp.Vector3(126.39, 185.15, 106.62),
-            'Играть',
+            'Spielen',
             this.openMenu
         )
         colshapes.new(
             new mp.Vector3(120.34, 192.19, 98.66),
-            'Выйти',
+            'Aussteigen',
             player => player.user.teleport(126.39, 185.15, 108.62, 0, 0),
             {dimension: -1}
         )
@@ -45,7 +45,7 @@ class BoardGameManager {
         const m = menu.new(player, 'Arcade')
         MONOPOLY_TABLES.forEach(t => {
             m.newItem({
-                name: `Комната №${t.dimension}`,
+                name: `Zimmer №${t.dimension}`,
                 onpress: () => {
                     player.user.teleport(122.47, 193.59, 98.66, 0, t.dimension)
                 },

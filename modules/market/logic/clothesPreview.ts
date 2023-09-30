@@ -14,7 +14,7 @@ CustomEvent.registerCef('market::clothPreview', (player: PlayerMp, tentId: numbe
     const item = inventory.get(itemId);
 
     if (!item) {
-        player.notify('Непредвиденная ошибка', 'error');
+        player.notify('Unvorhergesehener Fehler', 'error');
         return player.user.setGui(null);
     }
 
@@ -28,7 +28,7 @@ CustomEvent.registerCef('market::clothPreview', (player: PlayerMp, tentId: numbe
     const dressConfig = dress.get(dressId);
 
     if (dressConfig.male !== player.user.is_male) {
-        return player.notify(`Это ${dressConfig.male ? 'мужская' : 'женская'} одежда`, 'error');
+        return player.notify(`Es ist ${dressConfig.male ? 'männlich' : 'weiblich'} Kleidungsstück`, 'error');
     }
 
     dressConfig.data[variation].forEach(data => {

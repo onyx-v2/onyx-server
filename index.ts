@@ -28,7 +28,9 @@ import { initLogsDatabaseConnection } from './modules/typeorm/logs'
 import {loadConfig} from "./modules/businesses/lsc";
 
 process.env.TZ = 'Europe/Berlin'
+process.env.TZ = 'Europe/Berlin'
 mp.events.delayInitialization = true;
+system.debug.success('Laden von Servermodulen')
 system.debug.success('Laden von Servermodulen')
 
 initLogsDatabaseConnection()
@@ -45,7 +47,7 @@ initDatabaseConnection().then(async (q) => {
     await dress.load();
     await business.load();
     await fetchIp()
-    system.debug.success('Основные модули, необходимые до инициализации загружены');
+    system.debug.success('Die vor der Initialisierung benötigten Grundmodule werden geladen');
     if(!mp.config.announce) mp.events.delayInitialization = false;
     await inventory.load();
     await loadVehicleConfigs()
@@ -66,7 +68,7 @@ initDatabaseConnection().then(async (q) => {
     await marketItemsDb.init();
     await promocodes1x.load();
     loadGangZone()
-    system.debug.success('Все модули загружены');
+    system.debug.success('Alle Module sind geladen');
     system.debug.success('--------------------');
     if (mp.config.announce) mp.events.delayInitialization = false;
 });

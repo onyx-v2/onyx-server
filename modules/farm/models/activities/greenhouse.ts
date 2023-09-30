@@ -61,13 +61,13 @@ export class Greenhouse extends BaseActivity {
     private startNextStage(): void {
         switch (this.currentStage.type) {
             case GreenhouseStage.Landing:
-                this.startStage(GreenhouseStage.Water, 'Теперь полейте саженцы')
+                this.startStage(GreenhouseStage.Water, 'Jetzt die Setzlinge gießen')
                 break;
             case GreenhouseStage.Water:
-                this.startStage(GreenhouseStage.Collection, 'Соберите растения')
+                this.startStage(GreenhouseStage.Collection, 'Sammle die Pflanzen')
                 break;
             case GreenhouseStage.Collection:
-                this.startStage(GreenhouseStage.Landing, 'Теплица готова к посадке растений')
+                this.startStage(GreenhouseStage.Landing, 'Das Gewächshaus ist bereit für die Bepflanzung')
                 break;
         }
         this.points.forEach(p => p.processed = false)

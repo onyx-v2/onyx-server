@@ -7,7 +7,7 @@ interface MoneyBonusData {
 
 export class MoneyBonus implements IBonus<MoneyBonusData> {
     activate(player: PlayerMp, promocodeName: string, data: MoneyBonusData): void {
-        player.user.addMoney(data.amount, true, `Активация промокода ${promocodeName.toUpperCase()}`);
+        player.user.addMoney(data.amount, true, `Promo Code Aktivierung ${promocodeName.toUpperCase()}`);
     }
 
     addItemsToCreateMenu(player: PlayerMp, _menu: MenuClass, data: MoneyBonusData, updateMenu: () => void): void {
@@ -16,10 +16,10 @@ export class MoneyBonus implements IBonus<MoneyBonusData> {
         }
 
         _menu.newItem({
-            name: 'Количество',
+            name: 'Menge',
             more: data.amount,
             onpress: async () => {
-                const amount = await menu.input(player, 'Введите количество', 0, 7, 'int');
+                const amount = await menu.input(player, 'Gib die Menge ein', 0, 7, 'int');
                 if (amount && !isNaN(amount)) {
                     data.amount = amount;
                 }

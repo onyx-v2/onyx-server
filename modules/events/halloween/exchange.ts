@@ -31,11 +31,11 @@ registerDialog({
         {
             id: 0,
             npcReplies: [
-                { text: 'Привет! Ты наверно хочешь обменять конфеты на что-то интересное?' }
+                { text: 'Hallo! Vielleicht möchtest du Süßigkeiten gegen etwas Interessantes eintauschen.' }
             ],
             answers: [
                 {
-                    text: 'Да, покажи всё что у тебя есть',
+                    text: 'Ja, zeig mir alles, was du hast',
                     toNode: 2
                 }
             ]

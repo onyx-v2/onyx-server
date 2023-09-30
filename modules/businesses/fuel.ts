@@ -20,63 +20,63 @@ export const azsMenuOpenEvent = (player: PlayerMp, shop: BusinessEntity, electro
     const vehicle = player.vehicle;
     if(!vehicle){
         const item = inventoryShared.get(!electro ? 817 : 862)
-        if(!item || !item.defaultCost) return player.notify('Чтобы открыть заправку необходимо находиться в ТС', "error");
+        if(!item || !item.defaultCost) return player.notify('Um eine Tankstelle zu eröffnen, musst du im Fahrzeug sein', "error");
 
-        menu.accept(player, `Вы хотите приобрести ${item.name} за $${system.numberFormat(item.defaultCost)}`).then(status => {
+        menu.accept(player, `Du willst kaufen ${item.name} zugunsten von $${system.numberFormat(item.defaultCost)}`).then(status => {
             if(!status) return;
-            if(user.money < item.defaultCost) return player.notify('У вас недостаточно средств для оплаты', 'error');
+            if(user.money < item.defaultCost) return player.notify('Du hast nicht genügend Geld, um zu bezahlen', 'error');
             if(!user.tryGiveItem(item.item_id, true, true)) return;
-            user.removeMoney(item.defaultCost, true, `Покупка ${item.name} на заправке`);
-            business.addMoney(shop, item.defaultCost * 0.7, `Покупка ${item.name}`);
+            user.removeMoney(item.defaultCost, true, `Kaufen ${item.name} an der Pumpe`);
+            business.addMoney(shop, item.defaultCost * 0.7, `Kaufen ${item.name}`);
         })
 
         return;
     }
-    if (!vehicle) return player.notify('Чтобы открыть заправку необходимо находиться в ТС', "error");
-    if (!user.isDriver) return player.notify('Вы должны быть за рулём', "error");
+    if (!vehicle) return player.notify('Um eine Tankstelle zu eröffnen, musst du im Fahrzeug sein', "error");
+    if (!user.isDriver) return player.notify('Du solltest fahren', "error");
     const vehconf = Vehicle.getVehicleConfig(vehicle);
-    if(!vehconf) return player.notify('Данный транспорт нельзя заправлять, мы не знаем что для него подходит', 'error');
+    if(!vehconf) return player.notify('Dieses Fahrzeug kann nicht betankt werden, wir wissen nicht, was dafür geeignet ist.', 'error');
     CustomEvent.triggerClient(player, 'fuel:open', electro, shop.catalog, shop.id, shop.name, Vehicle.getFuel(vehicle), Vehicle.getFuelMax(vehicle))
 }
 
 CustomEvent.registerCef('fuel:add', async (player, id: number, amount: number, payType: PayType, pin: string, electro: boolean, selectedFuel: VEHICLE_FUEL_TYPE) => {
     const user = player.user;
-    if (!user) return "Ошибка";
+    if (!user) return "Fehler";
     const veh = player.vehicle;
-    if (!veh) return "Вы должны быть в транспорте чтобы его " + (electro ? "заряжать" : "заправлять");
-    if (!user.isDriver) return 'Вы должны быть за рулём';
+    if (!veh) return "Du musst im Transporter sein, um ihn zu bekommen " + (electro ? "Ladung" : "tuck");
+    if (!user.isDriver) return 'Du solltest fahren';
     const vehconf = Vehicle.getVehicleConfig(veh);
-    if (!vehconf) return 'Данный транспорт нельзя заправлять, мы не знаем что для него подходит';
+    if (!vehconf) return 'Dieses Fahrzeug kann nicht betankt werden, wir wissen nicht, was dafür geeignet ist.';
     const biz = business.get(id);
-    if(!biz) return "Вы попали на сломаную заправку, либо её ликвидировали пока вы решались заправиться";
-    if (biz.type !== BUSINESS_TYPE.FUEL) return "Вы попали на сломаную заправку, а быть может это вообще не заправка";
-    if(electro && vehconf.fuel_type !== VEHICLE_FUEL_TYPE.ELECTRO) return "Для данного транспорта не подходит электрозаправка";
-    if(!electro && vehconf.fuel_type === VEHICLE_FUEL_TYPE.ELECTRO) return "Данному транспорту необходима электрозаправка";
-    if (vehconf.fuel_type !== selectedFuel) return "Выбранный вид топлива не подходит для данного ТС";
+    if(!biz) return "Du triffst auf eine kaputte Tankstelle, oder sie wurde abgebaut, während du tanken wolltest.";
+    if (biz.type !== BUSINESS_TYPE.FUEL) return "Du hast eine kaputte Tankstelle erwischt, oder vielleicht ist es gar keine Tankstelle";
+    if(electro && vehconf.fuel_type !== VEHICLE_FUEL_TYPE.ELECTRO) return "Elektrische Betankung ist für dieses Fahrzeug nicht geeignet";
+    if(!electro && vehconf.fuel_type === VEHICLE_FUEL_TYPE.ELECTRO) return "Dieses Fahrzeug muss elektrisch aufgetankt werden";
+    if (vehconf.fuel_type !== selectedFuel) return "Die gewählte Kraftstoffart ist für dieses Fahrzeug nicht geeignet";
 
     const item = biz.catalog.find(q => q.item === selectedFuel);
-    if (!item) return "Выбранного типа топлива нет на данной заправке";
+    if (!item) return "Die ausgewählte Kraftstoffart ist an dieser Tankstelle nicht verfügbar";
     let sum: number;
     if(item.count < amount) sum = getFuelCost(selectedFuel) * amount;
     else sum = item.price * amount;
 
-    if(payType === PayType.COMPANY && (!user.fractionData || !user.fractionData.gos)) return "Вы не можете заправляться за счёт компании";
-    if(payType === PayType.COMPANY && veh.fraction !== user.fraction) return "За счёт компании можно заправлять только транспорт компании";
+    if(payType === PayType.COMPANY && (!user.fractionData || !user.fractionData.gos)) return "Du kannst nicht auf Kosten des Unternehmens auftanken";
+    if(payType === PayType.COMPANY && veh.fraction !== user.fraction) return "Nur Firmenfahrzeuge können auf Kosten des Unternehmens betankt werdenи";
 
-    if (payType === PayType.CASH && user.money < sum) return "У вас недостаточно средств";
+    if (payType === PayType.CASH && user.money < sum) return "Du hast nicht genug Geld";
 
-    if (payType === PayType.CARD && !user.tryRemoveBankMoney(sum, true, `Заправка ТС ${vehconf.name} ${fuelTypeNames[selectedFuel]} ${amount}${electro ? 'кВт' : 'л'}`, `${BUSINESS_SUBTYPE_NAMES[biz.type][biz.sub_type]} #${biz.id}`)) return "У вас недостаточно средств";
-    if (payType === PayType.CASH) user.removeMoney(sum, true, `Заправка ТС ${vehconf.name} ${fuelTypeNames[selectedFuel]} ${amount}${electro ? 'кВт' : 'л'} ${BUSINESS_SUBTYPE_NAMES[biz.type][biz.sub_type]} #${biz.id}`);
+    if (payType === PayType.CARD && !user.tryRemoveBankMoney(sum, true, `Tanken ${vehconf.name} ${fuelTypeNames[selectedFuel]} ${amount}${electro ? 'kW' : 'l'}`, `${BUSINESS_SUBTYPE_NAMES[biz.type][biz.sub_type]} #${biz.id}`)) return "Du hast nicht genug Geld";
+    if (payType === PayType.CASH) user.removeMoney(sum, true, `Tanken ${vehconf.name} ${fuelTypeNames[selectedFuel]} ${amount}${electro ? 'kW' : 'l'} ${BUSINESS_SUBTYPE_NAMES[biz.type][biz.sub_type]} #${biz.id}`);
     Vehicle.addFuel(veh, amount);
     if([PayType.CASH, PayType.CARD].includes(payType)) player.user.achiev.setAchievTickBiz(biz.type, biz.sub_type, sum)
     writeClientRatingLog(player, biz.id, businessDefaultCostItem(biz, biz.catalog.find(s => s.item === selectedFuel).item, 1), fuelTypeNames[selectedFuel], amount);
-    player.notify(`Транспорт ${electro ? "заряжен" : "заправлен"}`, "success");
+    player.notify(`Transport ${electro ? "geladen" : "angeheizt"}`, "success");
     if(item.count >= amount){
         const o = [...biz.catalog]
         const fuelItem = o.find(s => s.item === selectedFuel);
         fuelItem.count -= amount;
         biz.catalog = o;
-        business.addMoney(biz, sum, `Покупка топлива ${fuelTypeNames[selectedFuel]} ${amount}${electro ? 'кВт' : 'л'}`,
+        business.addMoney(biz, sum, `Kauf von Kraftstoff ${fuelTypeNames[selectedFuel]} ${amount}${electro ? 'kW' : 'l'}`,
             false, false, true, true, businessDefaultCostItem(biz, fuelItem.item, amount));
     }
     return "";
@@ -87,12 +87,12 @@ export const azsMenuBase = (player: PlayerMp, item: BusinessEntity, electro: boo
     if(!user) return;
     if (!user.isAdminNow(6) && item.userId !== user.id && !needUnload(player, item) && !canUserStartBizWar(user))
         return azsMenuOpenEvent(player, item, electro);
-    const m = menu.new(player, '', 'Заправка');
+    const m = menu.new(player, '', 'Tanken');
     m.sprite = "shopui_title_gasstation";
 
     if (needUnload(player, item)){
         m.newItem({
-            name: "~g~Выгрузить заказ",
+            name: "~g~Auftrag abladen",
             onpress: () => {
                 m.close();
                 deliverSet(player)
@@ -101,7 +101,7 @@ export const azsMenuBase = (player: PlayerMp, item: BusinessEntity, electro: boo
     }
 
     m.newItem({
-        name: "Меню заправки",
+        name: "Menü Tanken",
         onpress: () => {
             m.close();
             azsMenuOpenEvent(player, item, electro);
@@ -113,7 +113,7 @@ export const azsMenuBase = (player: PlayerMp, item: BusinessEntity, electro: boo
     if (user.isAdminNow(6) || item.userId === user.id){
 
         m.newItem({
-            name: '~g~Заказ продукции',
+            name: '~g~Produktbestellung',
             onpress: () => {
                 orderDeliverMenu(player, item)
             }
@@ -121,7 +121,7 @@ export const azsMenuBase = (player: PlayerMp, item: BusinessEntity, electro: boo
 
 
         m.newItem({
-            name: 'Управление бизнесом',
+            name: 'Business Management',
             onpress: () => {
 
                 businessCatalogMenu(player, item, () => {

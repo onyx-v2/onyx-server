@@ -39,7 +39,7 @@ export const QuestNpcParameters : NpcParameters = {
     Position: new mp.Vector3(705.22, -960.97, 30.4),
     Heading: 249.0,
     Model: 'csb_agent',
-    Name: 'Вор со стажем'
+    Name: 'Ein Dieb mit einer Erfolgsbilanz'
 }
 
 export const QuestBlip = 472;

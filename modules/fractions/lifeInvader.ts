@@ -8,7 +8,7 @@ gui.chat.registerCommand('w', (player, ...args) => {
 
     if (player.user.fraction !== FACTION_ID.LIFEINVADER) return;
     if (player.user.rank < NEWS_COMMAND_MIN_RANK) {
-        player.notify('Нет доступа', 'error');
+        player.notify('Kein Zugang', 'error');
         return;
     }
 

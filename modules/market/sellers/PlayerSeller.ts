@@ -6,7 +6,7 @@ export class PlayerSeller implements ISeller {
         private readonly position: Vector3Mp,
         private readonly player: PlayerMp
     ) {
-        player.notify('Так как вы продаете товары сами, то не можете покидать пределы рынка', 'info');
+        player.notify('Da du die Waren selbst verkaufst, kannst du den Marktplatz nicht verlassen', 'info');
 
         CustomEvent.triggerClient(player, 'market:setSellerPosition', this.position);
     }
@@ -25,6 +25,6 @@ export class PlayerSeller implements ISeller {
 
     public callToTent(caller: PlayerMp): void {
         CustomEvent.triggerClient(this.player, 'market:calledByCop');
-        caller.notify('Владелец палатки подойдет к ней в ближайшее время');
+        caller.notify('Der Besitzer des Zeltes wird sich in nächster Zeit bei ihr melden');
     }
 }

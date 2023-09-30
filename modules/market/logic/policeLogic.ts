@@ -31,6 +31,6 @@ mp.events.add('playerCuffed', (targetPlayer: PlayerMp, isCuffed: boolean) => {
         }
 
         playerTent.destroy(true);
-        targetPlayer.notify('Аренда палатки завершена автоматически, так как вы были арестованы', 'warning');
+        targetPlayer.notify('Die Zeltvermietung wird automatisch beendet, weil du verhaftet wurdest', 'warning');
     }, TENT_DESTROY_AFTER_CUFFS_SECONDS * 1000);
 });

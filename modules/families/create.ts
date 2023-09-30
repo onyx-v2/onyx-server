@@ -19,7 +19,7 @@ enum PayTypeFamily {
 const createPosition = FAMILY_CREATE_POS_GOS
 
 
-colshapes.new(new mp.Vector3(createPosition.x, createPosition.y, createPosition.z), 'Создание семьи', (player) => {
+colshapes.new(new mp.Vector3(createPosition.x, createPosition.y, createPosition.z), 'Eine Familie gründen', (player) => {
     familyCreateGUI(player)
 }, {
     drawStaticName: "scaleform",
@@ -29,17 +29,17 @@ colshapes.new(new mp.Vector3(createPosition.x, createPosition.y, createPosition.
 /** Отобразить ГУИ создания семьи игроку */
 export const familyCreateGUI = (player: PlayerMp) => {
     if(!mp.players.exists(player) || !player.user) return;
-    if(player.user.family) return player.notify('Вы не можете создать семью, так как состоите в другой семье')
+    if(player.user.family) return player.notify('Du kannst keine Familie gründen, weil du in einer anderen Familie bist.е')
     CustomEvent.triggerClient(player, 'family:create:start', [player.user.account.freeFamily ? 1 : FAMILY_CREATE_COINS, player.user.account.freeFamily ? 1 : FAMILY_CREATE_MONEY])
 }
 
 CustomEvent.registerCef('family:create', (player: PlayerMp, name: string, payType: PayTypeFamily, pin: string) => {
     if (!name || ! /^[a-zA-Z_-]{0,15}$/i.test(name)) {
-        player.notify('Не удалось создать семью с выбранным названием.', "error")
+        player.notify('Eine Familie mit dem gewählten Namen konnte nicht erstellt werden.', "error")
         return false
     }
     if (Family.getAll().find(f => f.name == name)) {
-        player.notify('Семья с таким названием уже существует', "error")
+        player.notify('Es gibt bereits eine Familie mit diesem Namen', "error")
         return false;
     }
     let user = player.user;
@@ -48,23 +48,23 @@ CustomEvent.registerCef('family:create', (player: PlayerMp, name: string, payTyp
     if(!user.account.freeFamily) {
         if (payType == PayTypeFamily.CASH) {
             if (user.money < FAMILY_CREATE_MONEY) {
-                player.notify("У вас недостаточно средств", 'error');
+                player.notify("Du hast nicht genug Geld", 'error');
                 return false
             }
-            user.removeMoney(FAMILY_CREATE_MONEY, true, 'Создание семьи')
+            user.removeMoney(FAMILY_CREATE_MONEY, true, 'Eine Familie gründen')
         }
         else if (payType == PayTypeFamily.CARD) {
             if (!user.verifyBankCardPay(pin)) {
-                player.notify(`Либо вы ввели не верный пин-код, либо у вас нет при себе банковской карты`, 'error')
+                player.notify(`Entweder hast du den falschen Pin-Code eingegeben oder du hast deine Bankkarte nicht dabei`, 'error')
                 return false
             }
-            if (!user.tryRemoveBankMoney(FAMILY_CREATE_MONEY, true, 'Создание семьи', `${name}`)) return false;
+            if (!user.tryRemoveBankMoney(FAMILY_CREATE_MONEY, true, 'Eine Familie gründen', `${name}`)) return false;
         }
         else if (payType == PayTypeFamily.DONATE) {
-            if (!user.tryRemoveDonateMoney(FAMILY_CREATE_COINS, true, 'Создание семьи')) return false;
+            if (!user.tryRemoveDonateMoney(FAMILY_CREATE_COINS, true, 'Eine Familie gründen')) return false;
         }
         else {
-            system.debug.error('[Семьи] Попытка использовать несуществующий тип оплаты')
+            system.debug.error('[Families] Versuch, eine nicht existierende Zahlungsart zu verwenden')
             return false
         }
     }
@@ -75,10 +75,10 @@ CustomEvent.registerCef('family:create', (player: PlayerMp, name: string, payTyp
         player.user.family = f
         player.user.familyRank = player.user.family.leaderRankID
         if(player.user.account.freeFamily) player.user.account.freeFamily = 0
-        player.notify('Поздравляем! Вы создали семью', "success")
+        player.notify('Herzlichen Glückwunsch! Du hast eine Familie gegründet', "success")
     }).catch(r => {
-        console.error('[ERROR] Ошибка создания семьи: ' + r);
-        player.notify('Не удалось создать семью. Обратитесь к Администрации сервера.', "error")
+        console.error('[ERROR] Fehler bei der Familienerstellung: ' + r);
+        player.notify('Eine Familie konnte nicht erstellt werden. Kontaktiere die Serververwaltung.', "error")
     })
     return true;
 })

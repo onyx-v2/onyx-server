@@ -27,7 +27,7 @@ async function handleInteractNpc(player: PlayerMp) {
     if (!player.user) return;
 
     if (!player.user.fractionData?.mafia) {
-        player.notify('Недоступно для вас', 'error')
+        player.notify('Nicht verfügbar für dich', 'error')
         return;
     }
 
@@ -35,10 +35,10 @@ async function handleInteractNpc(player: PlayerMp) {
 }
 
 function openJobMenu(player: PlayerMp) {
-    const jobMenu = menu.new(player, 'Грабеж домов');
+    const jobMenu = menu.new(player, 'Einbruch in ein Haus');
 
     jobMenu.newItem({
-        name: 'Начать работу',
+        name: 'Los gehts',
         onpress: () => startJob(player)
     });
 
@@ -47,19 +47,19 @@ function openJobMenu(player: PlayerMp) {
 
 function startJob(player: PlayerMp) {
     if (player.housesCrackerData) {
-        player.notify('Ты ещё не ограбил прошлый дом', 'error');
+        player.notify('Du hast das letzte Haus noch nicht ausgeraubt', 'error');
         return;
     }
 
     const nextTaskTime = player.user.entity.robberyTask_nextAvailableTime;
     if (system.timestamp < nextTaskTime) {
         const canGetTaskInMinutes = Math.ceil((nextTaskTime - system.timestamp) / 60);
-        player.notify(`Ты можешь взять новое задание через ${canGetTaskInMinutes} минут`, 'error');
+        player.notify(`Du kannst eine neue Aufgabe übernehmen in ${canGetTaskInMinutes} Minuten`, 'error');
         return;
     }
 
     if (!isPlayerHaveBag(player)) {
-        player.notify('Вам нужна сумка, чтобы начать ограбление', 'error');
+        player.notify('Du brauchst eine Tasche, um den Raub zu beginnen', 'error');
         return;
     }
 
@@ -78,7 +78,7 @@ function startJob(player: PlayerMp) {
     createCrackPoint(player, house);
 
     player.user.setWaypoint(house.x, house.y, house.z);
-    player.notify('Отправляйтесь к дому, отмеченному на карте', 'info');
+    player.notify('Gehe zu dem auf der Karte markierten Haus', 'info');
 }
 
 function isPlayerHaveBag(player: PlayerMp): boolean {

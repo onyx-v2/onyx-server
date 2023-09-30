@@ -7,7 +7,7 @@ export class RealDrop extends DropBase {
     }
     
     protected onDropActivated(player: PlayerMp): boolean {
-        player.notify('Вы активировали реальный приз! Обратитесь к администрации для выдачи')
+        player.notify('Du hast einen echten Preis aktiviert! Kontaktiere die Verwaltung für die Ausgabe')
         return true;
     };
 }

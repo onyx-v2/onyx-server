@@ -52,8 +52,8 @@ function endRobberyTask(player: PlayerMp, isSuccessfully: boolean = true) {
     CustomEvent.triggerClient(player, 'jobs:houseCracking:end');
 
     if (isSuccessfully) {
-        player.notify('Задание успешно завершено: вы покинули зону. ' +
-            'Всё награбленное находится у вас в инвентаре, можете продать на черном рынке.');
+        player.notify('Die Mission wurde erfolgreich abgeschlossen: Du hast das Gebiet verlassen. ' +
+            'Die ganze Beute ist in deinem Inventar, du kannst sie auf dem Schwarzmarkt verkaufen.');
 
         const robbedItems = player.housesCrackerData.robbedItems;
         for (const item of robbedItems) {
@@ -67,6 +67,6 @@ function endRobberyTask(player: PlayerMp, isSuccessfully: boolean = true) {
         
         delete player.housesCrackerData;
     } else {
-        player.notify('Задание ограбления провалено.', 'warning');
+        player.notify('Raubüberfall-Mission gescheitert.', 'warning');
     }
 }

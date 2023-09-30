@@ -37,7 +37,7 @@ export class TradeTent {
         this.id = TradeTent._idGenerator++;
 
         const colshapePosition = new mp.Vector3(position.x, position.y, position.z - 0.95);
-        this.interactColshape = colshapes.new(colshapePosition, 'Открыть список товаров', this.openMarket.bind(this), {
+        this.interactColshape = colshapes.new(colshapePosition, 'Produktliste öffnen', this.openMarket.bind(this), {
             type: 27,
             radius: 2
         });
@@ -66,7 +66,7 @@ export class TradeTent {
     public destroy(returnCompensation: boolean = false) {
         if (returnCompensation) {
             const compensation = getMarketRentCompensation(this.timeLeftS);
-            this.owner.user.addMoney(compensation, false, 'Возврат за досрочное завершение аренды палатки');
+            this.owner.user.addMoney(compensation, false, 'Rückerstattung bei vorzeitiger Beendigung der Zeltmiete');
         }
 
         this.moveItemsToStock();
@@ -93,7 +93,7 @@ export class TradeTent {
         const ownerMoney = Math.floor(money * (ownerPercents / 100));
 
         this.seller.makePayment(sellerMoney);
-        this.owner.user.addMoney(ownerMoney, true, 'Продажа предметов в торговой палатке');
+        this.owner.user.addMoney(ownerMoney, true, 'Verkaufen von Artikeln am Marktstand');
 
         this.createHistoryItem(soldItem, soldItemAmount, ownerMoney, buyerName);
     }

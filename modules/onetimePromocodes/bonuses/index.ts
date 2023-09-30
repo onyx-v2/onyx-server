@@ -8,7 +8,7 @@ interface Bonuses {
 
 export const promocodeBonuses: Bonuses = {
     types: [
-        { type: 'coins', name: 'Коины', bonus: new CoinsBonus() },
-        { type: 'money', name: 'Деньги', bonus: new MoneyBonus() }
+        { type: 'coins', name: 'Münzen', bonus: new CoinsBonus() },
+        { type: 'money', name: 'Geld', bonus: new MoneyBonus() }
     ]
 }

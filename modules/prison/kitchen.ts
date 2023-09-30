@@ -2,13 +2,13 @@ import {colshapes} from "../checkpoints";
 import {PRISON_KITCHEN_DRINK, PRISON_KITCHEN_EAT, PRISON_KITCHEN_EATING} from "../../../shared/prison/config";
 import {system} from "../system";
 
-colshapes.new(PRISON_KITCHEN_EAT, "Бургеры", (player) => {
+colshapes.new(PRISON_KITCHEN_EAT, "Burgers", (player) => {
     if (!player.user) return;
     if (!player.user.prison)
-        return player.notify("Кухня только для заключенных", "error");
+        return player.notify("Die Küche ist nur für Gefangene", "error");
 
     if (system.timestamp - player.user.prisonLastEat < PRISON_KITCHEN_EATING * 60)
-        return player.notify("Вы уже недавно брали бургер", "error");
+        return player.notify("Du hast kürzlich einen Burger gegessen", "error");
 
     player.user.prisonLastEat = system.timestamp;
     player.user.food += 200;
@@ -20,13 +20,13 @@ colshapes.new(PRISON_KITCHEN_EAT, "Бургеры", (player) => {
     }, 4000)
 });
 
-colshapes.new(PRISON_KITCHEN_DRINK, "Вода", (player) => {
+colshapes.new(PRISON_KITCHEN_DRINK, "Wasser", (player) => {
     if (!player.user) return;
     if (!player.user.prison)
-        return player.notify("Кухня только для заключенных", "error");
+        return player.notify("Die Küche ist nur für Gefangene", "error");
 
     if (system.timestamp - player.user.prisonLastDrink < PRISON_KITCHEN_EATING * 60)
-        return player.notify("Вы уже недавно брали воду", "error");
+        return player.notify("Du hast kürzlich schon Wasser genommen", "error");
 
     player.user.prisonLastDrink = system.timestamp;
     player.user.water += 500;

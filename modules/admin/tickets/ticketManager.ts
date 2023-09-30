@@ -22,19 +22,19 @@ class TicketManager {
             const timeSinceCreateLastTicket = system.timestamp - this._cooldowns.get(creator)
             if (timeSinceCreateLastTicket >= TICKET_CREATE_COOLDOWN) {
                 this._cooldowns.delete(creator)
-            } else return creator.notify(`Вы можете создать тикет только через ${system.formatTime(TICKET_CREATE_COOLDOWN - timeSinceCreateLastTicket)}`, 'warning')
+            } else return creator.notify(`Du kannst ein Ticket nur erstellen über ${system.formatTime(TICKET_CREATE_COOLDOWN - timeSinceCreateLastTicket)}`, 'warning')
         }
 
         this.queue.addToQueue(creator, message)
         this._cooldowns.set(creator, system.timestamp)
 
         creator.user.setGui(null)
-        creator.notify(`Ваш тикет в очереди ${this.queue.length}, ожидайте рассмотрения`, 'success')
+        creator.notify(`Dein Ticket ist in der Warteschlange ${this.queue.length}, bitte warte!`, 'success')
         
         mp.players.toArray()
             .filter(p => p.user && p.user.isAdminNow())
             .forEach(p => {
-                p.notify(`Поступил новый репорт, открой F6!`, 'info')
+                p.notify(`Ein neuer Bericht ist eingetroffen, öffne F6!`, 'info')
                 CustomEvent.triggerCef(p, 'playSound', 'succ')
                 if (p.ticketPage) {
                     CustomEvent.triggerCef(p, 'ticket:insert', [this.queue.lastTicket.description])
@@ -47,7 +47,7 @@ class TicketManager {
 
         const ticket = this.queue.getById(ticketId)
         if (!ticket) {
-            admin.notify('Тикет был закрыт или удален', 'warning')
+            admin.notify('Das Ticket wurde geschlossen oder gelöscht', 'warning')
             return null
         }
         if (!ticket.description.adminName)
@@ -67,7 +67,7 @@ class TicketManager {
 
         const ticket = this.queue.getById(ticketId)
         if (!ticket) {
-            admin.notify('Тикет был закрыт или удален', 'warning')
+            admin.notify('Das Ticket wurde geschlossen oder gelöscht', 'warning')
             return null
         }
 

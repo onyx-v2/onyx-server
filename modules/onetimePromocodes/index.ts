@@ -56,7 +56,7 @@ export const promocodes1x = {
         name = name.toLowerCase();
 
         if (promocodesPool.some(promocode => promocode.name === name && promocode.expiredAt > system.timestamp)) {
-            return 'Промокод с таким названием уже существует';
+            return 'Ein Promo-Code mit diesem Namen existiert bereits';
         }
 
         const promocode = Promocodes1x.create({
@@ -89,18 +89,18 @@ export const promocodes1x = {
         promocodeName = promocodeName.toLowerCase();
 
         if (!promocodes1x.isActive(promocodeName)) {
-            return player.notify('Промокод недействителен', 'error');
+            return player.notify('Promo Code ungültig', 'error');
         }
 
         if (!promocodeActivations.has(player.user.account.id)) {
-            return player.notify('Попробуйте позже', 'error');
+            return player.notify('Versuche es später noch einmal', 'error');
         }
 
         const promocode = promocodesPool.find(promocode => promocode.name === promocodeName && promocode.expiredAt > system.timestamp);
 
         const activatedPromocodes = promocodeActivations.get(player.user.account.id);
         if (activatedPromocodes.some(promocodeActivation => promocodeActivation.promocodeId === promocode.id)) {
-            return player.notify('Вы уже использовали этот промокод', 'error');
+            return player.notify('Du hast diesen Promo-Code bereits verwendet', 'error');
         }
 
         const bonusesData: BonusData[] = JSON.parse(promocode.bonuses);
@@ -122,7 +122,7 @@ export const promocodes1x = {
         activatedPromocodes.push(promocodeActivation);
         promocodeActivation.save();
 
-        player.notify(`Вы активировали промокод ${promocodeName.toUpperCase()}`);
+        player.notify(`Du hast den Promo-Code aktiviert ${promocodeName.toUpperCase()}`);
     },
 
     getAll: () => {
