@@ -27,22 +27,19 @@ import {promocodes1x} from "./modules/onetimePromocodes";
 import { initLogsDatabaseConnection } from './modules/typeorm/logs'
 import {loadConfig} from "./modules/businesses/lsc";
 
-let hack: NodeJS.Timeout = setInterval(() => { }, 0);
-
-
-process.env.TZ = 'Europe/Moscow'
+process.env.TZ = 'Europe/Berlin'
 mp.events.delayInitialization = true;
-system.debug.success('Загрузка модулей сервера')
+system.debug.success('Laden von Servermodulen')
 
 initLogsDatabaseConnection()
 
 initDatabaseConnection().then(async (q) => {
     await houses.load();
     if (fs.existsSync('./client_packages/dress.json.js')){
-        system.debug.debug(`Конфиг одежды существует, удаляем`);
+        system.debug.debug(`Die Kleidungskonfiguration existiert, löschen Sie sie`);
         fs.unlinkSync('./client_packages/dress.json.js');
     } else {
-        system.debug.debug(`Конфиг одежды не существует`);
+        system.debug.debug(`Kleidungskonfigurationen sind nicht vorhanden`);
     }
     await loadConfig()
     await dress.load();

@@ -194,8 +194,8 @@ export const dress = {
     },
     load: () => {
         system.debug.info('------------------------')
-        console.time("Загрузка одежды")
-        console.time("Время загрузки одежды")
+        console.time("Verladen von Kleidung")
+        console.time("Ladezeit der Kleidung")
         return new Promise((resolve, reject) => {
             DressEntity.find().then(data => {
                 // data.map(item => {
@@ -206,18 +206,18 @@ export const dress = {
                 //     }
                 // })
                 dress.data = data;
-                system.debug.info('Количество элементов одежды', data.length);
-                console.timeEnd("Время загрузки одежды")
+                system.debug.info('Anzahl der Kleidungsstücke', data.length);
+                console.timeEnd("Ladezeit der Kleidung")
                 system.debug.info('------------------------')
                 staticDress = dress.dynamicConfig;
                 fs.writeFileSync('./client_packages/dress.json.js', `global.dressstatic = ${JSON.stringify(dress.dynamicConfig)}`);
-                system.debug.debug(`Конфиг одежды сохранён`);
+                system.debug.debug(`Die Bekleidungskonfigurationen wurden beibehalten.`);
                 resolve(null);
             })
         })
     },
     adminMenu: (player: PlayerMp, filter?:string) => {
-        let m = menu.new(player, "", "Список одежды")
+        let m = menu.new(player, "", "Liste der Kleidung")
         const user = player.user;
         m.newItem({
             name: "~g~Новый элемент",
