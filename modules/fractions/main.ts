@@ -219,7 +219,7 @@ CustomEvent.registerCef('tablet:setRanks', (player: PlayerMp, ranks: IFractionRa
         manager.setFractionRanks(player.user.fraction, ranks);
         fraction.updateFractionsData(manager.fractionsList);
         player.notify('Die Änderungen wurden erfolgreich gespeichert', 'success');
-        player.user.log("tabletFraction", `Изменил ранги во фракции ${player.user.fraction}`)
+        player.user.log("tabletFraction", `Ändern der Ränge in der Fraktion ${player.user.fraction}`)
 
     }else{
         player.notify('Zu oft! Kann alle 5 Minuten gespeichert werden', 'error');

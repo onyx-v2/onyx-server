@@ -53,14 +53,14 @@ gui.chat.registerCommand('changeSocialName', async (player: PlayerMp, oldSocialN
     });
 
     if (!account) {
-        return player.notify('Аккаунт с таким Social`ом не найден');
+        return player.notify('Ein Konto mit dieser Sozialversicherungsnummer wurde nicht gefunden.');
     }
 
     account.social_name = newSocialName;
     await account.save();
 
-    player.user.log('AdminJob', `Сменил social на аккаунте ${account.login} с ${oldSocialName} на ${newSocialName}`);
-    player.notify(`Вы сменили social на аккаунте ${account.login} с ${oldSocialName} на ${newSocialName}`);
+    player.user.log('AdminJob', `Die Sozialdaten des Kontos geändert ${account.login} с ${oldSocialName} auf ${newSocialName}`);
+    player.notify(`Du hast die Sozialversicherungsnummer des Kontos geändert ${account.login} с ${oldSocialName} auf ${newSocialName}`);
 });
 
 gui.chat.registerCommand('deleteitems', (player, targetIdStr, itemIdStr) => {
@@ -70,7 +70,7 @@ gui.chat.registerCommand('deleteitems', (player, targetIdStr, itemIdStr) => {
 
     const target = UserStatic.get(parseInt(targetIdStr));
     if (!target || !target.user) {
-        return player.notify('Игрок не найден', 'error')
+        return player.notify('Spieler nicht gefunden', 'error')
     }
 
     const itemId = parseInt(itemIdStr);
@@ -85,8 +85,8 @@ gui.chat.registerCommand('deleteitems', (player, targetIdStr, itemIdStr) => {
         inventory.deleteItem(item, OWNER_TYPES.PLAYER, target.user.id);
     });
 
-    player.outputChatBox(`У игрока ${targetIdStr}: ${itemIdStr} - itemAmount x${itemAmount}, itemCount x${itemCount}`);
-    player.user.log('AdminJob', `Забрал все предметы #${itemId} (${itemCount}, ${itemAmount})`, target);
+    player.outputChatBox(`Der Spieler hat ${targetIdStr}: ${itemIdStr} - itemAmount x${itemAmount}, itemCount x${itemCount}`);
+    player.user.log('AdminJob', `Alle Gegenstände mitgenommen #${itemId} (${itemCount}, ${itemAmount})`, target);
 });
 
 gui.chat.registerCommand('toggleevlog', (player) => {
@@ -102,8 +102,8 @@ gui.chat.registerCommand('ajail', (player, userIdStr, minutesStr, ...reasonArgs)
     const minutes = parseInt(minutesStr);
     const reason = reasonArgs.join(' ');
 
-    if (!userId || !minutes || !reason) return player.notify("Ошибка в аргументах", "error");
-    if (minutes > 500) return player.notify("Нельзя посадить больше чем на 500 минут", "error");
+    if (!userId || !minutes || !reason) return player.notify("Argument Fehler", "error");
+    if (minutes > 500) return player.notify("Du kannst nicht mehr als 500 Minuten einbringen", "error");
 
     prison.jailAdmin(player, userId, minutes, reason);
 });
@@ -156,23 +156,23 @@ const testMenu = (player: PlayerMp) => {
     const user = player.user;
     if (!user) return;
     if (mp.config.announce) return;
-    const m = menu.new(player, 'Панель тестировщика');
+    const m = menu.new(player, 'Testfeld');
 
     m.newItem({
-        name: 'ТП на метку',
+        name: 'TP zum Markieren',
         onpress: () => {
             CustomEvent.triggerClient(player, 'tpWaypoint');
         }
     })
 
     m.newItem({
-        name: 'Фракция',
-        more: user.fraction ? `${fractionCfg.getFractionName(user.fraction)} (${user.fraction})` : "Не во фракции",
+        name: 'Fraktion',
+        more: user.fraction ? `${fractionCfg.getFractionName(user.fraction)} (${user.fraction})` : "Nicht in der Fraktion",
         onpress: () => {
             menu.selectFraction(player, 'all', user.fraction).then(async fraction => {
                 if (!fraction) return testMenu(player);
                 user.fraction = fraction;
-                player.notify("Фракция указана", "error");
+                player.notify("Fraktion angegeben", "error");
                 testMenu(player)
             })
         }
@@ -180,73 +180,73 @@ const testMenu = (player: PlayerMp) => {
 
     if (user.fraction) {
         m.newItem({
-            name: 'Ранг',
-            more: user.rank ? `${fractionCfg.getRankName(user.fraction, user.rank)} (${user.rank})` : "Нет ранга",
+            name: 'Rang',
+            more: user.rank ? `${fractionCfg.getRankName(user.fraction, user.rank)} (${user.rank})` : "Kein Rang",
             onpress: () => {
-                menu.selector(player, "Выберите ранг", fractionCfg.getFractionRanks(user.fraction), true).then(async val => {
+                menu.selector(player, "Wähle einen Rang", fractionCfg.getFractionRanks(user.fraction), true).then(async val => {
                     if (typeof val !== "number") return testMenu(player);
-                    if (!user.fraction) return player.notify("Игрок не во фракции", "error"), testMenu(player);
+                    if (!user.fraction) return player.notify("Spieler nicht in einer Fraktion", "error"), testMenu(player);
                     user.rank = val + 1;
-                    player.notify("Ранг назначен", "success");
+                    player.notify("Rang zugewiesen", "success");
                     testMenu(player)
                 })
             }
         })
         m.newItem({
-            name: '~r~Снять фракцию',
+            name: '~r~Ziehe die Fraktion zurück',
             onpress: () => {
                 menu.accept(player).then(async status => {
                     if (!status) return testMenu(player);
                     user.fraction = 0;
                     user.rank = 0;
-                    player.notify("Фракция указана", "error");
+                    player.notify("Fraktion angegeben", "error");
                 })
             }
         })
     }
 
     m.newItem({
-        name: 'Валюта',
+        name: 'Währung',
         more: `$${system.numberFormat(user.money)}`,
         onpress: () => {
-            menu.input(player, 'Сколько валюты выдать?', 100, 7, 'int').then(val => {
+            menu.input(player, 'Wie viel Geld kannst du ausgeben?', 100, 7, 'int').then(val => {
                 if (!val || val < 0 || val > 9999999) return;
-                user.addMoney(val, true, 'Выдача валюты через панель тестера')
+                user.addMoney(val, true, 'Währungsausgabe über das Tester-Panel')
             })
         }
     })
 
     if (user.bank_have) {
         m.newItem({
-            name: 'Банковский баланс',
+            name: 'Bank-Bilanz',
             more: `$${system.numberFormat(user.bank_money)}`,
             onpress: () => {
-                menu.input(player, 'Сколько валюты выдать?', 100, 7, 'int').then(val => {
+                menu.input(player, 'Wie viel Geld kannst du ausgeben?', 100, 7, 'int').then(val => {
                     if (!val || val < 0 || val > 9999999) return;
-                    user.addBankMoney(val, true, 'Выдача валюты через панель тестера', 'Система');
+                    user.addBankMoney(val, true, 'Währungsausgabe über das Tester-Panel', 'System');
                 })
             }
         })
     }
 
     m.newItem({
-        name: 'Коины',
+        name: 'Münzen',
         more: `$${system.numberFormat(user.donate_money)}`,
         onpress: () => {
-            menu.input(player, 'Сколько донат валюты выдать?', 100, 7, 'int').then(val => {
+            menu.input(player, 'Wie viel Spendengelder kannst du verteilen?', 100, 7, 'int').then(val => {
                 if (!val || val < 0 || val > 9999999) return;
-                user.addDonateMoney(val, 'Выдача донат валюты через панель тестера')
+                user.addDonateMoney(val, 'Ausgabe von Spendewährung über das Testerfeld')
             })
         }
     })
 
     m.newItem({
-        name: 'Спавн ТС',
+        name: 'Spavn TC',
         onpress: () => {
-            menu.input(player, 'Модель ТС', '', 7).then(model => {
+            menu.input(player, 'Fahrzeugmodell', '', 7).then(model => {
                 if (!model) return;
                 CustomEvent.callClient(player, 'verifyVehModel', model).then(q => {
-                    if (!q) return player.notify('Модель указана не верно', 'error')
+                    if (!q) return player.notify('Das Modell ist nicht korrekt', 'error')
                     let veh = Vehicle.spawn(model, player.position, player.heading, player.dimension, true, false);
                     user.putIntoVehicle(veh);
                 })
@@ -273,41 +273,41 @@ gui.chat.registerCommand("adminPanel", async (player, task: string, ids: string,
 
     const data = await User.getData(id);
 
-    if (!data) return player.notify('Пользователь с указанным ID не обнаружен', 'error');
+    if (!data) return player.notify('Benutzer mit der angegebenen ID wird nicht erkannt', 'error');
 
     if (!mp.players.exists(player)) return;
 
-    if (data.admin_level > user.admin_level && user.admin_level < 6 && mp.config.announce) return player.notify('Вы не можете взаимодействовать с администратором более высокого уровня чем вы', 'error')
+    if (data.admin_level > user.admin_level && user.admin_level < 6 && mp.config.announce) return player.notify('Du kannst nicht mit einem Administrator interagieren, der eine höhere Stufe als du selbst hat.', 'error')
 
     if (task === 'ban') {
-        if (!user.hasPermission('admin:useredit:banuser')) return player.notify("У вас нет доступа", 'error');
+        if (!user.hasPermission('admin:useredit:banuser')) return player.notify("Du hast keinen Zugang", 'error');
         User.banUser(id, player, reason, system.timestamp + time);
     } else if (task === 'aban') {
-        if (!user.hasPermission('admin:useredit:banaccount')) return player.notify("У вас нет доступа", 'error');
+        if (!user.hasPermission('admin:useredit:banaccount')) return player.notify("Du hast keinen Zugang", 'error');
         User.banUserAccount(data.accountId, player, reason, system.timestamp + time);
     } else if (task === 'jail') {
-        if (!user.hasPermission('admin:useredit:jail')) return player.notify("У вас нет доступа", 'error');
+        if (!user.hasPermission('admin:useredit:jail')) return player.notify("Du hast keinen Zugang", 'error');
         const target = User.get(id);
         if (mp.players.exists(target)) {
-            player.notify(`Наказание ${target.user.jail_time_admin ? "Перевыдано" : "Выдано"}`, 'success')
+            player.notify(`Наказание ${target.user.jail_time_admin ? "Neu aufgelegt" : "Ausgestellt"}`, 'success')
             target.user.jailAdmin(player, time, reason)
         } else {
-            player.notify(`Наказание ${data.jail_time_admin ? "Перевыдано" : "Выдано"}. Игрок его отбудет при следующем заходе на сервер`, 'success')
+            player.notify(`Наказание ${data.jail_time_admin ? "Neu aufgelegt" : "Ausgestellt"}. Der Spieler wird ihn beim nächsten Mal servieren, wenn er zum Server kommt`, 'success')
             data.jail_time_admin = time;
             data.jail_reason_admin = reason + ` / ${user.name} (${user.id})`;
             saveEntity(data);
         }
-        user.log('AdminJob', `Выдал деморган на ${timeN}${timeT}., причина - ${reason}`, data.id);
+        user.log('AdminJob', `Er hat einen Demobilisierungsbefehl ${timeN}${timeT}., Grund - ${reason}`, data.id);
         addAdminStats(user.id, 'jail')
     } else if (task === 'cmute') {
-        if (!user.hasPermission('admin:useredit:cmute')) return player.notify("У вас нет доступа", 'error');
+        if (!user.hasPermission('admin:useredit:cmute')) return player.notify("Du hast keinen Zugang", 'error');
         const target = User.get(id);
         cmute.set(id, system.timestamp + time);
-        user.log('AdminBan', `Выдал текстовый мут на персонажа ${id} до ${system.timeStampString(cmute.get(id))}`, id);
+        user.log('AdminBan', `Eine Textmeuterei auf ein Zeichen ausgestellt ${id} vor ${system.timeStampString(cmute.get(id))}`, id);
         addAdminStats(user.id, 'cmute')
         syncMutePlayer(id)
         const mutePlayer = User.get(id);
-        if (mutePlayer) mutePlayer.outputChatBox(`Вы получили блокировку текстового чата до ${system.timeStampString(cmute.get(id))}. Причина: ${reason}`)
+        if (mutePlayer) mutePlayer.outputChatBox(`Du hast eine Text-Chat-Sperre bis ${system.timeStampString(cmute.get(id))}. Причина: ${reason}`)
     } else if (task === 'vmute') {
         if (!user.hasPermission('admin:useredit:bmute')) return player.notify("У вас нет доступа", 'error');
         const target = User.get(id);
