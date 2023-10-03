@@ -50,6 +50,7 @@ import {isWaterSpotInRange} from "../jobs/firefighter/FireStation";
 import {InterractionMenu} from "./InterractionMenu";
 import {activeCars} from '../vehicle.grab'
 import {sendExchangeRequest} from "../inventory.exchange";
+import {openAutoSoundMenu} from "../vehicle.autosound";
 import {Carry} from '../carry'
 import {BATTLE_PASS_VEHICLES} from "../../../shared/battlePass/main";
 import {BANNED_TAXI_MODELS} from "../../../shared/taxi";
@@ -111,6 +112,14 @@ const vehInteract = (player: PlayerMp, targetId: number) => {
     const interaction = new InterractionMenu(player, true);
     interaction.autoClose = true;
     
+    if (player.vehicle === target && player.seat === 0) {
+
+        if (target.entity?.data && target.entity.data.isAutoSoundInstalled) {
+            interaction.add('Autoradio', '', 'autosound', () => openAutoSoundMenu(player, target));
+        }
+
+    }
+
     if (target.fireSquad && player.user.fireSquad && target.fireSquad === player.user.fireSquad) {
         interaction.add('Mit Feuerlöschgemisch befüllen', '', 'star', () => {
             if (!isWaterSpotInRange(target.position, FIRETRUCK_FILL_MIXTURE_RANGE)) {

@@ -35,7 +35,7 @@ export const fetchIp = async () => {
     if (ipStorage.data[0]){
         if (system.timestamp < ipStorage.data[0].time){
             ip_address = ipStorage.data[0].ip;
-            system.debug.info("Внешний IP, хранимый в файлах", ip_address)
+            system.debug.info("Externe IP in Dateien gespeichert", ip_address)
             return;
         }
     }

@@ -37,6 +37,7 @@ import {DRIFT_PARAMS} from "../../shared/drift";
 import {Logs} from "./logs";
 import {UserStatic} from "./usermodule/static";
 import {gui} from "./gui";
+import {VehiclePlayer} from "./vehicle.autosound";
 import {distinctArray} from "../../shared/arrays";
 import {BATTLE_PASS_VEHICLES} from "../../shared/battlePass/main";
 import {lscConfig} from "./businesses/lsc";
@@ -224,6 +225,7 @@ export class Vehicle {
     vehicle: VehicleMp;
     id: number;
     static list = new Map <number, Vehicle>();
+    musicPlayer: VehiclePlayer;
     static get(id: number){
         return this.list.get(id);
     }

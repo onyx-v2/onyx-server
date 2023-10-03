@@ -128,6 +128,9 @@ export class VehicleEntity extends BaseEntity {
     }
 
     @Column({ default: false })
+    isAutoSoundInstalled: boolean;
+    
+    @Column({ default: false })
     isAutopilotInstalled: boolean;
 
     @Column({ type: "varchar", length: 1024, nullable: true, default: null })

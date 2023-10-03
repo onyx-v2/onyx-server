@@ -54,6 +54,7 @@ import {tablet} from "./tablet";
 import {Logs} from "./logs";
 import {gui} from "./gui";
 import {colshapes} from "./checkpoints";
+import {BoxPlayer} from "./musicPlayer";
 import {gangfight} from "./gangfight";
 import {SendUpdate} from "../../shared/GameVisualElement";
 import {getNearestMarketInventory} from "./market/marketStock";
@@ -898,6 +899,31 @@ export const inventory = {
             CustomEvent.triggerClient(player, 'diving:useMap', item.item_id);
         }
 
+
+        if (item.item_id === AUTO_SOUND_ITEM_ID) {
+            if (!player.vehicle) {
+                return player.notify('Dieser Gegenstand kann nur in Fahrzeugen verwendet werden.', 'error');
+            }
+
+            if (!player.vehicle?.entity?.data) {
+                return player.notify('Es ist nicht möglich, ein Auto-Sound-System in diesem Fahrzeug zu installieren', 'error');
+            }
+
+            const vehicleData = player.vehicle.entity.data;
+            if (vehicleData.isAutoSoundInstalled) {
+                return player.notify('Das Soundsystem ist bereits in diesem Fahrzeug installiert', 'error');
+            }
+
+            vehicleData.isAutoSoundInstalled = true;
+            vehicleData.save();
+
+            item.useCount(1);
+
+            player.notify('Du hast erfolgreich ein Auto-Sound-System in deinem Fahrzeug installiert. ' +
+                'Um sie zu verwenden, öffne das Interaktionsmenü, während du dich im Auto auf dem Fahrersitz befindest (G)', 'success');
+        }
+
+
         if ([ITEM_TYPE.WATER, ITEM_TYPE.FOOD, ITEM_TYPE.ALCO].includes(itmCfg.type)) {
             if (itmCfg.type === ITEM_TYPE.ALCO) {
                 count = system.smallestNumber(count, 45)
@@ -946,6 +972,13 @@ export const inventory = {
             if (user.hasAttachment('item_' + itmCfg.item_id)) user.removeAttachment('item_' + itmCfg.item_id);
             else user.addAttachment('item_' + itmCfg.item_id);
         }
+
+        if (item.item_id === 894) {
+            if (!BoxPlayer.canPlace(player))
+                return player.notify('Es ist bereits ein Spieler in der Nähe oder du befindest dich in einer grünen Zone', 'error')
+            new BoxPlayer(player, item)
+        }
+
         if (item.item_id === 868) {
             if (player.dimension) return player.notify('В данном месте нельзя выпускать фейерверк', 'error')
             if (player.vehicle) return player.notify('Покиньте транспорт', 'error')
